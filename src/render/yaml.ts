@@ -12,7 +12,7 @@ const HEADER =
   "# Do not modify!\n# This file was generated from a template using https://github.com/StefMa/pkl-gha\n\n";
 
 function normalizeSchedule(
-  schedule: OnObject["schedule"]
+  schedule: OnObject["schedule"],
 ): { cron: string }[] | undefined {
   if (!schedule) return undefined;
   if (Array.isArray(schedule)) {

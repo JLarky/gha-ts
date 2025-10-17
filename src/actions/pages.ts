@@ -20,7 +20,7 @@ export interface UploadPagesArtifactOptions {
   name?: string;
 }
 export function uploadPagesArtifact(
-  opts: UploadPagesArtifactOptions
+  opts: UploadPagesArtifactOptions,
 ): UsesStep {
   return uses("actions/upload-pages-artifact@v3", buildWith(opts, {}));
 }

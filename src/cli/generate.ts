@@ -7,11 +7,11 @@ async function main() {
   const workflowsDir = resolve(process.cwd(), ".github/workflows");
   writeWorkflow(
     resolve(workflowsDir, "workflow-triggers.generated.yml"),
-    buildWorkflowTriggers()
+    buildWorkflowTriggers(),
   );
   writeWorkflow(
     resolve(workflowsDir, "prebuild-actions.generated.yml"),
-    buildPrebuildActions()
+    buildPrebuildActions(),
   );
 }
 

@@ -36,11 +36,11 @@ const uploadMergeMap: CamelToKebabMap = {
   includeHiddenFiles: "include-hidden-files",
 };
 export function uploadArtifactMerge(
-  options: UploadArtifactMergeOptions = {}
+  options: UploadArtifactMergeOptions = {},
 ): UsesStep {
   return uses(
     "actions/upload-artifact/merge@v4",
-    buildWith(options, uploadMergeMap)
+    buildWith(options, uploadMergeMap),
   );
 }
 
@@ -61,7 +61,7 @@ const downloadMap: CamelToKebabMap = {
   runId: "run-id",
 };
 export function downloadArtifact(
-  options: DownloadArtifactOptions = {}
+  options: DownloadArtifactOptions = {},
 ): UsesStep {
   return uses("actions/download-artifact@v4", buildWith(options, downloadMap));
 }

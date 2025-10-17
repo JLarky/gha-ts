@@ -230,11 +230,11 @@ export function validateStep(step: Step, index?: number, jobId?: string) {
   const hasUses = (step as any).uses !== undefined;
   if (hasRun && hasUses)
     throw new Error(
-      `Invalid step (job=${jobId} index=${index}): cannot have both run and uses.`
+      `Invalid step (job=${jobId} index=${index}): cannot have both run and uses.`,
     );
   if (!hasRun && !hasUses)
     throw new Error(
-      `Invalid step (job=${jobId} index=${index}): must have run or uses.`
+      `Invalid step (job=${jobId} index=${index}): must have run or uses.`,
     );
 }
 export function validateWorkflow(wf: Workflow) {
@@ -256,7 +256,7 @@ export function validateWorkflow(wf: Workflow) {
 export function normalizeRunsOn(ro: RunsOn): string | string[] {
   if (Array.isArray(ro)) {
     return ro.map((r: string | Machine) =>
-      typeof r === "string" ? r : machineToString(r)
+      typeof r === "string" ? r : machineToString(r),
     );
   }
   return typeof ro === "string" ? ro : machineToString(ro);
@@ -280,7 +280,7 @@ export function job(def: DefaultJob): DefaultJob {
 export function uses(
   action: string,
   withOpts?: Record<string, unknown>,
-  opts: Omit<UsesStep, "uses" | "with"> = {}
+  opts: Omit<UsesStep, "uses" | "with"> = {},
 ): UsesStep {
   return {
     uses: action,

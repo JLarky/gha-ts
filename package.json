@@ -11,5 +11,8 @@
   },
   "engines": {
     "bun": ">=1.1.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.1.0"
   }
 }

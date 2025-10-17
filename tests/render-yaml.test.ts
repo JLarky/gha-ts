@@ -1,0 +1,133 @@
+import { describe, expect, test } from "bun:test";
+import { renderWorkflowYaml } from "../src/render/yaml";
+import { buildWorkflowTriggers } from "../src/examples/workflow-triggers";
+import { buildPrebuildActions } from "../src/examples/prebuild-actions";
+
+// Using inline snapshots to keep the golden outputs colocated and easy to update
+
+describe("renderWorkflowYaml() golden outputs", () => {
+  test("workflow-triggers matches golden", () => {
+    const yaml = renderWorkflowYaml(buildWorkflowTriggers());
+    expect(yaml).toMatchInlineSnapshot(`
+"# Do not modify!
+# This file was generated from a template using https://github.com/StefMa/pkl-gha
+
+name: GitHub Action Triggers
+"on": 
+  branch_protection_rule: 
+    {}
+  check_run: 
+    {}
+  check_suite: 
+    {}
+  create: 
+    {}
+  delete: 
+    {}
+  deployment: 
+    {}
+  deployment_status: 
+    {}
+  discussion: 
+    {}
+  discussion_comment: 
+    {}
+  fork: 
+    {}
+  gollum: 
+    {}
+  issue_comment: 
+    {}
+  issues: 
+    {}
+  label: 
+    {}
+  milestone: 
+    {}
+  page_build: 
+    {}
+  project: 
+    {}
+  project_card: 
+    {}
+  project_column: 
+    {}
+  public: 
+    {}
+  pull_request: 
+    {}
+  pull_request_review: 
+    {}
+  pull_request_review_comment: 
+    {}
+  pull_request_target: 
+    {}
+  push: 
+    {}
+  registry_package: 
+    {}
+  release: 
+    {}
+  repository_dispatch: 
+    {}
+  schedule: 
+    - cron: "*/10 * * * *"
+    - cron: 5 4 * * *
+    - cron: "* 0 * * 0"
+  status: 
+    {}
+  watch: 
+    {}
+  workflow_call: 
+    {}
+  workflow_dispatch: 
+    {}
+  workflow_run: 
+    workflows: 
+      - some_other
+jobs: 
+  doesntMatter: 
+    runs-on: ubuntu-latest
+    steps: 
+      - run: "echo 'Hello, World!'"
+        name: Hello
+"
+`);
+  });
+
+  test("prebuild-actions matches golden", () => {
+    const yaml = renderWorkflowYaml(buildPrebuildActions());
+    expect(yaml).toMatchInlineSnapshot(`
+"# Do not modify!
+# This file was generated from a template using https://github.com/StefMa/pkl-gha
+
+name: Check prebuild actions
+"on": 
+  push: 
+    {}
+jobs: 
+  test-various-actions: 
+    name: Test actions
+    runs-on: macos-latest
+    steps: 
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: 
+          go-version: 1.17.7
+      - uses: actions/setup-java@v4
+        with: 
+          java-version: "17"
+          distribution: temurin
+      - uses: actions/cache@v4
+        with: 
+          path: wiki/README.md
+          key: "wiki-readme-\${{ runner.os }}-\${{ hashFiles('wiki/generateWikiToc.go') }}"
+      - uses: actions/upload-pages-artifact@v3
+        with: 
+          path: tmp-doc
+      - id: deployment
+        uses: actions/deploy-pages@v4
+"
+`);
+  });
+});

@@ -1,0 +1,87 @@
+import { YAML } from "bun";
+import { mkdirSync, writeFileSync } from "fs";
+import { dirname } from "path";
+import type { Workflow, OnObject, Job } from "../workflow-types";
+import {
+  isDefaultJob,
+  normalizeRunsOn,
+  validateWorkflow,
+} from "../workflow-types";
+
+const HEADER =
+  "# Do not modify!\n# This file was generated from a template using https://github.com/StefMa/pkl-gha\n\n";
+
+function normalizeSchedule(
+  schedule: OnObject["schedule"]
+): { cron: string }[] | undefined {
+  if (!schedule) return undefined;
+  if (Array.isArray(schedule)) {
+    if (schedule.length === 0) return [];
+    const first = schedule[0] as any;
+    if (typeof first === "string")
+      return (schedule as string[]).map((c) => ({ cron: c }));
+    if (typeof first === "object" && first && "cron" in first)
+      return schedule as { cron: string }[];
+  } else if (typeof schedule === "object" && schedule) {
+    const s = schedule as any;
+    if (Array.isArray(s.cron))
+      return (s.cron as string[]).map((c) => ({ cron: c }));
+  }
+  return undefined;
+}
+
+function normalizeOn(on: Workflow["on"]): any {
+  if (typeof on === "string" || Array.isArray(on)) return on;
+  const obj: any = { ...on };
+  if (obj.schedule !== undefined)
+    obj.schedule = normalizeSchedule(obj.schedule);
+  return obj;
+}
+
+function normalizeJobs(jobs: Record<string, Job>): Record<string, any> {
+  const out: Record<string, any> = {};
+  for (const [id, job] of Object.entries(jobs)) {
+    if (isDefaultJob(job)) {
+      out[id] = { ...job, ["runs-on"]: normalizeRunsOn(job["runs-on"]) };
+    } else {
+      out[id] = job;
+    }
+  }
+  return out;
+}
+
+export function toYamlReadyObject(workflow: Workflow): Record<string, unknown> {
+  validateWorkflow(workflow);
+  const ordered: Record<string, unknown> = {};
+  const obj = {
+    name: workflow.name,
+    on: normalizeOn(workflow.on),
+    env: workflow.env,
+    concurrency: workflow.concurrency,
+    permissions: workflow.permissions,
+    jobs: normalizeJobs(workflow.jobs),
+  };
+  for (const key of [
+    "name",
+    "on",
+    "env",
+    "concurrency",
+    "permissions",
+    "jobs",
+  ]) {
+    if ((obj as any)[key] !== undefined) ordered[key] = (obj as any)[key];
+  }
+  return ordered;
+}
+
+export function renderWorkflowYaml(workflow: Workflow): string {
+  const yamlBody = YAML.stringify(toYamlReadyObject(workflow), null, 2);
+  return HEADER + yamlBody + (yamlBody.endsWith("\n") ? "" : "\n");
+}
+
+export function writeWorkflow(filePath: string, workflow: Workflow) {
+  const yaml = renderWorkflowYaml(workflow);
+  const dir = dirname(filePath);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(filePath, yaml, "utf8");
+}

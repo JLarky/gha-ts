@@ -1,0 +1,15 @@
+{
+  "name": "gha-ts",
+  "version": "0.1.0",
+  "description": "TypeScript port of pkl-gha to generate GitHub Actions YAML",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "generate": "bun run src/cli/generate.ts",
+    "test": "bun test"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}

@@ -4,10 +4,11 @@ import { dirname } from "path";
 import { Workflow } from "../workflow-types";
 import { HEADER, toYamlReadyObject } from "./yaml";
 
+// Accept both Bun's YAML.stringify and npm 'yaml'.stringify signatures
 export type Stringify = (
   input: unknown,
-  replacer?: undefined | null,
-  space?: string | number,
+  replacerOrOptions?: unknown,
+  space?: unknown,
 ) => string;
 
 export type RenderOptions = {

@@ -1,9 +1,9 @@
 [![GitHub Release](https://img.shields.io/github/v/release/JLarky/gha-ts?include_prereleases)](https://github.com/JLarky/gha-ts/releases/latest)
 [![GitHub License](https://img.shields.io/github/license/JLarky/gha-ts)](https://github.com/JLarky/gha-ts/blob/main/LICENSE)
 
-# <img src="icon.png" alt="Pkl" width="55"/> gha-ts
+# <img src="icon.png" alt="gha-ts" width="55"/> gha-ts
 
-A [Pkl](https://pkl-lang.org/) template for writing GitHub Action workflows.
+A TypeScript library for writing GitHub Action workflows.
 
 ## What?
 
@@ -22,52 +22,53 @@ is definitely YAML validated and ready to be used as your Action Workflows.
 
 **1. Write a `Pkl` file and `amend` this template**
 
-```pkl
-amends "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@[LATEST_VERSION]#/Workflow.pkl"
-import "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@[LATEST_VERSION]#/Context.pkl" // Optional
-import "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@[LATEST_VERSION]#/Action.pkl" // Optional
+Create a `.github/src/test.ts` file with the following content:
 
-name = "Test"
+```ts
+import { workflow } from "@jlarky/gha-ts/workflow-types";
+import { checkout } from "@jlarky/gha-ts/actions";
 
-on {
-  // Define your `on` triggers. E.g.:
-  push {
-    branches {
-      "main"
-    }
-  }
-  pull_request {}
-}
-
-jobs {
-  // Define your `jobs`. E.g.: 
-  ["test"] {
-    `runs-on` = new UbuntuLatest {} // Could also be a string like "ubuntu-latest"
-    // Define your `steps`. E.g.:
-    steps {
-      (Action.checkout) {
-        fetchDepth = 0
-      }
-      new {
-        name = "Setup nexus credentials"
-        run = """
-          mkdir ~/.gradle
-          echo "systemProp.nexusUsername=\(Context.secret("NEXUS_USERNAME")) >> ~/.gradle/gradle.properties
-          echo "systemProp.nexusPassword=\(Context.secret("NEXUS_PASSWORD")) >> ~/.gradle/gradle.properties
-        """
-      }
-      new {
-        name = "Test android app"
-        run = "./gradlew testDebugUnitTest"
+export default workflow({
+  name: "Test",
+  on: {
+    // Define your `on` triggers. E.g.:
+    push {
+      branches {
+        "main"
       }
     }
-  }
-}
+    pull_request {}
+  },
+  jobs {
+    // Define your `jobs`. E.g.: 
+    test: {
+      "runs-on": "ubuntu-latest",
+      // Define your `steps`. E.g.:
+      steps {
+        checkout({
+          fetchDepth: 0
+        }),
+        {
+          name: "Setup nexus credentials",
+          run: `
+            mkdir ~/.gradle
+            echo "systemProp.nexusUsername=\(Context.secret("NEXUS_USERNAME")) >> ~/.gradle/gradle.properties
+            echo "systemProp.nexusPassword=\(Context.secret("NEXUS_PASSWORD")) >> ~/.gradle/gradle.properties
+          `
+        },
+        {
+          name: "Test android app",
+          run: "./gradlew testDebugUnitTest",
+        }
+      }
+    }
+  });
 ```
 
 **2. Install the Pkl cli**
 
 For macOS it as simple as:
+
 ```bash
 brew install pkl
 ````
@@ -76,13 +77,78 @@ For other platforms, please follow the [official installation guide](https://pkl
 
 **3. Convert the Pkl file to Yaml**
 
-```bash
-pkl eval path/to/your/pkl/file.pkl -o path/to/your/pkl/file.yaml
+create a `.github/build.ts` file with the following content (Using Bun):
+
+```ts
+#!/usr/bin/env bun
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
+import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
+import { createSerializer } from "@jlarky/gha-ts/render";
+
+async function main() {
+  const _dirname = dirname(fileURLToPath(import.meta.url));
+  const workflowsDir = resolve(_dirname, ".github/workflows");
+  const srcDir = resolve(_dirname, ".github/src");
+
+  await generateWorkflows({
+    srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
+    onModule: async (module) => {
+      createSerializer(module.workflow, Bun.YAML.stringify).writeWorkflow(
+        module.outFile
+      );
+    },
+  });
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
 ```
 
-*Or alternatively for all files in the `.github/workflows` directory*:
+Or using Node.js:
+
+```ts
+#!/usr/bin/env node
+import { YAML } from "yaml";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
+import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
+import { createSerializer } from "@jlarky/gha-ts/render";
+
+async function main() {
+  const _dirname = dirname(fileURLToPath(import.meta.url));
+  const workflowsDir = resolve(_dirname, ".github/workflows");
+  const srcDir = resolve(_dirname, ".github/src");
+
+  await generateWorkflows({
+    srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
+    onModule: async (module) => {
+      createSerializer(module.workflow, YAML.stringify).writeWorkflow(
+        module.outFile
+      );
+    },
+  });
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
+```
+
+Then run the script:
+
 ```bash
-pkl eval path/to/your/pkl/files/*.pkl -o path/to/your/pkl/files/%{moduleName}.yml
+bun run -watch .github/build.ts
+```
+
+or
+
+```bash
+chmod + x .github/build.ts
+.github/build.ts
 ```
 
 ## Why?

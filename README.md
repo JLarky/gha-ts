@@ -13,38 +13,24 @@ A TypeScript library for writing GitHub Actions workflows and rendering them to 
 Author GitHub Actions workflows in TypeScript with strong typing and helpful validation, then render to YAML for `.github/workflows/`.
 
 - **Strong typing**: Catch errors at build-time instead of in CI.
-- **Parity with Pkl**: Mirrors Pkl fields and behavior so upstream patches transfer with minimal churn.
 - **Deterministic YAML**: Stable key ordering and converters.
 
 ## Install
 
-Choose a registry and installer:
-
-- From npm (using nypm):
+If using Bun:
 
 ```bash
-# Core package
-nypm add -D @jlarky/gha-ts
-
-# Node.js only: add YAML stringifier (Bun users can skip this)
-nypm add -D yaml
+bunx jsr add -D @jlarky/gha-ts # or bun add -D @jlarky/gha-ts
 ```
 
-- From JSR (using the jsr CLI):
+If using Node.js:
 
 ```bash
-# If you have the jsr CLI installed
-jsr add @jlarky/gha-ts
-
-# Without a global install
-npx jsr add @jlarky/gha-ts
-# or
-bunx jsr add @jlarky/gha-ts
+npx nypm add -D @jlarky/gha-ts yaml # or npx jsr add -D @jlarky/gha-ts
 ```
 
 Notes:
-- Bun users can use the built-in `Bun.YAML.stringify` and do not need the `yaml` package.
-- Node.js users should install `yaml` and pass `YAML.stringify` to the renderer.
+- Bun users will import YAML from bun and node user will use `yaml` from npm.
 
 ## Quickstart
 
@@ -78,6 +64,7 @@ export default workflow({
 
 ```ts
 #!/usr/bin/env bun
+import { YAML } from "bun";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
@@ -91,7 +78,7 @@ async function main() {
   await generateWorkflows({
     srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
     onModule: async (module) => {
-      createSerializer(module.workflow, Bun.YAML.stringify).writeWorkflow(
+      createSerializer(module.workflow, YAML.stringify).writeWorkflow(
         module.outFile,
       );
     },
@@ -150,29 +137,15 @@ chmod +x .github/build.ts
 .github/build.ts
 ```
 
-### Using mise (recommended)
-
-This repo includes a `mise` task that watches sources and writes to `.github/workflows/*.generated.yml`:
-
-```bash
-mise run workflows:build
-```
-
 ## Examples
 
 - Real workflows for this repo live in `.github/src` and render to `.github/workflows`.
 - Additional usage examples: `src/examples/`.
 
-## Design constraints
-
-- Parity-first: mirror Pkl field names, option mappings, and behavior.
-- YAML rendering uses Bun’s built-in YAML or npm `yaml` with stable ordering. See the [Bun YAML API](https://bun.com/docs/api/yaml).
-- Aggregated `Action` helpers under `@jlarky/gha-ts/actions`.
-
-## Status
-
-Core parity is implemented for `Workflow`, `Context` helpers, `Action` helpers, and renderer. More examples and golden tests can be added over time.
-
 ## License
 
 MIT
+
+## Alternatives
+
+- [pkl-gha](https://github.com/stefma/pkl-gha)

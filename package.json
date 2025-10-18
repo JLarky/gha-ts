@@ -6,7 +6,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "generate": "bun run src/cli/generate.ts",
     "test": "bun test",
     "format": "oxfmt src tests",
     "format:check": "oxfmt --check src tests"

@@ -1,4 +1,5 @@
 import { workflow } from "../../src/workflow-types";
+import { publishJsr } from "./utils/jobs";
 import { checkoutAndInstallMise } from "./utils/steps";
 
 export default workflow({
@@ -33,5 +34,6 @@ export default workflow({
         },
       ],
     },
+    dryRunPublish: publishJsr({ dryRun: true }),
   },
 });

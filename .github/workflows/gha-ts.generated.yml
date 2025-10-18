@@ -28,3 +28,12 @@ jobs:
         uses: jdx/mise-action@v3
       - name: Test gha-ts
         run: mise run test
+  dryRunPublish: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: Install mise
+        uses: jdx/mise-action@v3
+      - name: Dry run publish package
+        run: bunx jsr publish --dry-run

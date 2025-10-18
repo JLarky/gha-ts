@@ -29,6 +29,7 @@ jobs:
       - name: Test gha-ts
         run: mise run test
   dryRunPublish: 
+    name: Dry run publish package
     runs-on: ubuntu-latest
     steps: 
       - name: checkout

@@ -11,6 +11,7 @@ permissions:
   id-token: write
 jobs: 
   publish: 
+    name: Publish package
     runs-on: ubuntu-latest
     steps: 
       - name: checkout

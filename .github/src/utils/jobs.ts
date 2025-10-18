@@ -3,6 +3,7 @@ import { checkoutAndInstallMise } from "./steps";
 
 export function publishJsr(opts: { dryRun?: boolean } = { dryRun: true }) {
   return job({
+    name: opts.dryRun ? "Dry run publish package" : "Publish package",
     "runs-on": "ubuntu-latest",
     steps: [
       ...checkoutAndInstallMise(),

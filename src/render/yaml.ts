@@ -93,9 +93,18 @@ export function renderWorkflowYaml(
 export function writeWorkflow(
   filePath: string,
   workflow: Workflow,
+  stringify?: (obj: unknown) => string,
   options?: RenderOptions,
 ) {
-  const yaml = renderWorkflowYaml(workflow, options);
+  const obj = toYamlReadyObject(workflow);
+  const yamlBody =
+    typeof stringify === "function"
+      ? stringify(obj)
+      : YAML.stringify(obj, null, 2);
+  const yaml =
+    (options?.header ?? HEADER) +
+    yamlBody +
+    (yamlBody.endsWith("\n") ? "" : "\n");
   const dir = dirname(filePath);
   mkdirSync(dir, { recursive: true });
   writeFileSync(filePath, yaml, "utf8");

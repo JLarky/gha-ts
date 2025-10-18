@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { createSerializer } from "../src/render";
-import { buildWorkflowTriggers } from "../src/examples/workflow-triggers";
-import { buildPrebuildActions } from "../src/examples/prebuild-actions";
+import { buildWorkflowTriggers } from "../examples/workflow-triggers";
+import { buildPrebuildActions } from "../examples/prebuild-actions";
 
 // Using inline snapshots to keep the golden outputs colocated and easy to update
 

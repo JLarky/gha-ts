@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { createSerializer } from "../src/render";
-import { buildWorkflowTriggers } from "../src/examples/workflow-triggers";
-import { buildPrebuildActions } from "../src/examples/prebuild-actions";
+import { buildWorkflowTriggers } from "../examples/workflow-triggers";
+import { buildPrebuildActions } from "../examples/prebuild-actions";
 import type { Workflow } from "../src/workflow-types";
 import { generateWorkflows } from "../src/cli";
 

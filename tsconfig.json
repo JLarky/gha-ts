@@ -12,6 +12,7 @@
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
+    "examples/**/*.ts",
     ".github/**/*.ts",
     "mise-tasks/**/*.ts"
   ]

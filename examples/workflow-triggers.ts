@@ -1,4 +1,4 @@
-import { Workflow, workflow } from "../workflow-types";
+import { Workflow, workflow } from "../src/workflow-types";
 
 export function buildWorkflowTriggers(): Workflow {
   return workflow({

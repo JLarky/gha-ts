@@ -3,8 +3,8 @@ import YAML from "yaml";
 
 import { createSerializer } from "../src/render";
 import { toYamlReadyObject } from "../src/render/yaml";
-import { buildWorkflowTriggers } from "../src/examples/workflow-triggers";
-import { buildPrebuildActions } from "../src/examples/prebuild-actions";
+import { buildWorkflowTriggers } from "../examples/workflow-triggers";
+import { buildPrebuildActions } from "../examples/prebuild-actions";
 
 describe("YAML stringify compatibility and JSON conversion", () => {
   test("Bun.YAML.stringify round-trips to canonical object (workflow-triggers)", () => {

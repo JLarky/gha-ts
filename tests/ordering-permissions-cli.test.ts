@@ -5,7 +5,7 @@ import { mkdtempSync, rmSync, existsSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { fileURLToPath } from "url";
-import { YAML } from "bun";
+import { parse } from "yaml";
 
 describe("ordering and formatting", () => {
   test("top-level key order and trailing newline", () => {
@@ -23,11 +23,11 @@ describe("ordering and formatting", () => {
     const idx = (prefix: string) =>
       lines.findIndex((l) => l.startsWith(prefix));
     const iName = idx("name:");
-    const iOn = idx('"on": ');
+    const iOn = idx("on:");
     const iEnv = idx("env:");
     const iConc = idx("concurrency:");
     const iPerm = idx("permissions:");
-    const iJobs = idx("jobs: ");
+    const iJobs = idx("jobs:");
     expect(iName).toBeGreaterThanOrEqual(0);
     expect(iName).toBeLessThan(iOn);
     expect(iOn).toBeLessThan(iEnv);
@@ -101,8 +101,8 @@ describe("CLI generate smoke", () => {
       expect(aContent.startsWith("# Do not modify!\n")).toBe(true);
       expect(bContent.startsWith("# Do not modify!\n")).toBe(true);
       // Ensure YAML parses
-      expect(() => YAML.parse(aContent)).not.toThrow();
-      expect(() => YAML.parse(bContent)).not.toThrow();
+      expect(() => parse(aContent)).not.toThrow();
+      expect(() => parse(bContent)).not.toThrow();
     } finally {
       rmSync(tmp, { recursive: true, force: true });
     }

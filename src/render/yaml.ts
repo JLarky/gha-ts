@@ -1,4 +1,4 @@
-import { YAML } from "bun";
+import { stringify } from "yaml";
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname } from "path";
 import type { Workflow, OnObject, Job } from "../workflow-types";
@@ -82,7 +82,7 @@ export function renderWorkflowYaml(
   workflow: Workflow,
   options?: RenderOptions,
 ): string {
-  const yamlBody = YAML.stringify(toYamlReadyObject(workflow), null, 2);
+  const yamlBody = stringify(toYamlReadyObject(workflow), null, 2);
   return (
     (options?.header ?? HEADER) +
     yamlBody +

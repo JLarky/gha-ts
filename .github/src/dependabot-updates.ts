@@ -1,4 +1,4 @@
-import { workflow } from "../../src/workflow-types";
+import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { checkout } from "./utils/steps";
 
 export default workflow({

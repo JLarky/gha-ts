@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createSerializer } from "../src/render";
+import { createSerializer } from "@jlarky/gha-ts/render";
 import { buildWorkflowTriggers } from "../examples/workflow-triggers";
 import { buildPrebuildActions } from "../examples/prebuild-actions";
 

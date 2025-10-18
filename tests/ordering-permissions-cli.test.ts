@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { createSerializer } from "../src/render";
-import { workflow, job, run, Workflow } from "../src/workflow-types";
+import { createSerializer } from "@jlarky/gha-ts/render";
+import { workflow, job, run, Workflow } from "@jlarky/gha-ts/workflow-types";
 import { mkdtempSync, rmSync, existsSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";

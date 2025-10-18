@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { toYamlReadyObject } from "../src/render/yaml";
-import { workflow, job, run, Workflow } from "../src/workflow-types";
+import { workflow, job, run, Workflow } from "@jlarky/gha-ts/workflow-types";
 
 describe("normalization", () => {
   test("runs-on machine/group/labels normalize to strings", () => {

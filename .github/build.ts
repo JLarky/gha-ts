@@ -1,7 +1,7 @@
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { generateWorkflows, scanWorkflows } from "../src/cli";
-import { createSerializer } from "../src/render";
+import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
+import { createSerializer } from "@jlarky/gha-ts/render";
 
 async function main() {
   const _dirname = dirname(fileURLToPath(import.meta.url));

@@ -1,8 +1,8 @@
-import { Workflow, workflow } from "../src/workflow-types";
-import { checkout } from "../src/actions/common";
-import { setupGo, setupJava } from "../src/actions/setup";
-import { cache } from "../src/actions/cache";
-import { uploadPagesArtifact, deployPages } from "../src/actions/pages";
+import { Workflow, workflow } from "@jlarky/gha-ts/workflow-types";
+import { checkout } from "@jlarky/gha-ts/actions";
+import { setupGo, setupJava } from "@jlarky/gha-ts/actions";
+import { cache } from "@jlarky/gha-ts/actions";
+import { uploadPagesArtifact, deployPages } from "@jlarky/gha-ts/actions";
 
 export function buildPrebuildActions(): Workflow {
   return workflow({

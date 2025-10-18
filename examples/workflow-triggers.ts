@@ -1,4 +1,4 @@
-import { Workflow, workflow } from "../src/workflow-types";
+import { Workflow, workflow } from "@jlarky/gha-ts/workflow-types";
 
 export function buildWorkflowTriggers(): Workflow {
   return workflow({

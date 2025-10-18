@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import YAML from "yaml";
 
-import { createSerializer } from "../src/render";
+import { createSerializer } from "@jlarky/gha-ts/render";
 import { toYamlReadyObject } from "../src/render/yaml";
 import { buildWorkflowTriggers } from "../examples/workflow-triggers";
 import { buildPrebuildActions } from "../examples/prebuild-actions";

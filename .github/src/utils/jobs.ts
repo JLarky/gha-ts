@@ -1,4 +1,4 @@
-import { job } from "../../../src/workflow-types";
+import { job } from "@jlarky/gha-ts/workflow-types";
 import { checkoutAndInstallMise } from "./steps";
 
 export function publishJsr(opts: { dryRun?: boolean } = { dryRun: true }) {

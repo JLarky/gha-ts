@@ -1,13 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { createSerializer } from "../src/render";
+import { createSerializer } from "@jlarky/gha-ts/render";
 import {
   Workflow,
   workflow,
   job,
   run,
-  uses,
   validateWorkflow,
-} from "../src/workflow-types";
+} from "@jlarky/gha-ts/workflow-types";
 
 describe("validation", () => {
   test("throws when step has both run and uses", () => {

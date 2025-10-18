@@ -1,9 +1,9 @@
 import { resolve } from "path";
-import { createSerializer } from "../src/render";
+import { createSerializer } from "@jlarky/gha-ts/render";
 import { buildWorkflowTriggers } from "../examples/workflow-triggers";
 import { buildPrebuildActions } from "../examples/prebuild-actions";
-import type { Workflow } from "../src/workflow-types";
-import { generateWorkflows } from "../src/cli";
+import type { Workflow } from "@jlarky/gha-ts/workflow-types";
+import { generateWorkflows } from "@jlarky/gha-ts/cli";
 
 function writeWorkflow(filePath: string, workflow: Workflow) {
   createSerializer(workflow, Bun.YAML.stringify).writeWorkflow(filePath);

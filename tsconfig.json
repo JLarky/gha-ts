@@ -7,7 +7,12 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["bun-types", "node"]
+    "types": ["bun-types", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@jlarky/gha-ts": ["./src/index.ts"],
+      "@jlarky/gha-ts/*": ["./src/*"]
+    }
   },
   "include": [
     "src/**/*.ts",

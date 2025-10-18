@@ -1,4 +1,4 @@
-import { workflow } from "../../src/workflow-types";
+import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { publishJsr } from "./utils/jobs";
 import { checkoutAndInstallMise } from "./utils/steps";
 

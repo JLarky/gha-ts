@@ -1,8 +1,8 @@
 import {
   checkout as checkoutAction,
   CheckoutOptions,
-} from "../../../src/actions";
-import { Step } from "../../../src/workflow-types";
+} from "@jlarky/gha-ts/actions";
+import { Step } from "@jlarky/gha-ts/workflow-types";
 
 export function checkout(options?: CheckoutOptions): Step {
   return {

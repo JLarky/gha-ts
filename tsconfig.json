@@ -9,5 +9,10 @@
     "skipLibCheck": true,
     "types": ["bun-types", "node"]
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", ".github/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    ".github/**/*.ts",
+    "mise-tasks/**/*.ts"
+  ]
 }

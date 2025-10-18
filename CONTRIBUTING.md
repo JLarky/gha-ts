@@ -23,6 +23,16 @@ Run the test suite via mise:
 mise run test
 ```
 
+## Publishing
+
+Set new version in `jsr.json` and push.
+
+To publish the package to npm, run:
+
+```bash
+mise run clone-to-npm --publish
+```
+
 ## Development
 
 ### Helpful links

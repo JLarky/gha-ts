@@ -148,4 +148,14 @@ MIT
 
 ## Alternatives
 
+- [ghats](https://github.com/koki-develop/ghats)
+- [github-actions-workflow-ts](https://github.com/emmanuelnk/github-actions-workflow-ts)
+- [github-actions-wac](https://github.com/webiny/github-actions-wac)
+- [github-actions-typing](https://github.com/typesafegithub/github-actions-typing)
+- [actions-toolkit](https://github.com/actions/toolkit)
+
+Non JavaScript/TypeScript:
+
 - [pkl-gha](https://github.com/stefma/pkl-gha)
+- [kotlin-github-actions-dsl](https://github.com/nefilim/kotlin-github-actions-dsl)
+- [github-workflows-kt](https://github.com/typesafegithub/github-workflows-kt)

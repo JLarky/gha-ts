@@ -33,6 +33,8 @@ To publish the package to npm, run:
 mise run clone-to-npm --publish
 ```
 
+Go to https://github.com/JLarky/gha-ts/releases and create a new release.
+
 ## Development
 
 ### Helpful links

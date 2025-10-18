@@ -2,7 +2,6 @@ import { resolve } from "path";
 import { Workflow } from "../workflow-types";
 
 export type WorkflowModule = {
-  srcFile: string;
   outFile: string;
   workflow: Workflow;
 };
@@ -35,7 +34,6 @@ export async function scanWorkflows(opts: { srcDir: string; outDir: string }) {
       .replace(/\s+/g, "-")}.generated.yml`;
 
     out.push({
-      srcFile: filePath,
       outFile: resolve(opts.outDir, outputFileName),
       workflow: workflowObj,
     });
@@ -45,7 +43,7 @@ export async function scanWorkflows(opts: { srcDir: string; outDir: string }) {
 
 export async function generateWorkflows(opts: {
   srcModules: WorkflowModule[];
-  onModule: (module: WorkflowModule) => Promise<void>;
+  onModule: (module: WorkflowModule) => Promise<void> | void;
 }) {
   for (const module of opts.srcModules) {
     await opts.onModule(module);

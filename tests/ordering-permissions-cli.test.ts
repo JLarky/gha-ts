@@ -73,15 +73,8 @@ describe("CLI generate smoke", () => {
   test("writes workflows into .github/workflows under cwd", async () => {
     const tmp = mkdtempSync(join(tmpdir(), "gha-ts-cli-"));
     try {
-      const cliPath = join(
-        // repo root is this test file's directory up two levels
-        join(
-          fileURLToPath(new URL(".", import.meta.url)),
-          "..",
-          "src",
-          "cli",
-          "generate.ts",
-        ),
+      const cliPath = fileURLToPath(
+        new URL("./generate-cli.ts", import.meta.url),
       );
       const proc = Bun.spawn({
         cmd: ["bun", cliPath],

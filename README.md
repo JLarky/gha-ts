@@ -3,81 +3,66 @@
 
 # <img src="icon.png" alt="gha-ts" width="55"/> gha-ts
 
-A TypeScript library for writing GitHub Action workflows.
+A TypeScript library for writing GitHub Actions workflows and rendering them to YAML.
+
+- Parity-first with `stefma/pkl-gha` semantics
+- Stable YAML rendering (Bun’s `Bun.YAML` or npm `yaml`)
 
 ## What?
 
-[Pkl](https://pkl-lang.org/) is a configuration as code language with rich validation.
-YAML, the language used for GitHub Actions on the other hand, is a configuration language with **no validation** at all.
-We have to rely on third-party tools or IDE support to validate our GitHub Actions.
-While this will get better over time, it's still not as good as having a language with rich validation out of the box.
+Author GitHub Actions workflows in TypeScript with strong typing and helpful validation, then render to YAML for `.github/workflows/`.
 
-This is where **this** template comes in.
-It allows you to write your GitHub Action Workflows in Pkl
-and then compile them (using the [Pkl cli](https://pkl-lang.org/main/current/pkl-cli/index.html#installation)) to YAML.
-The generated YAML output, if successfully converted, 
-is definitely YAML validated and ready to be used as your Action Workflows.
+- **Strong typing**: Catch errors at build-time instead of in CI.
+- **Parity with Pkl**: Mirrors Pkl fields and behavior so upstream patches transfer with minimal churn.
+- **Deterministic YAML**: Stable key ordering and converters.
 
-## How?
+## Install
 
-**1. Write a `Pkl` file and `amend` this template**
+Using Bun or a Node.js package manager:
 
-Create a `.github/src/test.ts` file with the following content:
+```bash
+# Bun
+bun add -D @jlarky/gha-ts
+
+# npm
+npm i -D @jlarky/gha-ts yaml
+
+# pnpm
+yarn add -D @jlarky/gha-ts yaml
+```
+
+- Bun users can use the built-in `Bun.YAML` stringifier and do not need the `yaml` package.
+- Node.js users should install `yaml` and pass `YAML.stringify` to the renderer.
+
+## Quickstart
+
+Create a workflow module at `.github/src/ci.ts`:
 
 ```ts
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { checkout } from "@jlarky/gha-ts/actions";
 
 export default workflow({
-  name: "Test",
+  name: "CI",
   on: {
-    // Define your `on` triggers. E.g.:
-    push {
-      branches {
-        "main"
-      }
-    }
-    pull_request {}
+    push: { branches: ["main"] },
+    pull_request: {},
   },
-  jobs {
-    // Define your `jobs`. E.g.: 
+  jobs: {
     test: {
       "runs-on": "ubuntu-latest",
-      // Define your `steps`. E.g.:
-      steps {
-        checkout({
-          fetchDepth: 0
-        }),
-        {
-          name: "Setup nexus credentials",
-          run: `
-            mkdir ~/.gradle
-            echo "systemProp.nexusUsername=\(Context.secret("NEXUS_USERNAME")) >> ~/.gradle/gradle.properties
-            echo "systemProp.nexusPassword=\(Context.secret("NEXUS_PASSWORD")) >> ~/.gradle/gradle.properties
-          `
-        },
-        {
-          name: "Test android app",
-          run: "./gradlew testDebugUnitTest",
-        }
-      }
-    }
-  });
+      steps: [
+        checkout({ fetchDepth: 0 }),
+        { name: "Run unit tests", run: "bun test" },
+      ],
+    },
+  },
+});
 ```
 
-**2. Install the Pkl cli**
+### Build script (Bun)
 
-For macOS it as simple as:
-
-```bash
-brew install pkl
-````
-
-For other platforms, please follow the [official installation guide](https://pkl-lang.org/main/current/pkl-cli/index.html#installation).
-
-**3. Convert the Pkl file to Yaml**
-
-create a `.github/build.ts` file with the following content (Using Bun):
+`.github/build.ts`:
 
 ```ts
 #!/usr/bin/env bun
@@ -95,7 +80,7 @@ async function main() {
     srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
     onModule: async (module) => {
       createSerializer(module.workflow, Bun.YAML.stringify).writeWorkflow(
-        module.outFile
+        module.outFile,
       );
     },
   });
@@ -107,11 +92,19 @@ main().catch((err) => {
 });
 ```
 
-Or using Node.js:
+Run:
+
+```bash
+bun run -watch .github/build.ts
+```
+
+### Build script (Node.js)
+
+`.github/build.ts`:
 
 ```ts
 #!/usr/bin/env node
-import { YAML } from "yaml";
+import YAML from "yaml";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
@@ -126,7 +119,7 @@ async function main() {
     srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
     onModule: async (module) => {
       createSerializer(module.workflow, YAML.stringify).writeWorkflow(
-        module.outFile
+        module.outFile,
       );
     },
   });
@@ -138,86 +131,36 @@ main().catch((err) => {
 });
 ```
 
-Then run the script:
+Run:
 
 ```bash
-bun run -watch .github/build.ts
-```
-
-or
-
-```bash
-chmod + x .github/build.ts
+chmod +x .github/build.ts
 .github/build.ts
 ```
 
-## Why?
+### Using mise (recommended)
 
-* **Strong typing**: Pkl is a strongly typed language. This means that you can't accidentally use a wrong type in your
-  configuration.
-* **Simplicity**: Strong validation and strong typing but still simple to write.
+This repo includes a `mise` task that watches sources and writes to `.github/workflows/*.generated.yml`:
+
+```bash
+mise run workflows:build
+```
 
 ## Examples
 
-You can find real-life examples in the [.github/pkl-workflows](.github/pkl-workflows) directory of this repository.
-There are also some examples in the [examples](examples) directory.
+- Real workflows for this repo live in `.github/src` and render to `.github/workflows`.
+- Additional usage examples: `src/examples/`.
 
-The (right now) supported templates looks like that:
-```
-name: String
-on: On
-env: EnvironmentVariables?
-concurrency: Concurrency?
-permissions: (*Permissions|"read-all"|"write-all")?
-jobs: Jobs
-```
+## Design constraints
 
-The template itself as well as the `class` definitions can be found in the [Workflow.pkl](Workflow.pkl) file.
+- Parity-first: mirror Pkl field names, option mappings, and behavior.
+- YAML rendering uses Bun’s built-in YAML or npm `yaml` with stable ordering. See the [Bun YAML API](https://bun.com/docs/api/yaml).
+- Aggregated `Action` helpers under `@jlarky/gha-ts/actions`.
 
-## Adopters
+## Status
 
-This module is already used in the following repositories:
-* [StefMa/pkl-gha](https://github.com/StefMa/pkl-gha/tree/725a23cc42112a11dec32ff934d3166bddc54e5c/.github/pkl-workflows)
-* [pkl-community/setup-pkl](https://github.com/pkl-community/setup-pkl/tree/52a58184f4f3e64a7fd8444f2a5dee6fa8eeba58/.github/pkl-workflows)
-* [realm/realm-dotnet](https://github.com/realm/realm-dotnet/tree/d44ca659e2744ce0a210ff7ffbcb59607d8b3dac/.github/pkl-workflows)
+Core parity is implemented for `Workflow`, `Context` helpers, `Action` helpers, and renderer. More examples and golden tests can be added over time.
 
-Additionally, it is used in the internal codebase of the [ioki](https://ioki.com/en/platform/) Android White-Label Apps.
+## License
 
-Let me know if you have also adopted the module, or submit a PR!
-
-## Release
-
-**Step 1**: Make sure you're on the `main` branch and pull the latest changes.
-
-```bash
-git checkout main
-git pull origin main
-```
-
-**Step 2**: Create a git tag in form of `com.github.action@[SEMVER_VERSION]`.
-
-```bash
-git tag com.github.action@[SEMVER_VERSION]
-```
-
-> [!IMPORTANT]
-> The `[SEMVER_VERSION]` should be the same as the version in the `PklProject` and `doc-package-info.pkl` files.
-
-**Step 3**: Push the tag to the remote repository.
-
-```bash
-git push origin com.github.action@[SEMVER_VERSION]
-```
-
-**Step 4**: The tag creates a new release on GitHub.
-Go to the [releases](https://github.com/JLarky/gha-ts/releases) page and edit the new release.
-Put some information about the changes in the description and publish the release.
-
-**Step 5**: Update the version in the [PklProject](PklProject) and [doc-package-info](doc-package-info.pkl) files.
-Adjust the version to the next [Semantic Versioning](https://semver.org/) version.
-
-Commit and push the changes:
-```bash
-git commit -m "Bump version to [SEMVER_VERSION]" .
-git push origin main
-```
+MIT

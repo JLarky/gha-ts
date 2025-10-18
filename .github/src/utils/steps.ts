@@ -22,6 +22,17 @@ export function installPkl(): Step {
   };
 }
 
+export function installMise(): Step {
+  return {
+    name: "Install mise",
+    uses: "jdx/mise-action@v3",
+  };
+}
+
 export function checkoutAndInstallPkl(): Step[] {
   return [checkout(), installPkl()];
+}
+
+export function checkoutAndInstallMise(): Step[] {
+  return [checkout(), installMise()];
 }

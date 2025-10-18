@@ -237,7 +237,7 @@ export function validateStep(step: Step, index?: number, jobId?: string) {
       `Invalid step (job=${jobId} index=${index}): must have run or uses.`,
     );
 }
-export function validateWorkflow(wf: Workflow) {
+export function validateWorkflow(wf: Workflow): Workflow {
   // onIsSet equivalent: at least one trigger must be set when 'on' is object
   if (typeof wf.on === "object" && !Array.isArray(wf.on)) {
     const on = wf.on as Record<string, unknown>;

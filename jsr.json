@@ -1,0 +1,15 @@
+{
+  "name": "@jlarky/gha-ts",
+  "version": "0.0.1",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./workflow-types": "./src/workflow-types.ts",
+    "./action": "./src/action.ts",
+    "./actions": "./src/actions/index.ts"
+  },
+  "publish": {
+    "include": ["./src/**/*.ts"],
+    "exclude": ["./src/examples/**/*.ts"]
+  }
+}

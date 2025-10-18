@@ -23,8 +23,6 @@ console.log("Republishing from jsr to npm");
 
 process.chdir(import.meta.dirname);
 
-await $`echo Hello, world!`;
-
 process.chdir(DIRECTORY);
 
 console.log("Cloning into directory", DIRECTORY);

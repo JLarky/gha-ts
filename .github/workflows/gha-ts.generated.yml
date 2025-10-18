@@ -40,3 +40,13 @@ jobs:
         uses: jdx/mise-action@v3
       - name: Dry run publish package
         run: bunx jsr publish --dry-run
+  tryPublishedPackage: 
+    name: Try Published Package
+    runs-on: ubuntu-latest
+    steps: 
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: Install mise
+        uses: jdx/mise-action@v3
+      - name: Run the test
+        run: mise run validate-published-package

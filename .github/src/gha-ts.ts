@@ -39,5 +39,16 @@ export default workflow({
       ],
     },
     dryRunPublish: publishJsr({ dryRun: true }),
+    tryPublishedPackage: {
+      name: "Try Published Package",
+      "runs-on": "ubuntu-latest",
+      steps: [
+        ...checkoutAndInstallMise(),
+        {
+          name: "Run the test",
+          run: "mise run validate-published-package",
+        },
+      ],
+    },
   },
 });

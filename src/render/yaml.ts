@@ -70,3 +70,29 @@ export function toYamlReadyObject(workflow: Workflow): Record<string, unknown> {
   }
   return ordered;
 }
+
+export type YamlParse = (source: string) => unknown;
+
+/**
+ * Parse a YAML string back into a plain JavaScript object.
+ * Provide a parser implementation (e.g., Bun.YAML.parse or yaml.parse).
+ */
+export function parseYamlToObject(
+  source: string,
+  parse: YamlParse,
+): unknown {
+  return parse(source);
+}
+
+/**
+ * Convert a YAML string to a prettified JSON string using the given parser.
+ * This is useful for round-trip comparisons that ignore YAML formatting differences.
+ */
+export function yamlToJsonString(
+  source: string,
+  parse: YamlParse,
+  space: number = 2,
+): string {
+  const obj = parseYamlToObject(source, parse);
+  return JSON.stringify(obj, null, space);
+}

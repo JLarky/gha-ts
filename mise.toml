@@ -13,3 +13,13 @@ run = "bun run format:check"
 [tasks.test]
 description = "Run tests with Bun"
 run = "bun test"
+
+[tasks."workflows:clear"]
+description = "Remove generated GitHub Actions workflows"
+run = "rm -r .github/workflows/*.generated.yml"
+
+[tasks."workflows:build"]
+description = "Generate GitHub Actions workflows from TypeScript"
+run = "bun run .github/build.ts"
+sources = [".github/build.ts", ".github/**/*.ts", "src/**/*.ts"]
+outputs = [".github/workflows/*.generated.yml"]

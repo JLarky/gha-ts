@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderWorkflowYaml } from "../src/render/yaml";
+import { createSerializer } from "../src/render";
 import {
   Workflow,
   workflow,
@@ -24,7 +24,7 @@ describe("validation", () => {
         }),
       },
     });
-    expect(() => renderWorkflowYaml(wf)).toThrow(
+    expect(() => createSerializer(wf).stringifyWorkflow()).toThrow(
       /cannot have both run and uses/,
     );
   });

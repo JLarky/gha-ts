@@ -1,7 +1,8 @@
 import { dirname, resolve } from "path";
 import type { Workflow } from "../src/workflow-types";
-import { writeWorkflow } from "../src/render/yaml";
+import { createSerializer } from "../src/render";
 import { fileURLToPath } from "url";
+import { YAML } from "bun"
 
 async function main() {
   const _dirname = dirname(fileURLToPath(import.meta.url));
@@ -34,7 +35,7 @@ async function main() {
       .toLowerCase()
       .replace(/\s+/g, "-")}.generated.yml`;
 
-    writeWorkflow(resolve(workflowsDir, outputFileName), workflowObj);
+    createSerializer(workflowObj, YAML.stringify).writeWorkflow(resolve(workflowsDir, outputFileName));
   }
   if (workflowFiles.length === 0) {
     console.warn("No GitHub Actions workflows found");

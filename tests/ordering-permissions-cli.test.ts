@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderWorkflowYaml } from "../src/render/yaml";
+import { createSerializer } from "../src/render";
 import { workflow, job, run, Workflow } from "../src/workflow-types";
 import { mkdtempSync, rmSync, existsSync, readFileSync } from "fs";
 import { tmpdir } from "os";
@@ -17,7 +17,7 @@ describe("ordering and formatting", () => {
       permissions: { contents: "read" },
       jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
     });
-    const yaml = renderWorkflowYaml(wf);
+    const yaml = createSerializer(wf, Bun.YAML.stringify).stringifyWorkflow();
     expect(yaml.endsWith("\n")).toBe(true);
     const lines = yaml.split("\n");
     const idx = (prefix: string) =>
@@ -46,7 +46,7 @@ describe("permissions and concurrency", () => {
       concurrency: { group: "deploy", "cancel-in-progress": false },
       jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
     });
-    const yaml = renderWorkflowYaml(wf);
+    const yaml = createSerializer(wf, Bun.YAML.stringify).stringifyWorkflow();
     expect(yaml).toContain("permissions:");
     expect(yaml).toContain("contents: read");
     expect(yaml).toContain("actions: write");
@@ -63,7 +63,7 @@ describe("permissions and concurrency", () => {
       concurrency: "my-group",
       jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
     });
-    const yaml = renderWorkflowYaml(wf);
+    const yaml = createSerializer(wf, Bun.YAML.stringify).stringifyWorkflow();
     expect(yaml).toContain("permissions: read-all");
     expect(yaml).toContain("concurrency: my-group");
   });
@@ -73,15 +73,8 @@ describe("CLI generate smoke", () => {
   test("writes workflows into .github/workflows under cwd", async () => {
     const tmp = mkdtempSync(join(tmpdir(), "gha-ts-cli-"));
     try {
-      const cliPath = join(
-        // repo root is this test file's directory up two levels
-        join(
-          fileURLToPath(new URL(".", import.meta.url)),
-          "..",
-          "src",
-          "cli",
-          "generate.ts",
-        ),
+      const cliPath = fileURLToPath(
+        new URL("./generate-cli.ts", import.meta.url),
       );
       const proc = Bun.spawn({
         cmd: ["bun", cliPath],

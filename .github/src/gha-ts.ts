@@ -29,11 +29,26 @@ export default workflow({
       steps: [
         ...checkoutAndInstallMise(),
         {
+          name: "Bun install",
+          run: "bun install",
+        },
+        {
           name: "Test gha-ts",
           run: "mise run test",
         },
       ],
     },
     dryRunPublish: publishJsr({ dryRun: true }),
+    tryPublishedPackage: {
+      name: "Try Published Package",
+      "runs-on": "ubuntu-latest",
+      steps: [
+        ...checkoutAndInstallMise(),
+        {
+          name: "Run the test",
+          run: "mise run validate-published-package",
+        },
+      ],
+    },
   },
 });

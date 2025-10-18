@@ -26,6 +26,8 @@ jobs:
         uses: actions/checkout@v5
       - name: Install mise
         uses: jdx/mise-action@v3
+      - name: Bun install
+        run: bun install
       - name: Test gha-ts
         run: mise run test
   dryRunPublish: 

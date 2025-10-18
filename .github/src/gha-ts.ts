@@ -29,6 +29,10 @@ export default workflow({
       steps: [
         ...checkoutAndInstallMise(),
         {
+          name: "Bun install",
+          run: "bun install",
+        },
+        {
           name: "Test gha-ts",
           run: "mise run test",
         },

@@ -8,6 +8,7 @@ export default workflow({
   },
   jobs: {
     checkWorkflowsConverted: {
+      name: "Check Pkl workflows converted",
       "runs-on": "ubuntu-latest",
       steps: [
         ...checkoutAndInstallPkl(),

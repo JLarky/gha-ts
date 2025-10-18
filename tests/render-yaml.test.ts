@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { createSerializer } from "../src/render";
+import { createSerializer, adaptYamlStringify } from "../src/render";
+import { parseYamlToObject, yamlToJsonString } from "../src/render/yaml";
+import YAML from "yaml";
 import { buildWorkflowTriggers } from "../src/examples/workflow-triggers";
 import { buildPrebuildActions } from "../src/examples/prebuild-actions";
 
@@ -146,5 +148,21 @@ jobs:
       header: custom,
     });
     expect(yaml.stringifyWorkflow().startsWith(custom)).toBe(true);
+  });
+
+  test("npm yaml backend round-trip parses to same JSON", () => {
+    const wf = buildWorkflowTriggers();
+    const npmYaml = createSerializer(
+      wf,
+      adaptYamlStringify(YAML.stringify as any),
+    ).stringifyWorkflow();
+    // Ensure we can parse npm yaml output back into an object
+    const obj = parseYamlToObject(npmYaml, YAML.parse as any);
+    expect(typeof obj).toBe("object");
+    // Compare JSON outputs after rendering through our serializer
+    const bunYaml = createSerializer(wf, Bun.YAML.stringify).stringifyWorkflow();
+    const bunJson = yamlToJsonString(bunYaml, Bun.YAML.parse as any);
+    const npmJson = yamlToJsonString(npmYaml, YAML.parse as any);
+    expect(JSON.parse(npmJson)).toEqual(JSON.parse(bunJson));
   });
 });

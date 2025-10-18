@@ -15,6 +15,19 @@ export type RenderOptions = {
   stringify?: Stringify;
 };
 
+/**
+ * Adapter for npm 'yaml' package's stringify to match our Stringify type.
+ * It respects the JSON.stringify-style `space` argument for indentation.
+ */
+export function adaptYamlStringify(
+  yamlStringify: (value: unknown, options?: unknown) => string,
+): Stringify {
+  return (input: unknown, _replacer?: undefined | null, space?: string | number) => {
+    const options = typeof space === "number" ? { indent: Number(space) } : undefined;
+    return yamlStringify(input, options);
+  };
+}
+
 export class Serializer {
   constructor(
     private workflow: Workflow,

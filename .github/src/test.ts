@@ -16,6 +16,7 @@ export default workflow({
         ...checkoutAndInstallPkl(),
         {
           name: "Test pkl module",
+          "working-directory": ".pkl",
           run: "pkl test",
         },
       ],

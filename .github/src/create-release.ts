@@ -2,7 +2,7 @@ import { workflow } from "../../src/workflow-types";
 import { checkoutAndInstallPkl } from "./utils/steps";
 
 export default workflow({
-  name: "CreateRelease",
+  name: "Create Release",
   on: {
     push: {
       tags: ["*"],

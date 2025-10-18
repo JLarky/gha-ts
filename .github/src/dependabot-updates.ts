@@ -2,7 +2,7 @@ import { workflow } from "../../src/workflow-types";
 import { checkout } from "./utils/steps";
 
 export default workflow({
-  name: "UpdatePklWorkflows",
+  name: "Update Pkl Workflows",
   on: {
     pull_request: {},
   } as any,

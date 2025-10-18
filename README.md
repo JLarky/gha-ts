@@ -18,20 +18,32 @@ Author GitHub Actions workflows in TypeScript with strong typing and helpful val
 
 ## Install
 
-Using Bun or a Node.js package manager:
+Choose a registry and installer:
+
+- From npm (using nypm):
 
 ```bash
-# Bun
-bun add -D @jlarky/gha-ts
+# Core package
+nypm add -D @jlarky/gha-ts
 
-# npm
-npm i -D @jlarky/gha-ts yaml
-
-# pnpm
-yarn add -D @jlarky/gha-ts yaml
+# Node.js only: add YAML stringifier (Bun users can skip this)
+nypm add -D yaml
 ```
 
-- Bun users can use the built-in `Bun.YAML` stringifier and do not need the `yaml` package.
+- From JSR (using the jsr CLI):
+
+```bash
+# If you have the jsr CLI installed
+jsr add @jlarky/gha-ts
+
+# Without a global install
+npx jsr add @jlarky/gha-ts
+# or
+bunx jsr add @jlarky/gha-ts
+```
+
+Notes:
+- Bun users can use the built-in `Bun.YAML.stringify` and do not need the `yaml` package.
 - Node.js users should install `yaml` and pass `YAML.stringify` to the renderer.
 
 ## Quickstart

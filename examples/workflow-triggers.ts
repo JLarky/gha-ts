@@ -42,7 +42,7 @@ export function buildWorkflowTriggers(): Workflow {
       workflow_call: {},
       workflow_dispatch: {},
       workflow_run: { workflows: ["some_other"] },
-    } as any,
+    },
     jobs: {
       doesntMatter: {
         "runs-on": "ubuntu-latest",

@@ -7,7 +7,7 @@ import { uploadPagesArtifact, deployPages } from "@jlarky/gha-ts/actions";
 export function buildPrebuildActions(): Workflow {
   return workflow({
     name: "Check prebuild actions",
-    on: { push: {} } as any,
+    on: { push: {} },
     jobs: {
       "test-various-actions": {
         name: "Test actions",

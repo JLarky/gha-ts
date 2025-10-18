@@ -6,9 +6,9 @@ export default workflow({
   on: {
     push: {
       branches: ["main"],
-    } as any,
+    },
     pull_request: {},
-  } as any,
+  },
   jobs: {
     test: {
       "runs-on": "ubuntu-latest",

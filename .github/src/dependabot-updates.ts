@@ -5,7 +5,7 @@ export default workflow({
   name: "Update Pkl Workflows",
   on: {
     pull_request: {},
-  } as any,
+  },
   jobs: {
     checkActionUpdate: {
       "runs-on": "ubuntu-latest",

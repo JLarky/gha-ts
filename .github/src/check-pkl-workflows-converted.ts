@@ -5,7 +5,7 @@ export default workflow({
   name: "Check Pkl workflows converted",
   on: {
     push: {},
-  } as any,
+  },
   jobs: {
     checkWorkflowsConverted: {
       "runs-on": "ubuntu-latest",

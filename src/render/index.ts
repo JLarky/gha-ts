@@ -60,7 +60,7 @@ export class Serializer {
 
 export function createSerializer(
   workflow: Workflow,
-  stringify?: Stringify
+  stringify?: Stringify,
 ): Serializer {
   return new Serializer(workflow, stringify ? { stringify } : undefined);
 }

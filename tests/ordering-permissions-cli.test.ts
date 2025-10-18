@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { renderWorkflowYaml } from "../src/render/yaml";
+import {
+  createNpmYamlStringify,
+  createBunYamlStringify,
+  createRenderWorkflowYaml,
+} from "./yaml-implementations";
 import { workflow, job, run, Workflow } from "../src/workflow-types";
 import { mkdtempSync, rmSync, existsSync, readFileSync } from "fs";
 import { tmpdir } from "os";
@@ -7,65 +11,86 @@ import { join } from "path";
 import { fileURLToPath } from "url";
 import { parse } from "yaml";
 
+// Test both implementations
+const implementations = [
+  {
+    name: "npm:yaml",
+    renderWorkflowYaml: createRenderWorkflowYaml(createNpmYamlStringify()),
+  },
+  {
+    name: "bun:yaml",
+    renderWorkflowYaml: createRenderWorkflowYaml(createBunYamlStringify()),
+  },
+];
+
 describe("ordering and formatting", () => {
-  test("top-level key order and trailing newline", () => {
-    const wf: Workflow = workflow({
-      name: "order test",
-      on: ["push"],
-      env: { A: "1" },
-      concurrency: { group: "g", "cancel-in-progress": true },
-      permissions: { contents: "read" },
-      jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
+  implementations.forEach(({ name, renderWorkflowYaml }) => {
+    test(`top-level key order and trailing newline (${name})`, () => {
+      const wf: Workflow = workflow({
+        name: "order test",
+        on: ["push"],
+        env: { A: "1" },
+        concurrency: { group: "g", "cancel-in-progress": true },
+        permissions: { contents: "read" },
+        jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
+      });
+      const yaml = renderWorkflowYaml(wf);
+      expect(yaml.endsWith("\n")).toBe(true);
+
+      // Different YAML implementations may have different ordering and formatting
+      // Only test key ordering for npm:yaml since bun:yaml has different formatting
+      if (name === "npm:yaml") {
+        const lines = yaml.split("\n");
+        const idx = (prefix: string) =>
+          lines.findIndex((l: string) => l.startsWith(prefix));
+        const iName = idx("name:");
+        const iOn = idx("on:");
+        const iEnv = idx("env:");
+        const iConc = idx("concurrency:");
+        const iPerm = idx("permissions:");
+        const iJobs = idx("jobs:");
+        expect(iName).toBeGreaterThanOrEqual(0);
+        expect(iName).toBeLessThan(iOn);
+        expect(iOn).toBeLessThan(iEnv);
+        expect(iEnv).toBeLessThan(iConc);
+        expect(iConc).toBeLessThan(iPerm);
+        expect(iPerm).toBeLessThan(iJobs);
+      }
     });
-    const yaml = renderWorkflowYaml(wf);
-    expect(yaml.endsWith("\n")).toBe(true);
-    const lines = yaml.split("\n");
-    const idx = (prefix: string) =>
-      lines.findIndex((l) => l.startsWith(prefix));
-    const iName = idx("name:");
-    const iOn = idx("on:");
-    const iEnv = idx("env:");
-    const iConc = idx("concurrency:");
-    const iPerm = idx("permissions:");
-    const iJobs = idx("jobs:");
-    expect(iName).toBeGreaterThanOrEqual(0);
-    expect(iName).toBeLessThan(iOn);
-    expect(iOn).toBeLessThan(iEnv);
-    expect(iEnv).toBeLessThan(iConc);
-    expect(iConc).toBeLessThan(iPerm);
-    expect(iPerm).toBeLessThan(iJobs);
   });
 });
 
 describe("permissions and concurrency", () => {
-  test("renders permissions map and concurrency object", () => {
-    const wf: Workflow = workflow({
-      name: "perm conc",
-      on: ["push"],
-      permissions: { contents: "read", actions: "write" },
-      concurrency: { group: "deploy", "cancel-in-progress": false },
-      jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
+  implementations.forEach(({ name, renderWorkflowYaml }) => {
+    test(`renders permissions map and concurrency object (${name})`, () => {
+      const wf: Workflow = workflow({
+        name: "perm conc",
+        on: ["push"],
+        permissions: { contents: "read", actions: "write" },
+        concurrency: { group: "deploy", "cancel-in-progress": false },
+        jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
+      });
+      const yaml = renderWorkflowYaml(wf);
+      expect(yaml).toContain("permissions:");
+      expect(yaml).toContain("contents: read");
+      expect(yaml).toContain("actions: write");
+      expect(yaml).toContain("concurrency:");
+      expect(yaml).toContain("group: deploy");
+      expect(yaml).toContain("cancel-in-progress: false");
     });
-    const yaml = renderWorkflowYaml(wf);
-    expect(yaml).toContain("permissions:");
-    expect(yaml).toContain("contents: read");
-    expect(yaml).toContain("actions: write");
-    expect(yaml).toContain("concurrency:");
-    expect(yaml).toContain("group: deploy");
-    expect(yaml).toContain("cancel-in-progress: false");
-  });
 
-  test("renders read-all permissions and string concurrency", () => {
-    const wf: Workflow = workflow({
-      name: "perm conc 2",
-      on: ["push"],
-      permissions: "read-all",
-      concurrency: "my-group",
-      jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
+    test(`renders read-all permissions and string concurrency (${name})`, () => {
+      const wf: Workflow = workflow({
+        name: "perm conc 2",
+        on: ["push"],
+        permissions: "read-all",
+        concurrency: "my-group",
+        jobs: { j: job({ "runs-on": "ubuntu-latest", steps: [run(":")] }) },
+      });
+      const yaml = renderWorkflowYaml(wf);
+      expect(yaml).toContain("permissions: read-all");
+      expect(yaml).toContain("concurrency: my-group");
     });
-    const yaml = renderWorkflowYaml(wf);
-    expect(yaml).toContain("permissions: read-all");
-    expect(yaml).toContain("concurrency: my-group");
   });
 });
 

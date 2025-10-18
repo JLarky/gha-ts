@@ -6,7 +6,6 @@ name: Publish
   push: 
     branches: 
       - main
-      - feat--jsr-publish
 permissions: 
   contents: read
   id-token: write

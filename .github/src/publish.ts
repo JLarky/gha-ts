@@ -5,7 +5,7 @@ export default workflow({
   name: "Publish",
   on: {
     push: {
-      branches: ["main", "feat--jsr-publish"],
+      branches: ["main"],
     },
   },
   permissions: {

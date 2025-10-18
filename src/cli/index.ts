@@ -6,7 +6,10 @@ export type WorkflowModule = {
   workflow: Workflow;
 };
 
-export async function scanWorkflows(opts: { srcDir: string; outDir: string }) {
+export async function scanWorkflows(opts: {
+  srcDir: string;
+  outDir: string;
+}): Promise<WorkflowModule[]> {
   const out: WorkflowModule[] = [];
   const workflowFiles = await Array.fromAsync(
     new Bun.Glob("*.ts").scan({ cwd: opts.srcDir }),

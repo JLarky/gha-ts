@@ -78,7 +78,7 @@ if (!SKIP_NPM) {
 
   const text = (await $`./build.ts`.throws(false)).text();
   console.log([text]);
-  if (text !== "5 GitHub Actions workflows were generated\n") {
+  if (text !== "4 GitHub Actions workflows were generated\n") {
     failures.push("npm");
   }
 }
@@ -88,7 +88,7 @@ if (!SKIP_JSR) {
 
   const text = (await $`./build.ts`.throws(false)).text();
   console.log([text]);
-  if (text !== "5 GitHub Actions workflows were generated\n") {
+  if (text !== "4 GitHub Actions workflows were generated\n") {
     failures.push("jsr");
   }
 }

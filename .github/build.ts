@@ -2,6 +2,9 @@ import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
 import { createSerializer } from "@jlarky/gha-ts/render";
+import "./workflows/gha-ts.main";
+import "./workflows/example-bun.main";
+import "./workflows/example-node.main";
 
 async function main() {
   const _dirname = dirname(fileURLToPath(import.meta.url));

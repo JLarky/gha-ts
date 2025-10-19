@@ -34,107 +34,82 @@ Notes:
 
 ## Quickstart
 
-Create a workflow module at `.github/src/ci.ts`:
+Create a workflow module at `.github/workflows/example-bun.main.ts` (when using Bun):
 
 ```ts
+#!/usr/bin/env bun
+import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { checkout } from "@jlarky/gha-ts/actions";
+import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
-export default workflow({
-  name: "CI",
+const wf = workflow({
+  name: "Example workflow",
   on: {
     push: { branches: ["main"] },
     pull_request: {},
   },
   jobs: {
-    test: {
+    exampleJob: {
       "runs-on": "ubuntu-latest",
       steps: [
         checkout({ fetchDepth: 0 }),
-        { name: "Run unit tests", run: "bun test" },
+        { name: "Test", run: "echo 'Hello, world!'" },
       ],
     },
   },
 });
+
+await generateWorkflow(wf, YAML.stringify, import.meta.url);
+```
+
+Or if you are using Node.js, create a workflow module at `.github/workflows/example-node.main.ts`:
+
+```ts
+#!/usr/bin/env node
+import { YAML } from "yaml";
+import { workflow } from "@jlarky/gha-ts/workflow-types";
+import { checkout } from "@jlarky/gha-ts/actions";
+import { generateWorkflow } from "@jlarky/gha-ts/cli";
+
+const wf = workflow({
+  name: "Example workflow",
+  on: {
+    push: { branches: ["main"] },
+    pull_request: {},
+  },
+  jobs: {
+    exampleJob: {
+      "runs-on": "ubuntu-latest",
+      steps: [
+        checkout({ fetchDepth: 0 }),
+        { name: "Test", run: "echo 'Hello, world!'" },
+      ],
+    },
+  },
+});
+
+await generateWorkflow(wf, YAML.stringify, import.meta.url);
 ```
 
 ### Build script (Bun)
 
-`.github/build.ts`:
-
-```ts
-#!/usr/bin/env bun
-import { YAML } from "bun";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
-import { createSerializer } from "@jlarky/gha-ts/render";
-
-async function main() {
-  const _dirname = dirname(fileURLToPath(import.meta.url));
-  const workflowsDir = resolve(_dirname, ".github/workflows");
-  const srcDir = resolve(_dirname, ".github/src");
-
-  await generateWorkflows({
-    srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
-    onModule: async (module) => {
-      createSerializer(module.workflow, YAML.stringify).writeWorkflow(
-        module.outFile,
-      );
-    },
-  });
-}
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+```bash
+chmod +x .github/workflows/example-bun.main.ts
+.github/workflows/example-bun.main.ts
 ```
 
-Run:
+Or in watch mode:
 
 ```bash
-bun run -watch .github/build.ts
+bun run --watch .github/workflows/example-bun.main.ts
 ```
 
 ### Build script (Node.js)
 
-`.github/build.ts`:
-
-```ts
-#!/usr/bin/env node
-import YAML from "yaml";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
-import { createSerializer } from "@jlarky/gha-ts/render";
-
-async function main() {
-  const _dirname = dirname(fileURLToPath(import.meta.url));
-  const workflowsDir = resolve(_dirname, ".github/workflows");
-  const srcDir = resolve(_dirname, ".github/src");
-
-  await generateWorkflows({
-    srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
-    onModule: async (module) => {
-      createSerializer(module.workflow, YAML.stringify).writeWorkflow(
-        module.outFile,
-      );
-    },
-  });
-}
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
-```
-
-Run:
-
 ```bash
-chmod +x .github/build.ts
-.github/build.ts
+chmod +x .github/workflows/example-node.main.ts
+.github/workflows/example-node.main.ts
 ```
 
 ## Examples

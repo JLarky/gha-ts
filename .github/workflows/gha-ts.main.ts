@@ -1,8 +1,11 @@
+#!/usr/bin/env bun
+import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
-import { publishJsr } from "./utils/jobs";
-import { checkoutAndInstallMise } from "./utils/steps";
+import { publishJsr } from "../src/utils/jobs";
+import { checkoutAndInstallMise } from "../src/utils/steps";
+import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
-export default workflow({
+const ghaTsWorkflow = workflow({
   name: "Test gha-ts",
   on: {
     push: {},
@@ -52,3 +55,5 @@ export default workflow({
     },
   },
 });
+
+await generateWorkflow(ghaTsWorkflow, YAML.stringify, import.meta.url);

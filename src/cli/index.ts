@@ -1,5 +1,7 @@
-import { resolve } from "path";
+import { basename, dirname, join, parse, resolve } from "path";
 import { Workflow } from "../workflow-types";
+import { createSerializer, Stringify } from "../render";
+import { fileURLToPath } from "url";
 
 export type WorkflowModule = {
   outFile: string;
@@ -61,4 +63,31 @@ export async function generateWorkflows(opts: {
         " generated",
     );
   }
+}
+
+export async function generateWorkflow(
+  workflow: Workflow,
+  stringify: Stringify,
+  moduleUrl: string, // from import.meta.url
+) {
+  const filePath = parse(fileURLToPath(moduleUrl));
+  const outFilePath = join(
+    filePath.dir,
+    filePath.name.replace(/\.main$/, "") + ".generated.yml",
+  );
+  console.log(`Out file: ${outFilePath}`);
+
+  await generateWorkflows({
+    srcModules: [
+      {
+        workflow,
+        outFile: outFilePath,
+      },
+    ],
+    onModule: async (module) => {
+      createSerializer(module.workflow, stringify).writeWorkflow(
+        module.outFile,
+      );
+    },
+  });
 }

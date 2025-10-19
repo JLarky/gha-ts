@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
-import { checkout } from "../src/utils/steps";
+import { checkout } from "./utils/steps";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
-const dependabotUpdatesWorkflow = workflow({
+const wf = workflow({
   name: "Update Pkl Workflows",
   on: {
     pull_request: {},
@@ -58,4 +58,4 @@ const dependabotUpdatesWorkflow = workflow({
   },
 });
 
-await generateWorkflow(dependabotUpdatesWorkflow, YAML.stringify, import.meta.url);
+await generateWorkflow(wf, YAML.stringify, import.meta.url);

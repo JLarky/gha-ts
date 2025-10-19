@@ -6,7 +6,7 @@ Clone the example:
 npx degit JLarky/gha-ts/examples/hello-world-bun/.github/workflows .github/workflows
 ```
 
-or create file ` .github/workflows/hello-world.main.ts` manually:
+or create file `.github/workflows/hello-world.main.ts` manually:
 
 ```ts
 #!/usr/bin/env bun

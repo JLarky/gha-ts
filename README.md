@@ -67,7 +67,7 @@ Or if you are using Node.js, create a workflow module at `.github/workflows/exam
 
 ```ts
 #!/usr/bin/env node
-import { YAML } from "yaml";
+import YAML from "yaml";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { checkout } from "@jlarky/gha-ts/actions";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
@@ -111,6 +111,8 @@ bun run --watch .github/workflows/example-bun.main.ts
 chmod +x .github/workflows/example-node.main.ts
 .github/workflows/example-node.main.ts
 ```
+
+If you want to rebuild multiple workflows at once you can write a simple script to do so. For example look at the [.github/build.ts](.github/build.ts) script we use in this repo.
 
 ## Examples
 

@@ -1,7 +1,10 @@
+#!/usr/bin/env bun
+import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
-import { checkoutAndInstallPkl } from "./utils/steps";
+import { checkoutAndInstallPkl } from "../src/utils/steps";
+import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
-export default workflow({
+const checkPklWorkflowsConvertedWorkflow = workflow({
   name: "Check Pkl workflows converted",
   on: {
     push: {},
@@ -24,3 +27,5 @@ export default workflow({
     },
   },
 });
+
+await generateWorkflow(checkPklWorkflowsConvertedWorkflow, YAML.stringify, import.meta.url);

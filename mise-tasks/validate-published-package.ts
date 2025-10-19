@@ -31,38 +31,35 @@ console.log("Testing published package");
 
 process.chdir(import.meta.dirname);
 
-const workflowsDir = await $`(cd ../.github/src && pwd)`.text();
-
 process.chdir(DIRECTORY);
 
 console.log("Cloning into directory", DIRECTORY);
 
 const script = `
 #!/usr/bin/env bun
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import { generateWorkflows, scanWorkflows } from "@jlarky/gha-ts/cli";
-import { createSerializer } from "@jlarky/gha-ts/render";
+import { YAML } from "bun";
+import { workflow } from "@jlarky/gha-ts/workflow-types";
+import { checkout } from "@jlarky/gha-ts/actions";
+import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
-async function main() {
-  const _dirname = dirname(fileURLToPath(import.meta.url));
-  const workflowsDir = resolve(_dirname, ".github/workflows");
-  const srcDir = "${workflowsDir.trim()}";
-
-  await generateWorkflows({
-    srcModules: await scanWorkflows({ srcDir, outDir: workflowsDir }),
-    onModule: async (module) => {
-      createSerializer(module.workflow, Bun.YAML.stringify).writeWorkflow(
-        module.outFile
-      );
+const wf = workflow({
+  name: "Validation workflow",
+  on: {
+    push: { branches: ["main"] },
+    pull_request: {},
+  },
+  jobs: {
+    validationJob: {
+      "runs-on": "ubuntu-latest",
+      steps: [
+        checkout({ fetchDepth: 0 }),
+        { name: "Test", run: "echo 'Hello, world!'" },
+      ],
     },
-  });
-}
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
+  },
 });
+
+await generateWorkflow(wf, YAML.stringify, import.meta.url);
 `;
 
 Bun.write("build.ts", script.trimStart());
@@ -73,12 +70,14 @@ await $`rm -rf node_modules .npmrc bun.lock`;
 
 const failures: string[] = [];
 
+const testString = `/build.generated.yml\n1 GitHub Actions workflow was generated\n`;
+
 if (!SKIP_NPM) {
   await $`bun add @jlarky/gha-ts@${NPM_VERSION}`;
 
   const text = (await $`./build.ts`.throws(false)).text();
   console.log([text]);
-  if (text !== "4 GitHub Actions workflows were generated\n") {
+  if (!text.includes(testString)) {
     failures.push("npm");
   }
 }
@@ -88,7 +87,7 @@ if (!SKIP_JSR) {
 
   const text = (await $`./build.ts`.throws(false)).text();
   console.log([text]);
-  if (text !== "4 GitHub Actions workflows were generated\n") {
+  if (!text.includes(testString)) {
     failures.push("jsr");
   }
 }

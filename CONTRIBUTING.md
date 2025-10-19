@@ -1,26 +1,47 @@
 # Contributing
 
-## Code formatting
+## Install dependencies
 
-Format TypeScript files with oxfmt via mise:
+Use mise to install dependencies:
+
+```bash
+mise run install
+# or
+mise x bun -- bun install
+```
+
+## Mise tasks
+
+Common tasks are available via mise:
+
+- format: Format TypeScript files with oxfmt
 
 ```bash
 mise run format
 ```
 
-To verify formatting without writing changes:
-
-```bash
-mise run format:check
-```
-
-
-## Tests
-
-Run the test suite via mise:
+- test: Run tests with Bun
 
 ```bash
 mise run test
+```
+
+- validate-published-package: Validate that the published package works
+
+```bash
+mise run validate-published-package
+```
+
+- workflows:build: Generate GitHub Actions workflows from TypeScript
+
+```bash
+mise run workflows:build
+```
+
+- workflows:clear: Remove generated GitHub Actions workflows
+
+```bash
+mise run workflows:clear
 ```
 
 ## Publishing

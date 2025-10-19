@@ -53,6 +53,51 @@ const wf = workflow({
         },
       ],
     },
+    checkGhaTsWorkflowsConverted: {
+      name: "Check gha-ts workflows converted",
+      "runs-on": "ubuntu-latest",
+      steps: [
+        ...checkoutAndInstallMise(),
+        {
+          name: "Install dependencies",
+          run: "mise run install",
+        },
+        {
+          name: "Clear generated workflows",
+          run: "mise run workflows:clear",
+        },
+        {
+          name: "Generate TS workflows to yaml",
+          run: "mise run workflows:build",
+        },
+        {
+          name: "Verify if TS workflows are converted",
+          run: `CHANGED="$(git --no-pager diff --name-only)";
+            if [ -n "$CHANGED" ]; then
+              echo "::error title=TS workflows are not up to date::Run 'mise run workflows:build' locally, commit, and push.";
+              echo "::group::Changed files";
+              echo "$CHANGED";
+              echo "::endgroup::";
+              while IFS= read -r file; do
+                [ -z "$file" ] && continue;
+                echo "::notice file=$file,line=1,title=Changed file::Update generated YAML for this file";
+              done <<< "$CHANGED";
+              {
+                echo "### TS workflows are not up to date";
+                echo;
+                echo "Run: mise run workflows:build";
+                echo;
+                echo "Then commit the updated files and push.";
+                echo;
+                echo "Changed files:";
+                echo;
+                echo "$CHANGED" | sed 's/^/- /';
+              } >> "$GITHUB_STEP_SUMMARY";
+              exit 1;
+            fi`,
+        },
+      ],
+    },
   },
 });
 

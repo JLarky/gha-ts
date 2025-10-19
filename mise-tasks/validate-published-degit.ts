@@ -2,6 +2,7 @@
 
 //MISE description="Validate that you can use code examples generated with degit"
 //USAGE flag "--degit-branch <branch>" help="The branch to use for the degit (default main)"
+//USAGE flag "--examples <example1,example2>" help="The examples to validate (default all)"
 //USAGE flag "--skip-degit" help="Skip the degit validation"
 //USAGE flag "--skip-install" help="Skip the install validation"
 //USAGE flag "--skip-build" help="Skip the build validation"
@@ -12,6 +13,10 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+const EXAMPLES = process.env.usage_examples?.split(",") || [
+  "hello-world-bun",
+  "hello-world-node",
+];
 const SKIP_DEGIT = process.env.usage_skip_degit === "true";
 const DEGIT_BRANCH = process.env.usage_degit_branch || undefined;
 const SKIP_INSTALL = process.env.usage_skip_install === "true";
@@ -76,7 +81,7 @@ async function runExample(name: string) {
 }
 
 const failures: string[] = [];
-for (const name of ["hello-world-bun"]) {
+for (const name of EXAMPLES) {
   try {
     await runExample(name);
   } catch (error) {

@@ -1,4 +1,4 @@
- Hello world example using Node.js
+# Hello world example using Node.js
 
 Clone the example:
 
@@ -24,5 +24,5 @@ chmod +x .github/workflows/hello-world.main.ts
 Or in watch mode:
 
 ```bash
-npx tsx --watch .github/workflows/hello-world.main.ts # watches for changes and rebuilds the workflow
+node --watch --no-warnings .github/workflows/hello-world.main.ts # watches for changes and rebuilds the workflow
 ```

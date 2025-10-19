@@ -11,6 +11,6 @@
     "./render": "./src/render/index.ts"
   },
   "publish": {
-    "include": ["./src/**/*.ts", "README.md", "LICENSE"]
+    "include": ["./src/**/*.ts", "LICENSE", "README.md"]
   }
 }

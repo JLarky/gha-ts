@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
-import { publishJsr } from "../src/utils/jobs";
+import { publishJsr } from "./utils/jobs";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
-const publishWorkflow = workflow({
+const wf = workflow({
   name: "Publish",
   on: {
     push: {
@@ -20,4 +20,4 @@ const publishWorkflow = workflow({
   },
 });
 
-await generateWorkflow(publishWorkflow, YAML.stringify, import.meta.url);
+await generateWorkflow(wf, YAML.stringify, import.meta.url);

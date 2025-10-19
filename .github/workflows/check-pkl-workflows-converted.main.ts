@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
-import { checkoutAndInstallPkl } from "../src/utils/steps";
+import { checkoutAndInstallPkl } from "./utils/steps";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
-const checkPklWorkflowsConvertedWorkflow = workflow({
+const wf = workflow({
   name: "Check Pkl workflows converted",
   on: {
     push: {},
@@ -28,4 +28,4 @@ const checkPklWorkflowsConvertedWorkflow = workflow({
   },
 });
 
-await generateWorkflow(checkPklWorkflowsConvertedWorkflow, YAML.stringify, import.meta.url);
+await generateWorkflow(wf, YAML.stringify, import.meta.url);

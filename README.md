@@ -30,7 +30,8 @@ npx nypm add -D @jlarky/gha-ts yaml # or npx jsr add -D @jlarky/gha-ts
 ```
 
 Notes:
-- Bun users will import YAML from bun and node user will use `yaml` from npm.
+- Bun users will import YAML from bun and node users will use `yaml` from npm.
+- This example is using Bun, but you can find other examples in the [examples](examples) directory.
 
 ## Quickstart
 
@@ -63,61 +64,12 @@ const wf = workflow({
 await generateWorkflow(wf, YAML.stringify, import.meta.url);
 ```
 
-Or if you are using Node.js, create a workflow module at `.github/workflows/example-node.main.ts`:
-
-```ts
-#!/usr/bin/env node
-import YAML from "yaml";
-import { workflow } from "@jlarky/gha-ts/workflow-types";
-import { checkout } from "@jlarky/gha-ts/actions";
-import { generateWorkflow } from "@jlarky/gha-ts/cli";
-
-const wf = workflow({
-  name: "Example workflow",
-  on: {
-    push: { branches: ["main"] },
-    pull_request: {},
-  },
-  jobs: {
-    exampleJob: {
-      "runs-on": "ubuntu-latest",
-      steps: [
-        checkout({ fetchDepth: 0 }),
-        { name: "Test", run: "echo 'Hello, world!'" },
-      ],
-    },
-  },
-});
-
-await generateWorkflow(wf, YAML.stringify, import.meta.url);
-```
-
-### Build script (Bun)
-
-```bash
-chmod +x .github/workflows/example-bun.main.ts
-.github/workflows/example-bun.main.ts
-```
-
-Or in watch mode:
-
-```bash
-bun run --watch .github/workflows/example-bun.main.ts
-```
-
-### Build script (Node.js)
-
-```bash
-chmod +x .github/workflows/example-node.main.ts
-.github/workflows/example-node.main.ts
-```
-
-If you want to rebuild multiple workflows at once you can write a simple script to do so. For example look at the [.github/build.ts](https://github.com/JLarky/gha-ts/blob/main/.github/build.ts) script we use in this repo.
-
 ## Examples
 
 - Look at the [.github/workflows](https://github.com/JLarky/gha-ts/tree/main/.github/workflows) directory for workflow examples.
 - Additional usage examples: `src/examples/`.
+- [Hello world (Bun)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-bun/)
+- [Hello world (Node.js)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-node/)
 
 ## License
 

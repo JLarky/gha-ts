@@ -2,3 +2,6 @@
 .out
 
 node_modules
+
+# Generated workflow files
+examples/*.generated.yml

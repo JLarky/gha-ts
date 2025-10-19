@@ -1,14 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { createSerializer } from "@jlarky/gha-ts/render";
-import { buildWorkflowTriggers } from "../examples/workflow-triggers";
-import { buildPrebuildActions } from "../examples/prebuild-actions";
+import { wf as workflowTriggersWf } from "../examples/workflow-triggers";
+import { wf as prebuildActionsWf } from "../examples/prebuild-actions";
 
 // Using inline snapshots to keep the golden outputs colocated and easy to update
 
 describe("renderWorkflowYaml() golden outputs", () => {
   test("workflow-triggers matches golden", () => {
     const yaml = createSerializer(
-      buildWorkflowTriggers(),
+      workflowTriggersWf,
       Bun.YAML.stringify,
     ).stringifyWorkflow();
     expect(yaml).toMatchInlineSnapshot(`
@@ -100,7 +100,7 @@ jobs:
 
   test("prebuild-actions matches golden", () => {
     const yaml = createSerializer(
-      buildPrebuildActions(),
+      prebuildActionsWf,
       Bun.YAML.stringify,
     ).stringifyWorkflow();
     expect(yaml).toMatchInlineSnapshot(`
@@ -140,7 +140,7 @@ jobs:
   test("supports custom header via options", () => {
     const custom = "## Custom Header\n\n";
     const yaml = createSerializer(
-      buildWorkflowTriggers(),
+      workflowTriggersWf,
       Bun.YAML.stringify,
     ).setOptions({
       header: custom,

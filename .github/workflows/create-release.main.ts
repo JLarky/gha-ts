@@ -2,6 +2,7 @@
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
+import { checkout } from "./utils/steps";
 
 const wf = workflow({
   name: "Create Release",
@@ -18,10 +19,7 @@ const wf = workflow({
     "create-release": {
       "runs-on": "ubuntu-latest",
       steps: [
-        {
-          name: "Checkout",
-          uses: "actions/checkout@v4",
-        },
+        checkout(),
         {
           name: "Get version from jsr.json",
           id: "get_version",

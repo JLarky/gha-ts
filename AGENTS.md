@@ -1,5 +1,7 @@
 ## Project: gha-ts
 
+Note: This project uses Mise and Bun instead of Node.js (npm/yarn). Use `mise run` tasks and Bun commands; see [@CONTRIBUTING.md](CONTRIBUTING.md).
+
 ### Purpose
 - Provide a 1:1 TypeScript port of `stefma/pkl-gha` so that GitHub Actions workflows and prebuilt actions defined in Pkl (`Workflow.pkl`, `Context.pkl`, `Action.pkl`, and `actions/*.pkl`) can be authored in TypeScript and rendered to YAML.
 - Stay as close as possible to the upstream Pkl semantics so patches from upstream can be applied with minimal churn.
@@ -27,3 +29,7 @@
 - Core parity complete for `Workflow`, `Context`, `Action`, and `actions/*`. Further examples and golden tests can be added next to guard semantics.
 
 
+
+### Contributing
+
+See [@CONTRIBUTING.md](CONTRIBUTING.md) for formatting, tests, publishing, and development guidelines.

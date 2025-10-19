@@ -14,6 +14,10 @@ run = "bun run format:check"
 description = "Run tests with Bun"
 run = "bun test"
 
+[tasks.install]
+description = "Install dependencies with Bun"
+run = "bun install"
+
 [tasks."workflows:clear"]
 description = "Remove generated GitHub Actions workflows"
 run = "rm -r .github/workflows/*.generated.yml"

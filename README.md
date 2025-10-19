@@ -1,7 +1,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/JLarky/gha-ts?include_prereleases)](https://github.com/JLarky/gha-ts/releases/latest)
 [![GitHub License](https://img.shields.io/github/license/JLarky/gha-ts)](https://github.com/JLarky/gha-ts/blob/main/LICENSE)
 
-# <img src="icon.png" alt="gha-ts" width="55"/> gha-ts
+# <img src="https://raw.githubusercontent.com/JLarky/gha-ts/refs/heads/main/icon.png" alt="gha-ts" width="55"/> gha-ts
 
 A TypeScript library for writing GitHub Actions workflows and rendering them to YAML.
 
@@ -112,11 +112,10 @@ chmod +x .github/workflows/example-node.main.ts
 .github/workflows/example-node.main.ts
 ```
 
-If you want to rebuild multiple workflows at once you can write a simple script to do so. For example look at the [.github/build.ts](.github/build.ts) script we use in this repo.
+If you want to rebuild multiple workflows at once you can write a simple script to do so. For example look at the [.github/build.ts](https://github.com/JLarky/gha-ts/blob/main/.github/build.ts) script we use in this repo.
 
 ## Examples
 
-- Real workflows for this repo live in `.github/src` and render to `.github/workflows`.
 - Additional usage examples: `src/examples/`.
 
 ## License

@@ -70,6 +70,7 @@ await generateWorkflow(wf, YAML.stringify, import.meta.url);
 - Additional usage examples: `src/examples/`.
 - [Hello world (Bun)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-bun/)
 - [Hello world (Node.js)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-node/)
+- [Hello world (Deno)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-deno/)
 
 ## License
 

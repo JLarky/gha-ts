@@ -16,6 +16,7 @@ import { join } from "node:path";
 const EXAMPLES = process.env.usage_examples?.split(",") || [
   "hello-world-bun",
   "hello-world-node",
+  "hello-world-deno",
 ];
 const SKIP_DEGIT = process.env.usage_skip_degit === "true";
 const DEGIT_BRANCH = process.env.usage_degit_branch || undefined;
@@ -59,7 +60,7 @@ async function runExample(name: string) {
     await $`${{ raw: overridden }}`;
   }
 
-  if (!SKIP_INSTALL) {
+  if (!SKIP_INSTALL && !name.includes("-deno")) {
     const text = await $`grep '# jsr' ${file}`.text();
 
     console.log([text]);

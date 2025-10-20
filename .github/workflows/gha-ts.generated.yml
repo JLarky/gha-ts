@@ -3,9 +3,36 @@
 
 name: Test gha-ts
 "on": 
-  push: 
+  pull_request: 
     {}
+  push: 
+    branches: 
+      - main
 jobs: 
+  actionlintReviewDog: 
+    name: Actionlint Review Dog
+    runs-on: ubuntu-latest
+    steps: 
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: Run reviewdog/action-actionlint
+        uses: reviewdog/action-actionlint@v1
+        with: 
+          reporter: github-pr-check
+          fail_level: any
+  actionlintSelfHosted: 
+    name: Actionlint Self Hosted
+    runs-on: ubuntu-latest
+    steps: 
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: store .github/actionlint-matcher.json
+        env: 
+          ACTIONLINT_MATCHER_JSON: "{\"problemMatcher\":[{\"owner\":\"actionlint\",\"pattern\":[{\"regexp\":\"^(?:\\\\x1b\\\\[\\\\d+m)?(.+?)(?:\\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\\\x1b\\\\[\\\\d+m)*: (?:\\\\x1b\\\\[\\\\d+m)*(.+?)(?:\\\\x1b\\\\[\\\\d+m)* \\\\[(.+?)\\\\]$\",\"file\":1,\"line\":2,\"column\":3,\"message\":4,\"code\":5}]}]}"
+        run: "echo \"$ACTIONLINT_MATCHER_JSON\" > .github/actionlint-matcher.json"
+      - name: Enable problem matcher and run actionlint
+        run: "echo \"::add-matcher::.github/actionlint-matcher.json\"\nbash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)\n./actionlint -color"
+        shell: bash
   formatTest: 
     name: Format Test
     runs-on: ubuntu-latest

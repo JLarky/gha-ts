@@ -2,15 +2,68 @@
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { publishJsr } from "./utils/jobs";
-import { checkoutAndInstallMise } from "./utils/steps";
+import { checkoutAndInstallMise, checkout } from "./utils/steps";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
 const wf = workflow({
   name: "Test gha-ts",
-  on: {
-    push: {},
-  },
+  on: { pull_request: {}, push: { branches: ["main"] } },
   jobs: {
+    actionlintReviewDog: {
+      name: "Actionlint Review Dog",
+      "runs-on": "ubuntu-latest",
+      steps: [
+        checkout(),
+        {
+          name: "Run reviewdog/action-actionlint",
+          uses: "reviewdog/action-actionlint@v1",
+          with: {
+            reporter: "github-pr-check",
+            fail_level: "any",
+          },
+        },
+      ],
+    },
+    actionlintSelfHosted: {
+      name: "Actionlint Self Hosted",
+      "runs-on": "ubuntu-latest",
+      steps: [
+        checkout(),
+        {
+          name: "store .github/actionlint-matcher.json",
+          env: {
+            // https://raw.githubusercontent.com/rhysd/actionlint/main/.github/actionlint-matcher.json
+            ACTIONLINT_MATCHER_JSON: JSON.stringify({
+              problemMatcher: [
+                {
+                  owner: "actionlint",
+                  pattern: [
+                    {
+                      regexp:
+                        "^(?:\\x1b\\[\\d+m)?(.+?)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*: (?:\\x1b\\[\\d+m)*(.+?)(?:\\x1b\\[\\d+m)* \\[(.+?)\\]$",
+                      file: 1,
+                      line: 2,
+                      column: 3,
+                      message: 4,
+                      code: 5,
+                    },
+                  ],
+                },
+              ],
+            }),
+          },
+          run: 'echo "$ACTIONLINT_MATCHER_JSON" > .github/actionlint-matcher.json',
+        },
+        {
+          name: "Enable problem matcher and run actionlint",
+          run:
+            'echo "::add-matcher::.github/actionlint-matcher.json"\n' +
+            "bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)\n" +
+            "./actionlint -color",
+          shell: "bash",
+        },
+      ],
+    },
     formatTest: {
       name: "Format Test",
       "runs-on": "ubuntu-latest",

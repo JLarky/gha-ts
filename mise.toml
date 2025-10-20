@@ -18,6 +18,10 @@ run = "bun test"
 description = "Install dependencies with Bun"
 run = "bun install"
 
+[tasks.actionlint]
+description = "Run actionlint"
+run = 'docker run --rm -t -v "$PWD":/repo -w /repo rhysd/actionlint:1.7.8 -color'
+
 [tasks."workflows:clear"]
 description = "Remove generated GitHub Actions workflows"
 run = "rm -r .github/workflows/*.generated.yml"

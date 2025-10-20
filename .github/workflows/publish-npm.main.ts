@@ -33,12 +33,33 @@ echo "version=\${VERSION}" >> "$GITHUB_OUTPUT"`,
           run: `echo "Hello world! Publishing version \${{ steps.version.outputs.version }}"`,
         },
         ...checkoutAndInstallMise(),
+        { run: `mkdir -p $RUNNER_TEMP/out` },
         {
           name: "Publish package",
           env: {
             NPM_CONFIG_PROVENANCE: "true",
           },
-          run: "mise run clone-to-npm --publish --ci --version 0.0.7",
+          run: `mise run clone-to-npm --publish --ci -d $RUNNER_TEMP/out --skip-publish`,
+        },
+        {
+          run: "pwd && ls -la",
+          "working-directory": "/home/runner/work/_temp/out/npm",
+        },
+        {
+          uses: "actions/setup-node@v4",
+          with: {
+            "node-version": 22,
+            "registry-url": "https://registry.npmjs.org",
+          },
+        },
+        {
+          run: [
+            "export NPM_CONFIG_PROVENANCE=true",
+            "which node && node -v",
+            "which npm && npm -v",
+            "npm publish --provenance",
+          ].join("\n"),
+          "working-directory": "/home/runner/work/_temp/out/npm",
         },
       ],
     },

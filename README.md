@@ -83,9 +83,11 @@ MIT
 - [github-actions-typing](https://github.com/typesafegithub/github-actions-typing)
 - [github-actions-wac](https://github.com/webiny/github-actions-wac)
 - [github-actions-workflow-ts](https://github.com/emmanuelnk/github-actions-workflow-ts)
+- [workflow-ts](https://github.com/galabra/workflow-ts)
 
 Non JavaScript/TypeScript:
 
+- [dagger](https://docs.dagger.io/getting-started/quickstarts/ci/)
 - [github-workflows-kt](https://github.com/typesafegithub/github-workflows-kt)
 - [kotlin-github-actions-dsl](https://github.com/nefilim/kotlin-github-actions-dsl)
 - [pkl-gha](https://github.com/stefma/pkl-gha)

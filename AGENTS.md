@@ -33,3 +33,5 @@ Note: This project uses Mise and Bun instead of Node.js (npm/yarn). Use `mise ru
 ### Contributing
 
 See [@CONTRIBUTING.md](CONTRIBUTING.md) for formatting, tests, publishing, and development guidelines.
+
+For workspace setup, see [@.cursor/worktrees.json](.cursor/worktrees.json) for Mise and dependency installation commands. If you are running in a environment that doesn't have mise installed, you'd need to install it first https://mise.jdx.dev/getting-started.html

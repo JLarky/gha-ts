@@ -20,7 +20,7 @@ jobs:
         uses: jdx/mise-action@v3
       - name: Get version from jsr.json
         id: get_version
-        run: "echo \"version=$(bun -e \"console.log(require('./jsr.json').version)\")\" >> $GITHUB_OUTPUT"
+        run: "echo \"version=$(bun -e \"console.log(require('./jsr.json').version)\")\" >> \"$GITHUB_OUTPUT\""
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with: 

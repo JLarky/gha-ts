@@ -44,6 +44,12 @@ mise run workflows:build
 mise run workflows:clear
 ```
 
+- actionlint: Run actionlint against workflows
+
+```bash
+mise run actionlint
+```
+
 ## Publishing
 
 Set the new version in `jsr.json` and push to `main`.

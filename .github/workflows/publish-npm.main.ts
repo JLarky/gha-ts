@@ -33,13 +33,13 @@ echo "version=\${VERSION}" >> "$GITHUB_OUTPUT"`,
           run: `echo "Hello world! Publishing version \${{ steps.version.outputs.version }}"`,
         },
         ...checkoutAndInstallMise(),
-        { run: `mkdir -p $RUNNER_TEMP/out` },
+        { run: `mkdir -p "$RUNNER_TEMP/out"` },
         {
           name: "Publish package",
           env: {
             NPM_CONFIG_PROVENANCE: "true",
           },
-          run: `mise run clone-to-npm --publish --ci -d $RUNNER_TEMP/out --skip-publish`,
+          run: `mise run clone-to-npm --publish --ci -d "$RUNNER_TEMP/out" --skip-publish`,
         },
         {
           run: "pwd && ls -la",

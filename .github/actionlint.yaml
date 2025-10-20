@@ -1,0 +1,4 @@
+paths:
+  .github/workflows/dependabot-updates.generated.yml:
+    ignore:
+      - 'shellcheck reported issue in this script: SC2086:.+' # disable for now

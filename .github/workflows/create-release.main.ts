@@ -31,7 +31,7 @@ const wf = workflow({
           with: {
             tag_name: `v\${{ steps.get_version.outputs.version }}`,
             draft: true,
-            prerelease: true,
+            make_latest: true,
           },
         },
       ],

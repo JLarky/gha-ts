@@ -4,6 +4,7 @@
 //USAGE flag "--publish" help="Publish the package (otherwise just dry run)"
 //USAGE flag "--version <version>" help="The version to publish (default latest)"
 //USAGE flag "--tag <tag>" help="The tag to publish (default latest)"
+//USAGE flag "--ci" help="Non-interactive mode (skip confirmation)"
 //USAGE flag "-d --directory <path>" help="The directory to use for the publish (default random tmp directory)"
 
 import { $ } from "bun";
@@ -18,6 +19,7 @@ const DRY_RUN = usage_publish !== "true";
 const VERSION = usage_version || "latest";
 const TAG = usage_tag || "latest";
 const DIRECTORY = usage_directory || mkdtempSync(join(tmpdir(), "tmp-npm-pkg"));
+const CI = process.env.usage_ci === "true";
 
 console.log("Republishing from jsr to npm");
 
@@ -32,32 +34,40 @@ await $`bunx jsr add @jlarky/gha-ts@${VERSION}`;
 process.chdir(join(DIRECTORY, "node_modules/@jlarky/gha-ts"));
 
 await $`bun pm pkg set name=@jlarky/gha-ts`;
+await $`bun pm pkg set repository.url=https://github.com/JLarky/gha-ts`;
 
-console.log("Publishing to npm");
+const version = await $`npm --version`.text();
 
-const answer = confirm(`Continue with ${DRY_RUN ? "dry run" : "publish"}?`);
-if (!answer) {
-  console.log("Aborting");
-  process.exit(0);
+console.log("Publishing to npm with npm version", version.trim());
+
+if (!CI) {
+  const answer = confirm(`Continue with ${DRY_RUN ? "dry run" : "publish"}?`);
+  if (!answer) {
+    console.log("Aborting");
+    process.exit(0);
+  }
 }
 
 console.log("Starting npm");
 
-const proc = Bun.spawn(
-  [
-    "npm",
-    "publish",
-    ...(DRY_RUN ? ["--dry-run"] : []),
-    "--tag",
-    TAG,
-    "--access",
-    "public",
-  ],
-  {
-    stdin: "inherit",
-    stdout: "inherit",
-    stderr: "inherit",
-  },
-);
+const cmd = [
+  "npm",
+  "publish",
+  ...(CI ? ["--provenance"] : []),
+  ...(DRY_RUN ? ["--dry-run"] : []),
+  "--tag",
+  TAG,
+  "--access",
+  "public",
+];
+
+console.log("CMD", cmd);
+
+const proc = Bun.spawn(cmd, {
+  stdin: "inherit",
+  stdout: "inherit",
+  stderr: "inherit",
+});
 
 await proc.exited;
+process.exit(proc.exitCode ?? 0);

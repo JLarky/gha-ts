@@ -1,67 +1,46 @@
 import { UsesStep, uses } from "../workflow-types";
-import { buildWith, CamelToKebabMap } from "./common";
+import { buildWith } from "./common";
 
 export interface UploadArtifactOptions {
   name?: string;
   path: string | string[];
-  retentionDays?: number; // retention-days
-  ifNoFilesFound?: "warn" | "error" | "ignore"; // if-no-files-found
-  compressionLevel?: number | string; // compression-level
-  overwrite?: boolean | string; // overwrite
-  includeHiddenFiles?: boolean | string; // include-hidden-files
+  "retention-days"?: number;
+  "if-no-files-found"?: "warn" | "error" | "ignore";
+  "compression-level"?: number | string;
+  overwrite?: boolean | string;
+  "include-hidden-files"?: boolean | string;
 }
-const uploadMap: CamelToKebabMap = {
-  retentionDays: "retention-days",
-  ifNoFilesFound: "if-no-files-found",
-  compressionLevel: "compression-level",
-};
 export function uploadArtifact(options: UploadArtifactOptions): UsesStep {
-  return uses("actions/upload-artifact@v4", buildWith(options, uploadMap));
+  return uses("actions/upload-artifact@v4", buildWith(options));
 }
 
 export interface UploadArtifactMergeOptions {
-  name?: string; // name
-  pattern?: string; // pattern
-  separateDirectories?: boolean | string; // separate-directories
-  retentionDays?: number; // retention-days
-  compressionLevel?: number | string; // compression-level
-  deleteMerged?: boolean | string; // delete-merged
-  includeHiddenFiles?: boolean | string; // include-hidden-files
+  name?: string;
+  pattern?: string;
+  "separate-directories"?: boolean | string;
+  "retention-days"?: number;
+  "compression-level"?: number | string;
+  "delete-merged"?: boolean | string;
+  "include-hidden-files"?: boolean | string;
 }
-const uploadMergeMap: CamelToKebabMap = {
-  separateDirectories: "separate-directories",
-  retentionDays: "retention-days",
-  compressionLevel: "compression-level",
-  deleteMerged: "delete-merged",
-  includeHiddenFiles: "include-hidden-files",
-};
 export function uploadArtifactMerge(
   options: UploadArtifactMergeOptions = {},
 ): UsesStep {
-  return uses(
-    "actions/upload-artifact/merge@v4",
-    buildWith(options, uploadMergeMap),
-  );
+  return uses("actions/upload-artifact/merge@v4", buildWith(options));
 }
 
 export interface DownloadArtifactOptions {
   name?: string;
-  artifactIds?: string;
+  "artifact-ids"?: string;
   path?: string;
   pattern?: string;
-  githubToken?: string;
+  "github-token"?: string;
   repository?: string;
-  runId?: string;
-  mergeMultiple?: boolean; // merge-multiple
+  "run-id"?: string;
+  "merge-multiple"?: boolean;
 }
-const downloadMap: CamelToKebabMap = {
-  mergeMultiple: "merge-multiple",
-  artifactIds: "artifact-ids",
-  githubToken: "github-token",
-  runId: "run-id",
-};
 export function downloadArtifact(
   options: DownloadArtifactOptions = {},
 ): UsesStep {
-  return uses("actions/download-artifact@v4", buildWith(options, downloadMap));
+  return uses("actions/download-artifact@v4", buildWith(options));
 }

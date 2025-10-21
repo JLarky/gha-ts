@@ -43,10 +43,10 @@ export function installNode(options?: SetupNodeOptions): Step {
   return { name: "Install Node.js", ...setupNodeAction(options) };
 }
 
-export function installDeno(options?: { denoVersion?: string }): Step {
+export function installDeno(options?: { "deno-version"?: string }): Step {
   return {
     name: "Install Deno",
     uses: "denoland/setup-deno@v2",
-    with: { "deno-version": options?.denoVersion },
+    with: options
   };
 }

@@ -121,8 +121,8 @@ const wf = workflow({
       "timeout-minutes": 5,
       steps: [
         ...checkoutAndInstallMise(),
-        installNode({ nodeVersion: "22" }),
-        installDeno({ denoVersion: "2.5.4" }),
+        installNode({ "node-version": "22" }),
+        installDeno({ "deno-version": "2.5.4" }),
         {
           name: "Validate degit examples",
           run: "mise run validate-published-degit --degit-branch ${{ github.ref_name || 'main' }}",

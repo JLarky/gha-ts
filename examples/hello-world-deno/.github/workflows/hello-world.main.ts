@@ -1,4 +1,4 @@
-#!/usr/bin/env deno --allow-write=.
+#!/usr/bin/env -S deno --allow-write=.
 import YAML from "npm:yaml";
 import { workflow } from "jsr:@jlarky/gha-ts/workflow-types";
 import { checkout } from "jsr:@jlarky/gha-ts/actions";

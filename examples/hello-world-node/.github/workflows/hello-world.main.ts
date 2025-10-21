@@ -1,4 +1,4 @@
-#!/usr/bin/env node --no-warnings
+#!/usr/bin/env -S node --no-warnings
 import YAML from "yaml";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { checkout } from "@jlarky/gha-ts/actions";

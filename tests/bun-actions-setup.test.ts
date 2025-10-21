@@ -41,7 +41,7 @@ describe("setupBun", () => {
       jobs: {
         test: {
           "runs-on": "ubuntu-latest",
-          steps: [setupBun({ bunVersion: "1.0.0" })],
+          steps: [setupBun({ "bun-version": "1.0.0" })],
         },
       },
     };
@@ -71,10 +71,10 @@ describe("setupBun", () => {
           "runs-on": "ubuntu-latest",
           steps: [
             setupBun({
-              bunVersion: "latest",
-              bunVersionFile: ".bun-version",
-              bunDownloadUrl: "https://example.com/bun.zip",
-              registryUrl: "https://registry.npmjs.org",
+              "bun-version": "latest",
+              "bun-version-file": ".bun-version",
+              "bun-download-url": "https://example.com/bun.zip",
+              "registry-url": "https://registry.npmjs.org",
               scope: "@my-scope",
             }),
           ],

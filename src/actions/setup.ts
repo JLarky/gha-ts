@@ -1,154 +1,99 @@
 import { uses, UsesStep } from "../workflow-types";
-import { buildWith, CamelToKebabMap } from "./common";
+import { buildWith } from "./common";
 
 export interface SetupNodeOptions {
-  nodeVersion?: string; // node-version
+  "node-version"?: string;
   cache?: "npm" | "pnpm" | "yarn";
-  cacheDependencyPath?: string; // cache-dependency-path
-  registryUrl?: string; // registry-url
-  scope?: string; // scope
-  alwaysAuth?: boolean | string; // always-auth
-  nodeVersionFile?: string; // node-version-file
-  architecture?: string; // architecture
-  checkLatest?: boolean | string; // check-latest
-  token?: string; // token
-  mirror?: string; // mirror
-  mirrorToken?: string; // mirror-token
+  "cache-dependency-path"?: string;
+  "registry-url"?: string;
+  scope?: string;
+  "always-auth"?: boolean | string;
+  "node-version-file"?: string;
+  architecture?: string;
+  "check-latest"?: boolean | string;
+  token?: string;
+  mirror?: string;
+  "mirror-token"?: string;
 }
-const setupNodeMap: CamelToKebabMap = {
-  nodeVersion: "node-version",
-  nodeVersionFile: "node-version-file",
-  cacheDependencyPath: "cache-dependency-path",
-  registryUrl: "registry-url",
-  alwaysAuth: "always-auth",
-  checkLatest: "check-latest",
-  mirrorToken: "mirror-token",
-};
 export function setupNode(options: SetupNodeOptions = {}): UsesStep {
-  return uses("actions/setup-node@v4", buildWith(options, setupNodeMap));
+  return uses("actions/setup-node@v4", buildWith(options));
 }
 
 export interface SetupJavaOptions {
   distribution?: "temurin" | "zulu" | string;
-  javaVersion?: string; // java-version
+  "java-version"?: string;
   cache?: "maven" | "gradle" | "sbt";
-  javaVersionFile?: string; // java-version-file
-  javaPackage?: string; // java-package
-  architecture?: string; // architecture
-  jdkFile?: string; // jdkFile (as-is per Pkl)
-  checkLatest?: boolean | string; // check-latest
-  serverId?: string; // server-id
-  serverUsername?: string; // server-username
-  serverPassword?: string; // server-password
-  settingsPath?: string; // settings-path
-  overwriteSettings?: boolean | string; // overwrite-settings
-  gpgPrivateKey?: string; // gpg-private-key
-  gpgPassphrase?: string; // gpg-passphrase
-  jobStatus?: string; // job-status
-  token?: string; // token
-  mvnToolchainId?: string; // mvn-toolchain-id
-  mvnToolchainVendor?: string; // mvn-toolchain-vendor
+  "java-version-file"?: string;
+  "java-package"?: string;
+  architecture?: string;
+  jdkFile?: string;
+  "check-latest"?: boolean | string;
+  "server-id"?: string;
+  "server-username"?: string;
+  "server-password"?: string;
+  "settings-path"?: string;
+  "overwrite-settings"?: boolean | string;
+  "gpg-private-key"?: string;
+  "gpg-passphrase"?: string;
+  "job-status"?: string;
+  token?: string;
+  "mvn-toolchain-id"?: string;
+  "mvn-toolchain-vendor"?: string;
 }
-const setupJavaMap: CamelToKebabMap = {
-  javaVersion: "java-version",
-  javaVersionFile: "java-version-file",
-  javaPackage: "java-package",
-  checkLatest: "check-latest",
-  serverId: "server-id",
-  serverUsername: "server-username",
-  serverPassword: "server-password",
-  settingsPath: "settings-path",
-  overwriteSettings: "overwrite-settings",
-  gpgPrivateKey: "gpg-private-key",
-  gpgPassphrase: "gpg-passphrase",
-  cacheDependencyPath: "cache-dependency-path",
-  jobStatus: "job-status",
-  mvnToolchainId: "mvn-toolchain-id",
-  mvnToolchainVendor: "mvn-toolchain-vendor",
-};
 export function setupJava(opts: SetupJavaOptions): UsesStep {
-  return uses("actions/setup-java@v4", buildWith(opts, setupJavaMap));
+  return uses("actions/setup-java@v4", buildWith(opts));
 }
 
 export interface SetupPythonOptions {
-  pythonVersion?: string;
+  "python-version"?: string;
   cache?: "pip";
-  pythonVersionFile?: string; // python-version-file
-  architecture?: string; // architecture
-  checkLatest?: boolean | string; // check-latest
-  token?: string; // token
-  cacheDependencyPath?: string; // cache-dependency-path
-  updateEnvironment?: boolean | string; // update-environment
-  allowPrereleases?: boolean | string; // allow-prereleases
-  freethreaded?: boolean | string; // freethreaded
+  "python-version-file"?: string;
+  architecture?: string;
+  "check-latest"?: boolean | string;
+  token?: string;
+  "cache-dependency-path"?: string;
+  "update-environment"?: boolean | string;
+  "allow-prereleases"?: boolean | string;
+  freethreaded?: boolean | string;
 }
-const setupPythonMap: CamelToKebabMap = {
-  pythonVersion: "python-version",
-  pythonVersionFile: "python-version-file",
-  checkLatest: "check-latest",
-  cacheDependencyPath: "cache-dependency-path",
-  updateEnvironment: "update-environment",
-  allowPrereleases: "allow-prereleases",
-};
 export function setupPython(opts: SetupPythonOptions): UsesStep {
-  return uses("actions/setup-python@v5", buildWith(opts, setupPythonMap));
+  return uses("actions/setup-python@v5", buildWith(opts));
 }
 
 export interface SetupGoOptions {
-  goVersion?: string; // go-version
-  goVersionFile?: string; // go-version-file
-  checkLatest?: boolean | string; // check-latest
-  token?: string; // token
-  cache?: boolean | string; // cache
-  cacheDependencyPath?: string; // cache-dependency-path
-  architecture?: string; // architecture
+  "go-version"?: string;
+  "go-version-file"?: string;
+  "check-latest"?: boolean | string;
+  token?: string;
+  cache?: boolean | string;
+  "cache-dependency-path"?: string;
+  architecture?: string;
 }
-const setupGoMap: CamelToKebabMap = {
-  goVersion: "go-version",
-  goVersionFile: "go-version-file",
-  checkLatest: "check-latest",
-  cacheDependencyPath: "cache-dependency-path",
-};
 export function setupGo(opts: SetupGoOptions = {}): UsesStep {
-  return uses("actions/setup-go@v5", buildWith(opts, setupGoMap));
+  return uses("actions/setup-go@v5", buildWith(opts));
 }
 
 export interface SetupDotnetOptions {
-  dotnetVersion?: string; // dotnet-version
-  dotnetQuality?: string; // dotnet-quality
-  globalJsonFile?: string; // global-json-file
-  sourceUrl?: string; // source-url
-  owner?: string; // owner
-  configFile?: string; // config-file
-  cache?: boolean | string; // cache
-  cacheDependencyPath?: string; // cache-dependency-path
+  "dotnet-version"?: string;
+  "dotnet-quality"?: string;
+  "global-json-file"?: string;
+  "source-url"?: string;
+  owner?: string;
+  "config-file"?: string;
+  cache?: boolean | string;
+  "cache-dependency-path"?: string;
 }
-const setupDotnetMap: CamelToKebabMap = {
-  dotnetVersion: "dotnet-version",
-  dotnetQuality: "dotnet-quality",
-  globalJsonFile: "global-json-file",
-  sourceUrl: "source-url",
-  configFile: "config-file",
-  cacheDependencyPath: "cache-dependency-path",
-};
 export function setupDotnet(opts: SetupDotnetOptions = {}): UsesStep {
-  return uses("actions/setup-dotnet@v4", buildWith(opts, setupDotnetMap));
+  return uses("actions/setup-dotnet@v4", buildWith(opts));
 }
 
 export interface SetupBunOptions {
-  bunVersion?: string; // bun-version
-  bunVersionFile?: string; // bun-version-file
-  bunDownloadUrl?: string; // bun-download-url
-  registryUrl?: string; // registry-url
-  scope?: string; // scope
+  "bun-version"?: string;
+  "bun-version-file"?: string;
+  "bun-download-url"?: string;
+  "registry-url"?: string;
+  scope?: string;
 }
-const setupBunMap: CamelToKebabMap = {
-  bunVersion: "bun-version",
-  bunVersionFile: "bun-version-file",
-  bunDownloadUrl: "bun-download-url",
-  registryUrl: "registry-url",
-  scope: "scope",
-};
 export function setupBun(opts: SetupBunOptions = {}): UsesStep {
-  return uses("oven-sh/setup-bun@v2", buildWith(opts, setupBunMap));
+  return uses("oven-sh/setup-bun@v2", buildWith(opts));
 }

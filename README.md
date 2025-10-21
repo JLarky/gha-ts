@@ -5,7 +5,7 @@
 
 A TypeScript library for writing GitHub Actions workflows and rendering them to YAML.
 
-- Parity-first with `stefma/pkl-gha` semantics
+- Designed closely with `stefma/pkl-gha` semantics (but we don't do camel-case -> kebab-case conversions for actions)
 - Stable YAML rendering (Bun’s `Bun.YAML` or npm `yaml`)
 
 ## What?

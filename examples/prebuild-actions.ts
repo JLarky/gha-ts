@@ -20,8 +20,8 @@ export const wf = workflow({
       "runs-on": "macos-latest",
       steps: [
         checkout(),
-        setupGo({ goVersion: "1.17.7" }),
-        setupJava({ javaVersion: "17", distribution: "temurin" }),
+        setupGo({ "go-version": "1.17.7" }),
+        setupJava({ "java-version": "17", distribution: "temurin" }),
         cache({
           path: "wiki/README.md",
           key: "wiki-readme-${{ runner.os }}-${{ hashFiles('wiki/generateWikiToc.go') }}",

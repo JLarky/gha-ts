@@ -1,6 +1,8 @@
 import {
   checkout as checkoutAction,
   CheckoutOptions,
+  setupNode as setupNodeAction,
+  SetupNodeOptions,
 } from "@jlarky/gha-ts/actions";
 import { Step } from "@jlarky/gha-ts/workflow-types";
 
@@ -35,4 +37,16 @@ export function checkoutAndInstallPkl(): Step[] {
 
 export function checkoutAndInstallMise(): Step[] {
   return [checkout(), installMise()];
+}
+
+export function installNode(options?: SetupNodeOptions): Step {
+  return { name: "Install Node.js", ...setupNodeAction(options) };
+}
+
+export function installDeno(options?: { denoVersion?: string }): Step {
+  return {
+    name: "Install Deno",
+    uses: "denoland/setup-deno@v2",
+    with: { "deno-version": options?.denoVersion },
+  };
 }

@@ -2,12 +2,21 @@
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { publishJsr } from "./utils/jobs";
-import { checkoutAndInstallMise, checkout } from "./utils/steps";
+import {
+  checkoutAndInstallMise,
+  checkout,
+  installNode,
+  installDeno,
+} from "./utils/steps";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
 const wf = workflow({
   name: "Test gha-ts",
-  on: { pull_request: {}, push: { branches: ["main"] } },
+  on: {
+    pull_request: {},
+    push: { branches: ["main"] },
+    schedule: [{ cron: "52 16 * * *" }],
+  },
   jobs: {
     actionlintReviewDog: {
       name: "Actionlint Review Dog",
@@ -103,6 +112,20 @@ const wf = workflow({
         {
           name: "Run the test",
           run: "mise run validate-published-package",
+        },
+      ],
+    },
+    validateDegitExamples: {
+      name: "Validate Degit Examples",
+      "runs-on": "ubuntu-latest",
+      "timeout-minutes": 5,
+      steps: [
+        ...checkoutAndInstallMise(),
+        installNode({ nodeVersion: "22" }),
+        installDeno({ denoVersion: "2.5.4" }),
+        {
+          name: "Validate degit examples",
+          run: "mise run validate-published-degit --degit-branch ${{ github.ref_name || 'main' }}",
         },
       ],
     },

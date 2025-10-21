@@ -8,6 +8,8 @@ name: Test gha-ts
   push: 
     branches: 
       - main
+  schedule: 
+    - cron: 52 16 * * *
 jobs: 
   actionlintReviewDog: 
     name: Actionlint Review Dog
@@ -77,6 +79,25 @@ jobs:
         uses: jdx/mise-action@v3
       - name: Run the test
         run: mise run validate-published-package
+  validateDegitExamples: 
+    name: Validate Degit Examples
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps: 
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: Install mise
+        uses: jdx/mise-action@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: "22"
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with: 
+          deno-version: 2.5.4
+      - name: Validate degit examples
+        run: "mise run validate-published-degit --degit-branch ${{ github.ref_name || 'main' }}"
   checkGhaTsWorkflowsConverted: 
     name: Check gha-ts workflows converted
     runs-on: ubuntu-latest

@@ -49,7 +49,7 @@ await $`bun pm pkg set repository.url=git+https://github.com/JLarky/gha-ts.git`;
 await $`bun pm pkg set publishConfig.provenance=true`;
 await $`bun pm pkg set publishConfig.access=public`;
 
-await $`mise x jq -- jq . package.json`;
+await $`cat package.json`;
 
 const npmVersion = await $`mise x node@lts -- npm --version`.text();
 const nodeVersion = await $`mise x node@lts -- node --version`.text();

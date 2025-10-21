@@ -149,6 +149,7 @@ export interface StepBase {
   "working-directory"?: string;
   shell?: string;
   "timeout-minutes"?: number | string;
+  "continue-on-error"?: boolean;
 }
 export interface RunStep extends StepBase {
   run: string;

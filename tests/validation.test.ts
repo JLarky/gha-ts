@@ -55,4 +55,18 @@ describe("validation", () => {
     });
     expect(() => validateWorkflow(wf)).toThrow(/at least one trigger/);
   });
+
+  test("accepts step-level continue-on-error as boolean", () => {
+    const wf: Workflow = workflow({
+      name: "valid",
+      on: ["push"],
+      jobs: {
+        j: job({
+          "runs-on": "ubuntu-latest",
+          steps: [run("echo hi", { "continue-on-error": true })],
+        }),
+      },
+    });
+    expect(() => validateWorkflow(wf)).not.toThrow();
+  });
 });

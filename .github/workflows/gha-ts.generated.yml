@@ -97,7 +97,7 @@ jobs:
         with: 
           deno-version: 2.5.4
       - name: Validate degit examples
-        run: mise run validate-published-degit
+        run: "mise run validate-published-degit --degit-branch ${{ github.ref_name || 'main' }}"
   checkGhaTsWorkflowsConverted: 
     name: Check gha-ts workflows converted
     runs-on: ubuntu-latest

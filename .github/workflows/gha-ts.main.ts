@@ -125,7 +125,7 @@ const wf = workflow({
         installDeno({ denoVersion: "2.5.4" }),
         {
           name: "Validate degit examples",
-          run: "mise run validate-published-degit",
+          run: "mise run validate-published-degit --degit-branch ${{ github.ref_name || 'main' }}",
         },
       ],
     },

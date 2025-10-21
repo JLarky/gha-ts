@@ -2,7 +2,12 @@
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { publishJsr } from "./utils/jobs";
-import { checkoutAndInstallMise, checkout } from "./utils/steps";
+import {
+  checkoutAndInstallMise,
+  checkout,
+  installNode,
+  installDeno,
+} from "./utils/steps";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
 const wf = workflow({
@@ -116,6 +121,8 @@ const wf = workflow({
       "timeout-minutes": 5,
       steps: [
         ...checkoutAndInstallMise(),
+        installNode({ nodeVersion: "22" }),
+        installDeno({ denoVersion: "2.5.4" }),
         {
           name: "Validate degit examples",
           run: "mise run validate-published-degit",

@@ -88,6 +88,14 @@ jobs:
         uses: actions/checkout@v5
       - name: Install mise
         uses: jdx/mise-action@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: "22"
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with: 
+          deno-version: 2.5.4
       - name: Validate degit examples
         run: mise run validate-published-degit
   checkGhaTsWorkflowsConverted: 

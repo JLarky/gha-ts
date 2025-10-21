@@ -8,6 +8,8 @@ name: Test gha-ts
   push: 
     branches: 
       - main
+  schedule: 
+    - cron: 52 16 * * *
 jobs: 
   actionlintReviewDog: 
     name: Actionlint Review Dog

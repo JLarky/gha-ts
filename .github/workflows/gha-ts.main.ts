@@ -7,7 +7,11 @@ import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
 const wf = workflow({
   name: "Test gha-ts",
-  on: { pull_request: {}, push: { branches: ["main"] } },
+  on: {
+    pull_request: {},
+    push: { branches: ["main"] },
+    schedule: [{ cron: "52 16 * * *" }],
+  },
   jobs: {
     actionlintReviewDog: {
       name: "Actionlint Review Dog",

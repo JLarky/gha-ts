@@ -106,6 +106,18 @@ const wf = workflow({
         },
       ],
     },
+    validateDegitExamples: {
+      name: "Validate Degit Examples",
+      "runs-on": "ubuntu-latest",
+      "timeout-minutes": 5,
+      steps: [
+        ...checkoutAndInstallMise(),
+        {
+          name: "Validate degit examples",
+          run: "mise run validate-published-degit",
+        },
+      ],
+    },
     checkGhaTsWorkflowsConverted: {
       name: "Check gha-ts workflows converted",
       "runs-on": "ubuntu-latest",

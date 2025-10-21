@@ -52,6 +52,8 @@ echo "version=\${VERSION}" >> "$GITHUB_OUTPUT"`,
           },
         },
         {
+          id: "publish-package",
+          "continue-on-error": true,
           run: [
             "export NPM_CONFIG_PROVENANCE=true",
             "which node && node -v",
@@ -59,6 +61,14 @@ echo "version=\${VERSION}" >> "$GITHUB_OUTPUT"`,
             "npm publish --provenance",
           ].join("\n"),
           "working-directory": "${{ runner.temp }}/npm",
+        },
+        {
+          name: "Report published package status to GITHUB_STEP_SUMMARY",
+          run: `{
+           echo "### Published package status";
+           echo;
+           echo "::error title=Published package status::\${{ steps.publish-package.conclusion }}";
+          } >> "$GITHUB_STEP_SUMMARY"`,
         },
         {
           uses: "actions/upload-artifact@v4",

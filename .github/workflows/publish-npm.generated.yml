@@ -35,8 +35,12 @@ jobs:
         with: 
           node-version: 22
           registry-url: https://registry.npmjs.org
-      - run: "export NPM_CONFIG_PROVENANCE=true\nwhich node && node -v\nwhich npm && npm -v\nnpm publish --provenance"
+      - id: publish-package
+        continue-on-error: true
+        run: "export NPM_CONFIG_PROVENANCE=true\nwhich node && node -v\nwhich npm && npm -v\nnpm publish --provenance"
         working-directory: "${{ runner.temp }}/npm"
+      - name: Report published package status to GITHUB_STEP_SUMMARY
+        run: "{\n           echo \"### Published package status\";\n           echo;\n           echo \"::error title=Published package status::${{ steps.publish-package.conclusion }}\";\n          } >> \"$GITHUB_STEP_SUMMARY\""
       - uses: actions/upload-artifact@v4
         if: "${{ always() }}"
         with: 

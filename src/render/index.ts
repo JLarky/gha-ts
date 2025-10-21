@@ -97,19 +97,7 @@ function preferBlockScalarForRun(yaml: string): string {
       // escaped backslashes (last)
       .replace(/\\\\/g, "\\");
 
-    let lines = decoded.split("\n");
-    // Remove common leading indentation across non-empty lines to avoid
-    // leaking TypeScript source indentation into the YAML block scalar
-    const nonEmpty = lines.filter((l) => l.trim().length > 0);
-    if (nonEmpty.length > 0) {
-      const leadingSpacesCounts = nonEmpty.map(
-        (l) => (l.match(/^\s*/)?.[0].length ?? 0),
-      );
-      const minIndent = Math.min(...leadingSpacesCounts);
-      if (minIndent > 0) {
-        lines = lines.map((l) => (l.length === 0 ? l : l.slice(minIndent)));
-      }
-    }
+    const lines = decoded.split("\n");
     const header = `${baseIndent}run: |\n`;
     const body = lines.map((l) => `${baseIndent}  ${l}`).join("\n");
     return header + body;

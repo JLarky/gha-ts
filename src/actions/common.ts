@@ -91,10 +91,7 @@ export interface DeletePackageVersionOptions {
 export function deletePackageVersion(
   options: DeletePackageVersionOptions = {},
 ): UsesStep {
-  return uses(
-    "actions/delete-package-versions@v5",
-    buildWith(options),
-  );
+  return uses("actions/delete-package-versions@v5", buildWith(options));
 }
 
 // Go Dependency Submission action
@@ -112,10 +109,7 @@ export interface GoDependencySubmissionOptions {
 export function goDependencySubmission(
   options: GoDependencySubmissionOptions = {},
 ): UsesStep {
-  return uses(
-    "actions/go-dependency-submission@v2",
-    buildWith(options),
-  );
+  return uses("actions/go-dependency-submission@v2", buildWith(options));
 }
 
 // Attest SBOM action
@@ -202,10 +196,7 @@ export interface CreateGitHubAppTokenOptions {
 export function createGitHubAppToken(
   options: CreateGitHubAppTokenOptions = {},
 ): UsesStep {
-  return uses(
-    "actions/create-github-app-token@v2",
-    buildWith(options),
-  );
+  return uses("actions/create-github-app-token@v2", buildWith(options));
 }
 
 // Dependency Review Action
@@ -235,10 +226,7 @@ export interface DependencyReviewActionOptions {
 export function dependencyReviewAction(
   options: DependencyReviewActionOptions = {},
 ): UsesStep {
-  return uses(
-    "actions/dependency-review-action@v4",
-    buildWith(options),
-  );
+  return uses("actions/dependency-review-action@v4", buildWith(options));
 }
 
 // Stale action (subset mapping)

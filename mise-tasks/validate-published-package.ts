@@ -52,7 +52,7 @@ const wf = workflow({
     validationJob: {
       "runs-on": "ubuntu-latest",
       steps: [
-        checkout({ fetchDepth: 0 }),
+        checkout({ "fetch-depth": 0 }),
         { name: "Test", run: "echo 'Hello, world!'" },
       ],
     },

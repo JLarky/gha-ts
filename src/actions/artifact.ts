@@ -26,10 +26,7 @@ export interface UploadArtifactMergeOptions {
 export function uploadArtifactMerge(
   options: UploadArtifactMergeOptions = {},
 ): UsesStep {
-  return uses(
-    "actions/upload-artifact/merge@v4",
-    buildWith(options),
-  );
+  return uses("actions/upload-artifact/merge@v4", buildWith(options));
 }
 
 export interface DownloadArtifactOptions {

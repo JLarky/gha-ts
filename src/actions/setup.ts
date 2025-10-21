@@ -134,3 +134,21 @@ const setupDotnetMap: CamelToKebabMap = {
 export function setupDotnet(opts: SetupDotnetOptions = {}): UsesStep {
   return uses("actions/setup-dotnet@v4", buildWith(opts, setupDotnetMap));
 }
+
+export interface SetupBunOptions {
+  bunVersion?: string; // bun-version
+  bunVersionFile?: string; // bun-version-file
+  bunDownloadUrl?: string; // bun-download-url
+  registryUrl?: string; // registry-url
+  scope?: string; // scope
+}
+const setupBunMap: CamelToKebabMap = {
+  bunVersion: "bun-version",
+  bunVersionFile: "bun-version-file",
+  bunDownloadUrl: "bun-download-url",
+  registryUrl: "registry-url",
+  scope: "scope",
+};
+export function setupBun(opts: SetupBunOptions = {}): UsesStep {
+  return uses("oven-sh/setup-bun@v2", buildWith(opts, setupBunMap));
+}

@@ -176,10 +176,20 @@ export interface DefaultJob {
   concurrency?: Concurrency;
   "timeout-minutes"?: number | string;
   "continue-on-error"?: boolean | string;
-  container?: { image: string; env?: Record<string, string>; options?: string };
+  container?: {
+    image: string;
+    env?: Record<string, string>;
+    options?: string;
+    credentials?: { username: string; password: string };
+  };
   services?: Record<
     string,
-    { image: string; env?: Record<string, string>; ports?: (string | number)[] }
+    {
+      image: string;
+      env?: Record<string, string>;
+      ports?: (string | number)[];
+      credentials?: { username: string; password: string };
+    }
   >;
   defaults?: { run?: { shell?: string; "working-directory"?: string } };
   environment?: Environment;
@@ -189,7 +199,7 @@ export interface ReusableJob {
   name?: string;
   uses: string; // path or org/repo/.github/workflows/file.yml@ref
   with?: Record<string, unknown>;
-  secrets?: Record<string, string>;
+  secrets?: Record<string, string> | { inherit: true };
   permissions?: Permissions;
   if?: string;
   needs?: string | string[];

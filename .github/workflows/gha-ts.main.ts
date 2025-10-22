@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { publishJsr } from "./utils/jobs";
 import {
@@ -8,7 +7,7 @@ import {
   installNode,
   installDeno,
 } from "./utils/steps";
-import { generateWorkflow } from "@jlarky/gha-ts/cli";
+import { generateWorkflowYaml } from "./utils/yaml";
 
 const wf = workflow({
   name: "Test gha-ts",
@@ -170,11 +169,11 @@ const wf = workflow({
                 echo "$CHANGED" | awk '{print "- " $0}';
               } >> "$GITHUB_STEP_SUMMARY";
               exit 1;
-            fi`,
+            fi`.replace(/^ {12}/gm, ""),
         },
       ],
     },
   },
 });
 
-await generateWorkflow(wf, YAML.stringify, import.meta.url);
+await generateWorkflowYaml(wf, import.meta.url);

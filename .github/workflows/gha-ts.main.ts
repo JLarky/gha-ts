@@ -80,8 +80,34 @@ const wf = workflow({
       steps: [
         ...checkoutInstallMiseAndBun(),
         {
-          name: "Format Check",
-          run: "mise run format:check",
+          name: "store .github/oxfmt-matcher.json",
+          env: {
+            OXFMT_MATCHER_JSON: JSON.stringify({
+              problemMatcher: [
+                {
+                  owner: "oxfmt",
+                  severity: "error",
+                  pattern: [
+                    {
+                      regexp: "^(.+): (.+)$",
+                      file: 1,
+                      line: 1,
+                      message: 2,
+                    },
+                  ],
+                },
+              ],
+            }),
+          },
+          run: 'echo "$OXFMT_MATCHER_JSON" > .github/oxfmt-matcher.json',
+        },
+        {
+          name: "Enable problem matcher and run format check",
+          run: lines`
+            echo "::add-matcher::.github/oxfmt-matcher.json"
+            set -o pipefail
+            bun run oxfmt --list-different .github src tests | sed "/^$/d; s|$|: File is not formatted. Run 'mise run format' to fix.|"
+          `,
         },
       ],
     },

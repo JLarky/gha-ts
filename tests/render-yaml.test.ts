@@ -147,4 +147,28 @@ jobs:
     });
     expect(yaml.stringifyWorkflow().startsWith(custom)).toBe(true);
   });
+
+  test("preserves unknown properties in workflow", () => {
+    const workflowWithUnknown = {
+      name: "Test Unknown Props",
+      on: "push",
+      jobs: {
+        test: {
+          "runs-on": "ubuntu-latest",
+          steps: [{ run: "echo test" }],
+        },
+      },
+      "hello-world": "custom value",
+      "x-custom-field": { nested: "data" },
+    };
+    const yaml = createSerializer(
+      workflowWithUnknown,
+      Bun.YAML.stringify,
+    ).stringifyWorkflow();
+    expect(yaml).toContain("hello-world");
+    expect(yaml).toContain("custom value");
+    expect(yaml).toContain("x-custom-field");
+    expect(yaml).toContain("nested");
+    expect(yaml).toContain("data");
+  });
 });

@@ -66,3 +66,47 @@ describe("YAML stringify compatibility and JSON conversion", () => {
     expect(parsed).toEqual(canonical);
   });
 });
+
+describe("yaml roundtrip for regex", () => {
+  const regex =
+    "^(?:\\x1b\\[\\d+m)?(.+?)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*: (?:\\x1b\\[\\d+m)*(.+?)(?:\\x1b\\[\\d+m)* \\[(.+?)\\]$";
+
+  test("yaml module produces 4 lines of output", () => {
+    const yaml = YAML.stringify({ regex });
+    expect(yaml).toMatchInlineSnapshot(`
+        "regex: "^(?:\\\\x1b\\\\[\\\\d+m)?(.+?)(?:\\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\
+          \\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\\\x1b\\\\[\\\\d+m)*:
+          (?:\\\\x1b\\\\[\\\\d+m)*(.+?)(?:\\\\x1b\\\\[\\\\d+m)* \\\\[(.+?)\\\\]$"
+        "
+      `);
+    expect(yaml.split("\n").length).toBe(4);
+    expect(Bun.YAML.parse(yaml)).toEqual({ regex });
+    expect(YAML.parse(yaml)).toEqual({ regex });
+    expect(jsYaml.load(yaml)).toEqual({ regex });
+  });
+
+  test("js-yaml module produces 4 lines of output", () => {
+    const yaml = jsYaml.dump({ regex });
+    expect(yaml).toMatchInlineSnapshot(`
+      "regex: >-
+        ^(?:\\x1b\\[\\d+m)?(.+?)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*:
+        (?:\\x1b\\[\\d+m)*(.+?)(?:\\x1b\\[\\d+m)* \\[(.+?)\\]$
+      "
+    `);
+    expect(yaml.split("\n").length).toBe(4);
+    expect(Bun.YAML.parse(yaml)).toEqual({ regex });
+    expect(YAML.parse(yaml)).toEqual({ regex });
+    expect(jsYaml.load(yaml)).toEqual({ regex });
+  });
+
+  test("Bun.YAML module produces no newlines in the output", () => {
+    const yaml = Bun.YAML.stringify({ regex });
+    expect(yaml).toMatchInlineSnapshot(
+      `"{regex: "^(?:\\\\x1b\\\\[\\\\d+m)?(.+?)(?:\\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\\\x1b\\\\[\\\\d+m)*: (?:\\\\x1b\\\\[\\\\d+m)*(.+?)(?:\\\\x1b\\\\[\\\\d+m)* \\\\[(.+?)\\\\]$"}"`,
+    );
+    expect(yaml.split("\n").length).toBe(1);
+    expect(Bun.YAML.parse(yaml)).toEqual({ regex });
+    expect(YAML.parse(yaml)).toEqual({ regex });
+    expect(jsYaml.load(yaml)).toEqual({ regex });
+  });
+});

@@ -14,13 +14,13 @@ function normalizeSchedule(
   if (!schedule) return undefined;
   if (Array.isArray(schedule)) {
     if (schedule.length === 0) return [];
-    const first = schedule[0] as any;
+    const first = schedule[0];
     if (typeof first === "string")
       return (schedule as string[]).map((c) => ({ cron: c }));
     if (typeof first === "object" && first && "cron" in first)
       return schedule as { cron: string }[];
   } else if (typeof schedule === "object" && schedule) {
-    const s = schedule as any;
+    const s = schedule;
     if (Array.isArray(s.cron))
       return (s.cron as string[]).map((c) => ({ cron: c }));
   }
@@ -73,12 +73,13 @@ export function toYamlReadyObject(workflow: Workflow): Record<string, unknown> {
     "jobs",
   ];
   for (const key of knownKeys) {
-    if ((obj as any)[key] !== undefined) ordered[key] = (obj as any)[key];
+    if (obj[key as keyof typeof obj] !== undefined)
+      ordered[key] = obj[key as keyof typeof obj];
   }
 
   // Then, add any unknown/custom properties from the original workflow
   const unknownKeys: string[] = [];
-  for (const key of Object.keys(workflow)) {
+  for (const key of Object.keys(workflow) as (keyof Workflow)[]) {
     if (!knownKeys.includes(key) && workflow[key] !== undefined) {
       unknownKeys.push(key);
       ordered[key] = workflow[key];

@@ -3,6 +3,7 @@ import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { publishJsr } from "./utils/jobs";
 import {
   checkoutAndInstallMise,
+  checkoutInstallMiseAndBun,
   checkout,
   installNode,
   installDeno,
@@ -77,14 +78,21 @@ const wf = workflow({
       name: "Format Test",
       "runs-on": "ubuntu-latest",
       steps: [
-        ...checkoutAndInstallMise(),
-        {
-          name: "Bun install",
-          run: "bun install",
-        },
+        ...checkoutInstallMiseAndBun(),
         {
           name: "Format Check",
           run: "mise run format:check",
+        },
+      ],
+    },
+    typeCheck: {
+      name: "Type Check",
+      "runs-on": "ubuntu-latest",
+      steps: [
+        ...checkoutInstallMiseAndBun(),
+        {
+          name: "Type Check",
+          run: "mise run typecheck",
         },
       ],
     },
@@ -92,11 +100,7 @@ const wf = workflow({
       name: "Mise Test",
       "runs-on": "ubuntu-latest",
       steps: [
-        ...checkoutAndInstallMise(),
-        {
-          name: "Bun install",
-          run: "bun install",
-        },
+        ...checkoutInstallMiseAndBun(),
         {
           name: "Test gha-ts",
           run: "mise run test",

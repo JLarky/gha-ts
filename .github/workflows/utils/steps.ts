@@ -39,6 +39,17 @@ export function checkoutAndInstallMise(): Step[] {
   return [checkout(), installMise()];
 }
 
+export function checkoutInstallMiseAndBun(): Step[] {
+  return [
+    checkout(),
+    installMise(),
+    {
+      name: "Bun install",
+      run: "bun install",
+    },
+  ];
+}
+
 export function installNode(options?: SetupNodeOptions): Step {
   return { name: "Install Node.js", ...setupNodeAction(options) };
 }

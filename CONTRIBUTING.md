@@ -26,6 +26,12 @@ mise run format
 mise run test
 ```
 
+- typecheck: Run TypeScript type checking
+
+```bash
+mise run typecheck
+```
+
 - validate-published-package: Validate that the published package works
 
 ```bash

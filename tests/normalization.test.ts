@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { toYamlReadyObject } from "../src/render/yaml";
-import { workflow, job, run, Workflow } from "@jlarky/gha-ts/workflow-types";
+import {
+  workflow,
+  job,
+  run,
+  Workflow,
+  Machine,
+} from "@jlarky/gha-ts/workflow-types";
 
 describe("normalization", () => {
   test("runs-on machine/group/labels normalize to strings", () => {
@@ -14,7 +20,7 @@ describe("normalization", () => {
           steps: [run(":")],
         }),
         c: job({
-          "runs-on": [{ name: "ignored" }, "ubuntu-latest"],
+          "runs-on": [{ name: "ignored" }, "ubuntu-latest" as Machine],
           steps: [run(":")],
         }),
       },

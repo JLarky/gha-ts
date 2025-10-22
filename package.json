@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "test": "bun test",
+    "typecheck": "bunx --bun tsc --noEmit",
     "format": "oxfmt src tests",
     "format:check": "oxfmt --check src tests"
   },

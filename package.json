@@ -8,8 +8,8 @@
   "scripts": {
     "test": "bun test",
     "typecheck": "bunx --bun tsc --noEmit",
-    "format": "oxfmt src tests",
-    "format:check": "oxfmt --check src tests"
+    "format": "oxfmt .github src tests",
+    "format:check": "oxfmt --check .github src tests"
   },
   "engines": {
     "bun": ">=1.1.0"

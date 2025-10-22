@@ -52,21 +52,45 @@ export function toYamlReadyObject(workflow: Workflow): Record<string, unknown> {
   const ordered: Record<string, unknown> = {};
   const obj = {
     name: workflow.name,
+    "run-name": workflow["run-name"],
     on: normalizeOn(workflow.on),
     env: workflow.env,
     concurrency: workflow.concurrency,
     permissions: workflow.permissions,
+    defaults: workflow.defaults,
     jobs: normalizeJobs(workflow.jobs),
   };
-  for (const key of [
+
+  // First, add known keys in the specified order
+  const knownKeys = [
     "name",
+    "run-name",
     "on",
     "env",
     "concurrency",
     "permissions",
+    "defaults",
     "jobs",
-  ]) {
+  ];
+  for (const key of knownKeys) {
     if ((obj as any)[key] !== undefined) ordered[key] = (obj as any)[key];
   }
+
+  // Then, add any unknown/custom properties from the original workflow
+  const unknownKeys: string[] = [];
+  for (const key of Object.keys(workflow)) {
+    if (!knownKeys.includes(key) && workflow[key] !== undefined) {
+      unknownKeys.push(key);
+      ordered[key] = workflow[key];
+    }
+  }
+
+  if (unknownKeys.length > 0) {
+    console.warn(
+      `Warning: Unknown workflow properties detected: ${unknownKeys.join(", ")}. ` +
+        `This may indicate a typo in your workflow or that gha-ts needs to be updated to support new GitHub Actions features.`,
+    );
+  }
+
   return ordered;
 }

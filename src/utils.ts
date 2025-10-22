@@ -29,8 +29,9 @@
  * ```
  */
 export function lines(script: string | TemplateStringsArray): string {
-  const str = (typeof script === "string" ? script : script.raw[0]).trimStart();
+  let str = typeof script === "string" ? script : script.raw[0];
   const [, indent] = str.split("\n", 2).map((line) => line.search(/\S/));
+  str = str.trim();
   if (typeof indent === "number" && indent > 0) {
     return str.replace(new RegExp(`^ {${indent}}`, "gm"), "");
   } else {

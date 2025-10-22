@@ -171,7 +171,8 @@ const wf = workflow({
                 echo "$CHANGED" | awk '{print "- " $0}';
               } >> "$GITHUB_STEP_SUMMARY";
               exit 1;
-            fi`,
+            fi
+          `,
         },
       ],
     },

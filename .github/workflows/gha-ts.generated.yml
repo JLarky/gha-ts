@@ -47,8 +47,15 @@ jobs:
         uses: jdx/mise-action@v3
       - name: Bun install
         run: bun install
-      - name: Format Check
-        run: mise run format:check
+      - name: store .github/oxfmt-matcher.json
+        env:
+          OXFMT_MATCHER_JSON: "{\"problemMatcher\":[{\"owner\":\"oxfmt\",\"severity\":\"error\",\"pattern\":[{\"regexp\":\"^(.+): (.+)$\",\"file\":1,\"line\":1,\"message\":2}]}]}"
+        run: echo "$OXFMT_MATCHER_JSON" > .github/oxfmt-matcher.json
+      - name: Enable problem matcher and run format check
+        run: |-
+          echo "::add-matcher::.github/oxfmt-matcher.json"
+          set -o pipefail
+          bun run oxfmt --list-different .github src tests | sed "/^$/d; s|$|: File is not formatted. Run 'mise run format' to fix.|"
   typeCheck:
     name: Type Check
     runs-on: ubuntu-latest

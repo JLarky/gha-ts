@@ -58,6 +58,6 @@ export function installDeno(options?: { "deno-version"?: string }): Step {
   return {
     name: "Install Deno",
     uses: "denoland/setup-deno@v2",
-    with: options
+    with: options,
   };
 }

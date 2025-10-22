@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import YAML from "yaml";
+import * as jsYaml from "js-yaml";
 
 import { createSerializer } from "@jlarky/gha-ts/render";
 import { toYamlReadyObject } from "../src/render/yaml";
@@ -27,6 +28,15 @@ describe("YAML stringify compatibility and JSON conversion", () => {
     expect(parsed).toEqual(canonical);
   });
 
+  test("js-yaml.dump round-trips to canonical object (workflow-triggers)", () => {
+    const canonical = toYamlReadyObject(workflowTriggersWf);
+    const yaml = createSerializer(workflowTriggersWf, (input) =>
+      jsYaml.dump(input, { noRefs: true }),
+    ).stringifyWorkflow();
+    const parsed = YAML.parse(yaml);
+    expect(parsed).toEqual(canonical);
+  });
+
   test("Bun.YAML.stringify round-trips to canonical object (prebuild-actions)", () => {
     const canonical = toYamlReadyObject(prebuildActionsWf);
     const yaml = createSerializer(
@@ -42,6 +52,15 @@ describe("YAML stringify compatibility and JSON conversion", () => {
     const yaml = createSerializer(
       prebuildActionsWf,
       YAML.stringify,
+    ).stringifyWorkflow();
+    const parsed = YAML.parse(yaml);
+    expect(parsed).toEqual(canonical);
+  });
+
+  test("js-yaml.dump round-trips to canonical object (prebuild-actions)", () => {
+    const canonical = toYamlReadyObject(prebuildActionsWf);
+    const yaml = createSerializer(prebuildActionsWf, (input) =>
+      jsYaml.dump(input, { noRefs: true }),
     ).stringifyWorkflow();
     const parsed = YAML.parse(yaml);
     expect(parsed).toEqual(canonical);

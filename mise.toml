@@ -14,6 +14,10 @@ run = "bun run format:check"
 description = "Run tests with Bun"
 run = "bun test"
 
+[tasks.typecheck]
+description = "Run TypeScript type checking"
+run = "bun run typecheck"
+
 [tasks.install]
 description = "Install dependencies with Bun"
 run = "bun install"

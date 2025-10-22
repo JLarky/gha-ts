@@ -29,18 +29,12 @@ jobs:
         uses: actions/checkout@v5
       - name: store .github/actionlint-matcher.json
         env:
-          ACTIONLINT_MATCHER_JSON: >-
-            {"problemMatcher":[{"owner":"actionlint","pattern":[{"regexp":"^(?:\\x1b\\[\\d+m)?(.+?)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*:
-            (?:\\x1b\\[\\d+m)*(.+?)(?:\\x1b\\[\\d+m)*
-            \\[(.+?)\\]$","file":1,"line":2,"column":3,"message":4,"code":5}]}]}
+          ACTIONLINT_MATCHER_JSON: "{\"problemMatcher\":[{\"owner\":\"actionlint\",\"pattern\":[{\"regexp\":\"^(?:\\\\x1b\\\\[\\\\d+m)?(.+?)(?:\\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\\\x1b\\\\[\\\\d+m)*:(?:\\\\x1b\\\\[\\\\d+m)*(\\\\d+)(?:\\\\x1b\\\\[\\\\d+m)*: (?:\\\\x1b\\\\[\\\\d+m)*(.+?)(?:\\\\x1b\\\\[\\\\d+m)* \\\\[(.+?)\\\\]$\",\"file\":1,\"line\":2,\"column\":3,\"message\":4,\"code\":5}]}]}"
         run: echo "$ACTIONLINT_MATCHER_JSON" > .github/actionlint-matcher.json
       - name: Enable problem matcher and run actionlint
-        run: >-
+        run: |-
           echo "::add-matcher::.github/actionlint-matcher.json"
-
-          bash <(curl -fsSL
-          https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint -color
         shell: bash
   formatTest:
@@ -105,9 +99,7 @@ jobs:
         with:
           deno-version: 2.5.4
       - name: Validate degit examples
-        run: >-
-          mise run validate-published-degit --degit-branch ${{ github.ref_name
-          || 'main' }}
+        run: mise run validate-published-degit --degit-branch ${{ github.ref_name || 'main' }}
   checkGhaTsWorkflowsConverted:
     name: Check gha-ts workflows converted
     runs-on: ubuntu-latest

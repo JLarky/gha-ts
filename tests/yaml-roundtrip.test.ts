@@ -99,6 +99,18 @@ describe("yaml roundtrip for regex", () => {
     expect(jsYaml.load(yaml)).toEqual({ regex });
   });
 
+  test("js-yaml module produces 2 lines of output when lineWidth is bigger", () => {
+    const yaml = jsYaml.dump({ regex }, { lineWidth: Infinity });
+    expect(yaml).toMatchInlineSnapshot(`
+      "regex: '^(?:\\x1b\\[\\d+m)?(.+?)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*:(?:\\x1b\\[\\d+m)*(\\d+)(?:\\x1b\\[\\d+m)*: (?:\\x1b\\[\\d+m)*(.+?)(?:\\x1b\\[\\d+m)* \\[(.+?)\\]$'
+      "
+    `);
+    expect(yaml.split("\n").length).toBe(2);
+    expect(Bun.YAML.parse(yaml)).toEqual({ regex });
+    expect(YAML.parse(yaml)).toEqual({ regex });
+    expect(jsYaml.load(yaml)).toEqual({ regex });
+  });
+
   test("Bun.YAML module produces no newlines in the output", () => {
     const yaml = Bun.YAML.stringify({ regex });
     expect(yaml).toMatchInlineSnapshot(

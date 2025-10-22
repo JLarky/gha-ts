@@ -4,7 +4,7 @@ import { Workflow } from "@jlarky/gha-ts/workflow-types";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
 
 export const stringifyYaml: Stringify = (input) =>
-  dump(input, { noRefs: true, quotingType: '"' });
+  dump(input, { noRefs: true, quotingType: '"', lineWidth: Infinity });
 
 export async function generateWorkflowYaml(
   workflow: Workflow,

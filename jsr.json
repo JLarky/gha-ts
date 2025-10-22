@@ -8,13 +8,10 @@
     "./cli": "./src/cli/index.ts",
     "./action": "./src/action.ts",
     "./actions": "./src/actions/index.ts",
-    "./render": "./src/render/index.ts"
+    "./render": "./src/render/index.ts",
+    "./utils": "./src/utils.ts"
   },
   "publish": {
-    "include": [
-      "./src/**/*.ts",
-      "README.md",
-      "LICENSE"
-    ]
+    "include": ["./src/**/*.ts", "README.md", "LICENSE"]
   }
 }

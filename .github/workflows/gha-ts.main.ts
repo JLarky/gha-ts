@@ -8,6 +8,7 @@ import {
   installDeno,
 } from "./utils/steps";
 import { generateWorkflowYaml } from "./utils/yaml";
+import { lines } from "@jlarky/gha-ts/utils";
 
 const wf = workflow({
   name: "Test gha-ts",
@@ -147,7 +148,8 @@ const wf = workflow({
         },
         {
           name: "Verify if TS workflows are converted",
-          run: `CHANGED="$(git --no-pager diff --name-only)";
+          run: lines`
+            CHANGED="$(git --no-pager diff --name-only)";
             if [ -n "$CHANGED" ]; then
               echo "::error title=TS workflows are not up to date::Run 'mise run workflows:build' locally, commit, and push.";
               echo "::group::Changed files";
@@ -169,7 +171,7 @@ const wf = workflow({
                 echo "$CHANGED" | awk '{print "- " $0}';
               } >> "$GITHUB_STEP_SUMMARY";
               exit 1;
-            fi`.replace(/^ {12}/gm, ""),
+            fi`,
         },
       ],
     },

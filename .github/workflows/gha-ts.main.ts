@@ -88,6 +88,21 @@ const wf = workflow({
         },
       ],
     },
+    typeCheck: {
+      name: "Type Check",
+      "runs-on": "ubuntu-latest",
+      steps: [
+        ...checkoutAndInstallMise(),
+        {
+          name: "Bun install",
+          run: "bun install",
+        },
+        {
+          name: "Type Check",
+          run: "mise run typecheck",
+        },
+      ],
+    },
     miseTest: {
       name: "Mise Test",
       "runs-on": "ubuntu-latest",

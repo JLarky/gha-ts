@@ -49,6 +49,18 @@ jobs:
         run: bun install
       - name: Format Check
         run: mise run format:check
+  typeCheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: Install mise
+        uses: jdx/mise-action@v3
+      - name: Bun install
+        run: bun install
+      - name: Type Check
+        run: mise run typecheck
   miseTest:
     name: Mise Test
     runs-on: ubuntu-latest

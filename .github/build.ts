@@ -7,3 +7,4 @@ import "./workflows/publish-npm.main";
 import "./workflows/dependabot-updates.main";
 import "./workflows/check-pkl-workflows-converted.main";
 import "./workflows/create-release.main";
+import "./workflows/github-actions-lint.main";

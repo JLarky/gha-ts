@@ -57,9 +57,8 @@ Set the new version in `jsr.json` and push to `main`.
 When `jsr.json` changes on `main`, the Create Release workflow (`.github/workflows/create-release.main.ts`) automatically creates a draft prerelease on GitHub with tag `v<version>`.
 
 - Review the draft on [Releases](https://github.com/JLarky/gha-ts/releases), adjust notes, and publish it.
-- For stable releases, uncheck the prerelease flag before publishing.
 
-To publish the package to npm, run:
+To publish the package to npm, run on your machine (CI pipeline doesn't work yet):
 
 ```bash
 mise run clone-to-npm --publish

@@ -1,0 +1,12 @@
+{
+  "name": "workflows",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@jlarky/gha-ts": "^0.1.2",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1"
+  }
+}

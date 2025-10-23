@@ -7,7 +7,7 @@ describe("lines helper", () => {
       echo Hello World.
       echo Another line.
     `;
-    expect(result).toBe("echo Hello World.\necho Another line.");
+    expect(result).toBe("echo Hello World.\necho Another line.\n");
   });
 
   test("function call usage - removes common indentation", () => {
@@ -15,7 +15,7 @@ describe("lines helper", () => {
       echo Hello World.
       echo Another line.
     `);
-    expect(result).toBe("echo Hello World.\necho Another line.");
+    expect(result).toBe("echo Hello World.\necho Another line.\n");
   });
 
   test("real-world example from workflow - multiline shell script", () => {
@@ -52,18 +52,18 @@ describe("lines helper", () => {
 
   test("handles single line", () => {
     const result = lines`echo Hello`;
-    expect(result).toBe("echo Hello");
+    expect(result).toBe("echo Hello\n");
   });
 
   test("handles empty content after trimStart", () => {
     const result = lines``;
-    expect(result).toBe("");
+    expect(result).toBe("\n");
   });
 
   test("handles string with no indentation", () => {
     const result = lines(`echo Hello
 echo World`);
-    expect(result).toBe("echo Hello\necho World");
+    expect(result).toBe("echo Hello\necho World\n");
   });
 
   test("preserves relative indentation", () => {
@@ -74,7 +74,7 @@ echo World`);
       fi
     `;
     expect(result).toBe(
-      'if true; then\n  echo "indented"\n    echo "more indented"\nfi',
+      'if true; then\n  echo "indented"\n    echo "more indented"\nfi\n',
     );
   });
 
@@ -84,7 +84,7 @@ echo World`);
         line2
       line3
     `;
-    expect(result).toBe("line1\n  line2\nline3");
+    expect(result).toBe("line1\n  line2\nline3\n");
   });
 
   test("trims leading whitespace before first content", () => {
@@ -92,7 +92,7 @@ echo World`);
 
       echo Hello
     `;
-    expect(result).toBe("echo Hello");
+    expect(result).toBe("echo Hello\n");
   });
 
   test("handles content with varying indentation", () => {
@@ -101,7 +101,7 @@ echo World`);
           deeply indented
       back to start
     `;
-    expect(result).toBe("first\n    deeply indented\nback to start");
+    expect(result).toBe("first\n    deeply indented\nback to start\n");
   });
 
   test("works with tabs (though spaces are recommended)", () => {
@@ -131,7 +131,7 @@ echo World`);
     };
 
     expect(step.run).toBe(
-      'echo "Starting test"\nnpm run test\necho "Test complete"',
+      'echo "Starting test"\nnpm run test\necho "Test complete"\n',
     );
     expect(step.run).not.toMatch(/^[ ]+echo/); // No leading spaces on first line before content
   });
@@ -148,7 +148,7 @@ echo World`);
     }
 
     const cmd = getRunCommand();
-    expect(cmd.run).toBe("echo nested\necho deeply");
+    expect(cmd.run).toBe("echo nested\necho deeply\n");
   });
 
   test("handles only whitespace lines", () => {
@@ -157,7 +157,7 @@ echo World`);
       
       last line
     `;
-    expect(result).toBe("first line\n\nlast line");
+    expect(result).toBe("first line\n\nlast line\n");
   });
 
   test("preserves trailing spaces on individual lines", () => {
@@ -168,7 +168,7 @@ echo World`);
       line2
       line3
     `;
-    expect(result).toBe("line1   \nline2\nline3");
+    expect(result).toBe("line1   \nline2\nline3\n");
     // Verify trailing spaces are preserved on line1
     expect(result.split("\n")[0]).toBe("line1   ");
   });

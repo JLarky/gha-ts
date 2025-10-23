@@ -2,3 +2,9 @@
 description = "Install dependencies with Node"
 tools.node = "22"
 run = "npm install"
+
+[tasks.wf-build]
+run = "workflows/utils/build-cli.ts"
+
+[tasks.wf-watch]
+run = "node --watch --no-warnings workflows/utils/build-cli.ts"

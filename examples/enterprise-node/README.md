@@ -1,6 +1,6 @@
-# Enterprise-focused example using Node.js
+# Enterprise-focused example using Node.js (with Mise)
 
-This example shows how to author a workflow in TypeScript that is friendly to enterprise setups (private registries, minimal permissions, caching) and render it to YAML.
+This example shows how to author a workflow in TypeScript that is friendly to enterprise setups (private registries, minimal permissions, caching) and render it to YAML using Mise tasks.
 
 ## Install gha-ts
 
@@ -56,17 +56,25 @@ export const wf = workflow({
 await generateWorkflow(wf, YAML.stringify, import.meta.url);
 ```
 
-## Run the workflow
+## Register the workflow in your builder
 
-```bash
-chmod +x .github/workflows/enterprise-node.main.ts
-.github/workflows/enterprise-node.main.ts # builds .github/workflows/enterprise-node.generated.yml
+Create `.github/build.ts` (if you don't have one already) and import your workflow module:
+
+```ts
+import "./workflows/enterprise-node.main";
 ```
 
-## Watch mode
+## Build with Mise
 
 ```bash
-node --watch --no-warnings .github/workflows/enterprise-node.main.ts # watches for changes and rebuilds the workflow
+mise run workflows:build
+# outputs .github/workflows/enterprise-node.generated.yml
+```
+
+Optional clean:
+
+```bash
+mise run workflows:clear
 ```
 
 ## Notes for enterprise/GHAS

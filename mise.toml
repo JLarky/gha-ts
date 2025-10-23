@@ -35,3 +35,22 @@ description = "Generate GitHub Actions workflows from TypeScript"
 run = "bun run .github/build.ts"
 sources = [".github/build.ts", ".github/**/*.ts", "src/**/*.ts"]
 outputs = [".github/workflows/*.generated.yml"]
+
+[tasks."oc:colima"]
+description = "Start Colima"
+tools.lima = "1.2.1"
+tools.colima = "0.9.1"
+run = "colima start"
+
+[tasks."oc:colima:stop"]
+description = "Stop Colima"
+tools.lima = "1.2.1"
+tools.colima = "0.9.1"
+run = "colima stop"
+
+[tasks.oc]
+run = "docker run --rm -it -v $PWD:/work -w /work -v ~/.colima-jail/mise:/mise -v ~/.colima-jail/root:/root jdxcode/mise:latest run opencode"
+
+[tasks.opencode]
+tools.opencode = "latest"
+run = 'opencode'

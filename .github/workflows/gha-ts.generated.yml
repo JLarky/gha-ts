@@ -52,7 +52,7 @@ jobs:
           OXFMT_MATCHER_JSON: "{\"problemMatcher\":[{\"owner\":\"oxfmt\",\"severity\":\"error\",\"pattern\":[{\"regexp\":\"^(.+): (.+)$\",\"file\":1,\"line\":1,\"message\":2}]}]}"
         run: echo "$OXFMT_MATCHER_JSON" > .github/oxfmt-matcher.json
       - name: Enable problem matcher and run format check
-        run: |-
+        run: |
           echo "::add-matcher::.github/oxfmt-matcher.json"
           set -o pipefail
           bun run oxfmt --list-different .github src tests | sed "/^$/d; s|$|: File is not formatted. Run 'mise run format' to fix.|"
@@ -134,7 +134,7 @@ jobs:
       - name: Generate TS workflows to yaml
         run: mise run workflows:build
       - name: Verify if TS workflows are converted
-        run: |-
+        run: |
           CHANGED="$(git --no-pager diff --name-only)";
           if [ -n "$CHANGED" ]; then
             echo "::error title=TS workflows are not up to date::Run 'mise run workflows:build' locally, commit, and push.";

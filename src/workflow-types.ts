@@ -272,10 +272,10 @@ export const permissionsAllRead: PermissionsAllValue = "read-all";
 export const permissionsAllWrite: PermissionsAllValue = "write-all";
 
 // Simple factories to aid composition
-export function workflow(def: Workflow): Workflow {
+export function workflow<W extends Workflow>(def: W): W {
   return def;
 }
-export function job(def: DefaultJob): DefaultJob {
+export function job<J extends DefaultJob>(def: J): J {
   return def;
 }
 export function uses(

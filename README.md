@@ -71,6 +71,7 @@ await generateWorkflow(wf, YAML.stringify, import.meta.url);
 - [Hello world (Bun)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-bun/)
 - [Hello world (Node.js)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-node/)
 - [Hello world (Deno)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-deno/)
+- [Enterprise (Node.js)](https://github.com/JLarky/gha-ts-enterprise-node) - great example of using gha-ts "for real".
 
 ## License
 

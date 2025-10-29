@@ -189,7 +189,7 @@ export interface ReusableJob {
   name?: string;
   uses: string; // path or org/repo/.github/workflows/file.yml@ref
   with?: Record<string, unknown>;
-  secrets?: Record<string, string>;
+  secrets?: Record<string, string> | "inherit";
   permissions?: Permissions;
   if?: string;
   needs?: string | string[];

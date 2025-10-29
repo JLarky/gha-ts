@@ -62,7 +62,9 @@ export interface WorkflowCallTrigger {
       description?: string;
     }
   >;
-  secrets?: Record<string, { required?: boolean; description?: string }>;
+  secrets?:
+    | Record<string, { required?: boolean; description?: string }>
+    | "inherit";
   outputs?: Record<string, { description?: string; value: string }>;
 }
 

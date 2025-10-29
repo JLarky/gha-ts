@@ -62,7 +62,9 @@ export interface WorkflowCallTrigger {
       description?: string;
     }
   >;
-  secrets?: Record<string, { required?: boolean; description?: string }>;
+  secrets?:
+    | Record<string, { required?: boolean; description?: string }>
+    | "inherit";
   outputs?: Record<string, { description?: string; value: string }>;
 }
 
@@ -189,7 +191,7 @@ export interface ReusableJob {
   name?: string;
   uses: string; // path or org/repo/.github/workflows/file.yml@ref
   with?: Record<string, unknown>;
-  secrets?: Record<string, string>;
+  secrets?: Record<string, string> | "inherit";
   permissions?: Permissions;
   if?: string;
   needs?: string | string[];

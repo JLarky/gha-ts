@@ -29,7 +29,7 @@
  * ```
  */
 export function lines(script: string | TemplateStringsArray): string {
-  let str = typeof script === "string" ? script : script.raw[0];
+  let str = typeof script === "string" ? script : script[0];
   const [, indent] = str.split("\n", 2).map((line) => line.search(/\S/));
   str = str.trim() + "\n";
   if (typeof indent === "number" && indent > 0) {

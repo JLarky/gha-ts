@@ -186,7 +186,7 @@ echo World`);
   test("handles template literal without interpolation", () => {
     const result = lines`hello \${world}`;
     expect(result).toMatchInlineSnapshot(`
-      "hello \\\${world}
+      "hello \${world}
       "
     `);
   });

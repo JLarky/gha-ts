@@ -13,6 +13,10 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+const jsrPackageName = "@jlarky/gha-ts";
+const npmPackageName = "@jlarky/gha-ts";
+const npmRepositoryUrl = "https://github.com/JLarky/gha-ts";
+
 const { usage_directory, usage_publish, usage_version, usage_tag } =
   process.env;
 
@@ -35,24 +39,32 @@ console.log("Cloning into directory", DIRECTORY);
 
 process.chdir(join(DIRECTORY, "jsr"));
 
-await $`bunx jsr add @jlarky/gha-ts@${VERSION}`;
+await $`bunx jsr add ${jsrPackageName}@${VERSION}`;
 
 process.chdir(DIRECTORY);
 
-await $`cp -r jsr/node_modules/@jlarky/gha-ts/ npm`;
+await $`cp -r jsr/node_modules/${jsrPackageName}/ npm`;
 
 process.chdir(join(DIRECTORY, "npm"));
 
-await $`bun pm pkg set name=@jlarky/gha-ts`;
+await $`bun pm pkg set name=${npmPackageName}`;
 await $`bun pm pkg set repository.type=git`;
-await $`bun pm pkg set repository.url=git+https://github.com/JLarky/gha-ts.git`;
+await $`bun pm pkg set repository.url=git+${npmRepositoryUrl}.git`;
 await $`bun pm pkg set publishConfig.provenance=true`;
 await $`bun pm pkg set publishConfig.access=public`;
 
+const files = ["README.md", "LICENSE"];
+let glob = new Bun.Glob("**/*.{js,js.map}");
+for await (const file of glob.scan(".")) files.push(file);
+glob = new Bun.Glob("_dist/**/*");
+for await (const file of glob.scan(".")) files.push(file);
+
+await $`bun pm pkg set --json files='${JSON.stringify(files)}'`;
+
 await $`cat package.json`;
 
-const npmVersion = await $`mise x node@lts -- npm --version`.text();
-const nodeVersion = await $`mise x node@lts -- node --version`.text();
+const npmVersion = await $`mise x node@24 -- npm --version`.text();
+const nodeVersion = await $`mise x node@24 -- node --version`.text();
 
 console.log("Publishing to npm with npm version", { npmVersion, nodeVersion });
 
@@ -70,7 +82,7 @@ if (!SKIP_PUBLISH) {
   const cmd = [
     "mise",
     "x",
-    "node@lts",
+    "node@24",
     "--",
     "npm",
     "publish",

@@ -58,17 +58,18 @@ mise run actionlint
 
 ## Publishing
 
-Set the new version in `jsr.json` and push to `main`.
+Bump the version and push to `main`:
+
+```bash
+mise run bump-version
+git push origin main
+```
 
 When `jsr.json` changes on `main`, the Create Release workflow (`.github/workflows/create-release.main.ts`) automatically creates a draft prerelease on GitHub with tag `v<version>`.
 
 - Review the draft on [Releases](https://github.com/JLarky/gha-ts/releases), adjust notes, and publish it.
 
-To publish the package to npm, run on your machine (CI pipeline doesn't work yet):
-
-```bash
-mise run clone-to-npm --publish
-```
+New release will trigger the Publish to npm workflow (`.github/workflows/publish-npm.main.ts`) to publish the package to npm.
 
 ## Development
 

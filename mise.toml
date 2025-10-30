@@ -54,3 +54,21 @@ run = "docker run --rm -it -v $PWD:/work -w /work -v ~/.colima-jail/mise:/mise -
 [tasks.opencode]
 tools.opencode = "latest"
 run = 'opencode'
+
+[tasks."bump-version"]
+description = "Bump version"
+tools.bun = "1.3.0"
+run = '''
+#!/usr/bin/env bun
+import { $ } from "bun";
+
+const tmpFolder = (await $`mktemp -d`.text()).trim();
+await $`cp jsr.json ${tmpFolder}/package.json`;
+await $`bun pm pkg get version`.cwd(tmpFolder);
+await $`bun pm version patch --no-git-tag-version`.cwd(tmpFolder);
+const newVersion = (await $`bun pm pkg get version`.cwd(tmpFolder).text()).trim();
+await $`cp ${tmpFolder}/package.json jsr.json`;
+await $`rm -rf ${tmpFolder}`;
+await $`git commit jsr.json -m "Bump version to ${newVersion}"`;
+console.log('Now you can run `git push origin main` to publish the new version');
+'''

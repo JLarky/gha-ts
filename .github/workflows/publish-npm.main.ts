@@ -31,7 +31,7 @@ const wf = workflow({
         ...checkoutAndInstallMise(),
         {
           name: "Publish package",
-          run: lines`mise run clone-to-npm --publish --ci -d "$RUNNER_TEMP" --publish`,
+          run: lines`mise run clone-to-npm:ci --publish --ci -d "$RUNNER_TEMP"`,
         },
         {
           run: lines`pwd && ls -la`,

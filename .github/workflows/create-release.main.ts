@@ -23,7 +23,7 @@ const wf = workflow({
         {
           name: "Get version from jsr.json",
           id: "get_version",
-          run: `echo "version=$(bun -e "console.log(require('./jsr.json').version)")" >> "$GITHUB_OUTPUT"`,
+          run: `echo "version=$(jq -r '.version' ./jsr.json)" >> "$GITHUB_OUTPUT"`,
         },
         {
           name: "Create Release",

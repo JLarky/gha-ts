@@ -26,7 +26,7 @@ jobs:
         uses: jdx/mise-action@v3
       - name: Publish package
         run: |
-          mise run clone-to-npm --publish --ci -d "$RUNNER_TEMP" --publish
+          mise run clone-to-npm:ci --publish --ci -d "$RUNNER_TEMP"
       - run: |
           pwd && ls -la
         working-directory: ${{ runner.temp }}/npm

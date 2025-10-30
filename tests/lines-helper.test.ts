@@ -172,4 +172,22 @@ echo World`);
     // Verify trailing spaces are preserved on line1
     expect(result.split("\n")[0]).toBe("line1   ");
   });
+
+  test("handles template literal with interpolation", () => {
+    const world = "World";
+    // @ts-expect-error - lines doesn't take substitutions
+    const result = lines`hello ${world}`;
+    expect(result).toMatchInlineSnapshot(`
+      "hello
+      "
+    `);
+  });
+
+  test("handles template literal without interpolation", () => {
+    const result = lines`hello \${world}`;
+    expect(result).toMatchInlineSnapshot(`
+      "hello \\\${world}
+      "
+    `);
+  });
 });

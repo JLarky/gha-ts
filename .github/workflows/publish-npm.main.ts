@@ -1,8 +1,8 @@
-#!/usr/bin/env bun
-import { YAML } from "bun";
+#!/usr/bin/env -S node --no-warnings
 import { workflow } from "@jlarky/gha-ts/workflow-types";
-import { generateWorkflow } from "@jlarky/gha-ts/cli";
+import { generateWorkflowYaml } from "./utils/yaml";
 import { checkoutAndInstallMise } from "./utils/steps";
+import { lines } from "@jlarky/gha-ts/utils";
 
 const wf = workflow({
   name: "Publish to npm",
@@ -22,54 +22,22 @@ const wf = workflow({
       "runs-on": "ubuntu-latest",
       steps: [
         {
-          name: "Extract version from tag",
+          name: "Extract version from jsr.json",
           id: "version",
-          run: `VERSION="\${{ github.ref }}"
-VERSION="\${VERSION#refs/tags/v}"
-echo "version=\${VERSION}" >> "$GITHUB_OUTPUT"`,
-        },
-        {
-          name: "Hello world",
-          run: `echo "Hello world! Publishing version \${{ steps.version.outputs.version }}"`,
+          run: lines`
+            echo "version=$(jq -r '.version' ./jsr.json)" >> "$GITHUB_OUTPUT"
+          `,
         },
         ...checkoutAndInstallMise(),
         {
           name: "Publish package",
-          env: {
-            NPM_CONFIG_PROVENANCE: "true",
-          },
-          run: `mise run clone-to-npm --publish --ci -d "$RUNNER_TEMP" --skip-publish`,
+          run: lines`mise run clone-to-npm --publish --ci -d "$RUNNER_TEMP" --publish`,
         },
         {
-          run: "pwd && ls -la",
+          run: lines`pwd && ls -la`,
           "working-directory": "${{ runner.temp }}/npm",
         },
-        {
-          uses: "actions/setup-node@v4",
-          with: {
-            "node-version": 24,
-            "registry-url": "https://registry.npmjs.org",
-          },
-        },
-        {
-          id: "publish-package",
-          "continue-on-error": true,
-          run: [
-            "export NPM_CONFIG_PROVENANCE=true",
-            "which node && node -v",
-            "which npm && npm -v",
-            "npm publish --provenance",
-          ].join("\n"),
-          "working-directory": "${{ runner.temp }}/npm",
-        },
-        {
-          name: "Report published package status to GITHUB_STEP_SUMMARY",
-          run: `{
-           echo "### Published package status";
-           echo;
-           echo "::error title=Published package status::\${{ steps.publish-package.conclusion }}";
-          } >> "$GITHUB_STEP_SUMMARY"`,
-        },
+
         {
           uses: "actions/upload-artifact@v4",
           if: "${{ always() }}",
@@ -84,4 +52,4 @@ echo "version=\${VERSION}" >> "$GITHUB_OUTPUT"`,
   },
 });
 
-await generateWorkflow(wf, YAML.stringify, import.meta.url);
+await generateWorkflowYaml(wf, import.meta.url);

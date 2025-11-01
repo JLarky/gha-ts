@@ -185,4 +185,20 @@ echo World`);
     const result = lines`hello \${world}`;
     expect(result).toBe("hello ${world}\n");
   });
+
+  test("does not add double trailing newline when input already ends with one", () => {
+    // When input string already ends with newline, result should not have double newline
+    const input = "line1\nline2\n";
+    const result = lines(input);
+    expect(result).toBe("line1\nline2\n");
+    expect(result.endsWith("\n\n")).toBe(false);
+    expect(result.match(/\n\n$/)).toBeNull();
+  });
+
+  test("handles input that is just a newline", () => {
+    // Input that's just "\n" should return "\n" (not "\n\n")
+    const result = lines("\n");
+    expect(result).toBe("\n");
+    expect(result).not.toBe("\n\n");
+  });
 });

@@ -87,21 +87,23 @@ export function lines(
     }
   }
 
+  let result: string;
   if (hasAnyIndentation && minIndent > 0 && minIndent !== Infinity) {
-    return (
-      linesArray
-        .map((line) => {
-          if (line && line.length >= minIndent) {
-            const leadingWhitespace = line.match(/^(\s+)/)?.[1];
-            if (leadingWhitespace && leadingWhitespace.length >= minIndent) {
-              return line.slice(minIndent);
-            }
+    result = linesArray
+      .map((line) => {
+        if (line && line.length >= minIndent) {
+          const leadingWhitespace = line.match(/^(\s+)/)?.[1];
+          if (leadingWhitespace && leadingWhitespace.length >= minIndent) {
+            return line.slice(minIndent);
           }
-          return line;
-        })
-        .join("\n") + "\n"
-    );
+        }
+        return line;
+      })
+      .join("\n");
   } else {
-    return linesArray.join("\n") + "\n";
+    result = linesArray.join("\n");
   }
+
+  // Only add trailing newline if result doesn't already end with one
+  return result.endsWith("\n") ? result : result + "\n";
 }

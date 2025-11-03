@@ -9,6 +9,8 @@
     "skipLibCheck": true,
     "types": ["bun-types", "node"],
     "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": true,
     "paths": {
       "@jlarky/gha-ts": ["./src/index.ts"],
       "@jlarky/gha-ts/*": ["./src/*"]
@@ -18,7 +20,9 @@
     "src/**/*.ts",
     "tests/**/*.ts",
     "examples/**/*.ts",
+    "examples/**/*.mjs",
     ".github/**/*.ts",
+    ".github/**/*.mjs",
     "mise-tasks/**/*.ts"
   ]
 }

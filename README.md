@@ -67,7 +67,7 @@ await generateWorkflow(wf, YAML.stringify, import.meta.url);
 ## Examples
 
 - Look at the [.github/workflows](https://github.com/JLarky/gha-ts/tree/main/.github/workflows) directory for workflow examples.
-- Additional usage examples: `src/examples/`.
+- Additional usage examples: `examples/`.
 - [Hello world (Bun)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-bun/)
 - [Hello world (Node.js)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-node/)
 - [Hello world (Deno)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-deno/)

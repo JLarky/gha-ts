@@ -33,7 +33,12 @@ run = "rm -r .github/workflows/*.generated.yml"
 [tasks."workflows:build"]
 description = "Generate GitHub Actions workflows from TypeScript"
 run = "bun run .github/build.ts"
-sources = [".github/build.ts", ".github/**/*.ts", "src/**/*.ts"]
+sources = [
+  ".github/build.ts",
+  ".github/**/*.ts",
+  "src/**/*.ts",
+  ".github/**/*.mjs"
+]
 outputs = [".github/workflows/*.generated.yml"]
 
 [tasks."oc:colima"]

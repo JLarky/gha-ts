@@ -5,15 +5,11 @@
 
 A TypeScript library for writing GitHub Actions workflows and rendering them to YAML.
 
-- Designed closely with `stefma/pkl-gha` semantics (but we don't do camel-case -> kebab-case conversions for actions)
-- Stable YAML rendering (Bun’s `Bun.YAML` or npm `yaml`)
+- Extremely lean core, gha-ts has 0 dependencies, you provide your own yaml serializer (or just use JSON.stringify, because any valid JSON is also valid YAML)
+- No typescript overhead. Github will only use generated YAML files, so it won't see the difference. You use typescript just on your machine and heck, it doesn't even has to be typescript (see javascript example in Examples section)!
+- For quicker onboarding [we provide CLI](https://github.com/JLarky/gha-ts-enterprise-node/blob/main/.github/workflows/utils/convert-cli.ts) to convert all of your existing workflows to TypeScript (or start with one file!).
 
-## What?
-
-Author GitHub Actions workflows in TypeScript with strong typing and helpful validation, then render to YAML for `.github/workflows/`.
-
-- **Strong typing**: Catch errors at build-time instead of in CI.
-- **Deterministic YAML**: Stable key ordering and converters.
+It's easy to start with gha-ts, but for production-ready uses I would strongly recommend checking out [gha-ts-enterprise-node](https://github.com/JLarky/gha-ts-enterprise-node) example, that includes things like build/watch scripts, action version locking, linting of your workflows and an example of a [CI job](https://github.com/JLarky/gha-ts-enterprise-node/blob/main/.github/workflows/check-gha-ts-workflows-converted.main.ts) that checks that generated YAML files are in sync with the source.
 
 ## Install
 
@@ -70,6 +66,7 @@ await generateWorkflow(wf, YAML.stringify, import.meta.url);
 - Additional usage examples: `examples/`.
 - [Hello world (Bun)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-bun/)
 - [Hello world (Node.js)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-node/)
+- [Hello world (Javascript)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-node-20/)
 - [Hello world (Deno)](https://github.com/JLarky/gha-ts/tree/main/examples/hello-world-deno/)
 - [Enterprise (Node.js)](https://github.com/JLarky/gha-ts-enterprise-node) - great example of using gha-ts "for real".
 

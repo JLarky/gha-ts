@@ -19,23 +19,23 @@ const wf = workflow({
         {
           name: "Install dependencies",
           "working-directory": ".github/workflows",
-          run: "npm install @jlarky/gha-ts typescript",
+          run: "npm install @jlarky/gha-ts typescript yaml",
         },
         {
           name: "Remove generated workflow",
-          run: "rm .github/workflows/hello-world.generated.yml",
+          run: "rm .github/workflows/example-javascript.generated.yml",
         },
         {
           name: "Build workflows",
-          run: "node .github/workflows/hello-world.main.mjs",
+          run: "node .github/workflows/example-javascript.main.mjs",
         },
         {
           name: "Verify generated workflow",
-          run: "git diff --exit-code .github/workflows/hello-world.generated.yml",
+          run: "git diff --exit-code .github/workflows/example-javascript.generated.yml",
         },
         {
           name: "Type-Check",
-          run: "tsc --noEmit --allowJs .github/workflows/example-javascript.main.mjs",
+          run: "tsc --noEmit --skipLibCheck --allowJs --module nodenext --moduleResolution nodenext .github/workflows/example-javascript.main.mjs",
         },
       ],
     },

@@ -116,14 +116,14 @@ export type Permissions =
   | PermissionsAllValue;
 export interface ConcurrencyObject {
   group: string;
-  "cancel-in-progress"?: boolean | string;
+  "cancel-in-progress"?: boolean;
 }
 export type Concurrency = ConcurrencyObject | string;
 
 // Strategy & Matrix
 export interface Strategy {
   matrix?: Record<string, unknown[] | unknown>;
-  "fail-fast"?: boolean | string;
+  "fail-fast"?: boolean;
   "max-parallel"?: number | string;
 }
 
@@ -177,7 +177,7 @@ export interface DefaultJob {
   strategy?: Strategy;
   concurrency?: Concurrency;
   "timeout-minutes"?: number | string;
-  "continue-on-error"?: boolean | string;
+  "continue-on-error"?: boolean;
   container?: { image: string; env?: Record<string, string>; options?: string };
   services?: Record<
     string,

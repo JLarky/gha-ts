@@ -17,6 +17,7 @@ const EXAMPLES = process.env.usage_examples?.split(",") || [
   "hello-world-bun",
   "hello-world-node",
   "hello-world-deno",
+  "hello-world-node-20",
 ];
 const SKIP_DEGIT = process.env.usage_skip_degit === "true";
 const DEGIT_BRANCH = process.env.usage_degit_branch || undefined;

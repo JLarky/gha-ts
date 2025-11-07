@@ -60,6 +60,70 @@ const wf = workflow({
 await generateWorkflow(wf, YAML.stringify, import.meta.url);
 ```
 
+## Expression Helpers
+
+gha-ts provides a modern, type-safe DSL for building GitHub Actions expressions with automatic quoting and validation:
+
+```ts
+import { workflow } from "@jlarky/gha-ts/workflow-types";
+import { expr, ctx, fn } from "@jlarky/gha-ts/expressions";
+
+const wf = workflow({
+  name: "CI",
+  // Dynamic run name with fallback
+  "run-name": expr`${ctx.github.event_name} - ${ctx.github.head_ref || ctx.github.ref}`,
+  
+  on: { push: {}, pull_request: {}, merge_group: {} },
+  
+  // Concurrency group using expressions
+  concurrency: {
+    group: expr`${ctx.github.workflow} - ${ctx.github.ref}`,
+    "cancel-in-progress": true,
+  },
+  
+  jobs: {
+    test: {
+      "runs-on": "ubuntu-latest",
+      // Conditional job execution with functions
+      if: expr`${ctx.github.event_name} == 'merge_group' || ${fn.endsWith(ctx.github.head_ref, '-run-tests')}`,
+      
+      steps: [
+        {
+          uses: "actions/checkout@v4",
+        },
+        {
+          uses: "actions/cache@v4",
+          with: {
+            path: "~/.cache",
+            // Cache key with file hashing
+            key: expr`${ctx.runner.os}-deps-${fn.hashFiles('package.json', 'bun.lock')}`,
+          },
+        },
+        {
+          id: "test",
+          name: "Run tests",
+          run: "bun test",
+        },
+        {
+          name: "Upload coverage",
+          // Conditional on step output
+          if: expr`${fn.success()} && ${ctx.steps.output('test', 'coverage')} > 80`,
+          uses: "actions/upload-artifact@v4",
+        },
+      ],
+    },
+  },
+});
+```
+
+**Key Features:**
+- **Type-safe context accessors** - `ctx.github.ref`, `ctx.env.var('NODE_VERSION')`, etc.
+- **Auto-quoting** - Plain strings are automatically quoted, context tokens are not
+- **Function helpers** - `fn.contains()`, `fn.startsWith()`, `fn.hashFiles()`, etc.
+- **Expression validation** - Prevents double-wrapping with explicit errors
+
+See [src/expressions.md](src/expressions.md) for complete documentation and [examples/expressions-demo.ts](examples/expressions-demo.ts) for a full example.
+
 ## Examples
 
 - Look at the [.github/workflows](https://github.com/JLarky/gha-ts/tree/main/.github/workflows) directory for workflow examples.

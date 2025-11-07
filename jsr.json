@@ -9,7 +9,8 @@
     "./action": "./src/action.ts",
     "./actions": "./src/actions/index.ts",
     "./render": "./src/render/index.ts",
-    "./utils": "./src/utils.ts"
+    "./utils": "./src/utils.ts",
+    "./context": "./src/context.ts"
   },
   "publish": {
     "include": ["./src/**/*.ts", "README.md", "LICENSE"]

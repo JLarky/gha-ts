@@ -60,6 +60,53 @@ const wf = workflow({
 await generateWorkflow(wf, YAML.stringify, import.meta.url);
 ```
 
+## Context Helpers
+
+`@jlarky/gha-ts/context` ships a production-ready DSL for authoring GitHub Actions expressions without hand-writing `${{ ... }}`:
+
+```ts
+import { expr, ctx, fn } from "@jlarky/gha-ts/context";
+
+const wf = workflow({
+  "run-name": expr`${ctx.github.event_name} - ${fn.coalesce(
+    ctx.github.head_ref,
+    ctx.github.ref,
+  )}`,
+  on: { merge_group: {} },
+  concurrency: {
+    group: expr`${ctx.github.workflow} - ${ctx.github.ref}`,
+    "cancel-in-progress": true,
+  },
+  jobs: {
+    checks: {
+      if: expr`${fn.or(
+        fn.eq(ctx.github.event_name, "merge_group"),
+        fn.endsWith(ctx.github.head_ref, "-run-tests"),
+      )}`,
+      steps: [
+        { uses: "actions/checkout@v4" },
+        {
+          name: "Publish artifact",
+          env: {
+            ARTIFACT_PATH: expr`${ctx.steps.output("build", "path")}`,
+          },
+          run: "bun run publish",
+        },
+      ],
+    },
+  },
+});
+```
+
+Highlights:
+
+- `expr\`\`` guarantees a single wrapper and auto-quotes plain strings.
+- `ctx` exposes strongly-typed fragments for all GitHub contexts (`ctx.github.ref`, `ctx.needs.output("lint", "result")`, ...).
+- `fn` mirrors GitHub's expression functions with auto-quoting baked in (`fn.contains`, `fn.coalesce`, `fn.hashFiles`, ...).
+- Helpers like `ctx.raw(value)` and `ctx.token("github.ref")` stay available for edge cases.
+
+See `tests/context-helpers.test.ts` for additional examples.
+
 ## Examples
 
 - Look at the [.github/workflows](https://github.com/JLarky/gha-ts/tree/main/.github/workflows) directory for workflow examples.

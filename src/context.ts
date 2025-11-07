@@ -387,14 +387,44 @@ class GitHubCtx {
 
 class EnvCtx {
   readonly var = createDynamicTokenFactory("env");
+
+  scope<const Names extends readonly string[]>(
+    ...names: Names
+  ): { readonly [K in Names[number]]: Fragment } {
+    const scoped: Record<string, Fragment> = {};
+    for (const name of names) {
+      scoped[name] = this.var(name);
+    }
+    return deepFreeze(scoped) as { readonly [K in Names[number]]: Fragment };
+  }
 }
 
 class SecretsCtx {
   readonly secret = createDynamicTokenFactory("secrets");
+
+  scope<const Names extends readonly string[]>(
+    ...names: Names
+  ): { readonly [K in Names[number]]: Fragment } {
+    const scoped: Record<string, Fragment> = {};
+    for (const name of names) {
+      scoped[name] = this.secret(name);
+    }
+    return deepFreeze(scoped) as { readonly [K in Names[number]]: Fragment };
+  }
 }
 
 class VarsCtx {
   readonly var = createDynamicTokenFactory("vars");
+
+  scope<const Names extends readonly string[]>(
+    ...names: Names
+  ): { readonly [K in Names[number]]: Fragment } {
+    const scoped: Record<string, Fragment> = {};
+    for (const name of names) {
+      scoped[name] = this.var(name);
+    }
+    return deepFreeze(scoped) as { readonly [K in Names[number]]: Fragment };
+  }
 }
 
 class MatrixCtx {
@@ -465,6 +495,20 @@ function deepFreeze<T>(object: T): T {
   return object;
 }
 
+export type ContextObjectKey =
+  | "github"
+  | "env"
+  | "secrets"
+  | "vars"
+  | "matrix"
+  | "job"
+  | "jobs"
+  | "steps"
+  | "needs"
+  | "runner"
+  | "strategy"
+  | "inputs";
+
 class ContextNamespace {
   readonly github = deepFreeze(new GitHubCtx());
   readonly env = deepFreeze(new EnvCtx());
@@ -495,6 +539,18 @@ class ContextNamespace {
 
   expr(strings: TemplateStringsArray, ...values: ExprInterpolationValue[]): WorkflowExpression {
     return expr(strings, ...values);
+  }
+
+  pick<const Keys extends readonly ContextObjectKey[]>(
+    ...keys: Keys
+  ): { readonly [K in Keys[number]]: ContextNamespace[K] } {
+    const selection: Partial<Record<ContextObjectKey, unknown>> = {};
+    for (const key of keys) {
+      selection[key] = this[key];
+    }
+    return deepFreeze(selection) as {
+      readonly [K in Keys[number]]: ContextNamespace[K];
+    };
   }
 }
 

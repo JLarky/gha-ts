@@ -66,4 +66,26 @@ describe("context helpers", () => {
     const expression = expr`${fn.join(ctx.matrix.value("node-version"), raw("|"))}`;
     expect(expression).toBe("${{ join(matrix.node-version, '|') }}");
   });
+
+  it("can scope to a subset of namespaces", () => {
+    const scoped = ctx.pick("github");
+    expect(scoped.github.ref.wrap()).toBe("${{ github.ref }}");
+    // @ts-expect-error secrets is not part of the scoped view
+    type _ForbiddenSecrets = typeof scoped.secrets;
+  });
+
+  it("can scope environment variables to an allow list", () => {
+    const env = ctx.env.scope("NODE_VERSION", "BUN_VERSION");
+    expect(env.NODE_VERSION.wrap()).toBe("${{ env.NODE_VERSION }}");
+    expect(env.BUN_VERSION.wrap()).toBe("${{ env.BUN_VERSION }}");
+    // @ts-expect-error ACCESS_TOKEN is not part of the scope
+    type _ForbiddenEnv = typeof env.ACCESS_TOKEN;
+  });
+
+  it("can scope secrets and vars similarly", () => {
+    const secrets = ctx.secrets.scope("NPM_TOKEN");
+    expect(secrets.NPM_TOKEN.wrap()).toBe("${{ secrets.NPM_TOKEN }}");
+    const vars = ctx.vars.scope("CACHE_KEY");
+    expect(vars.CACHE_KEY.wrap()).toBe("${{ vars.CACHE_KEY }}");
+  });
 });

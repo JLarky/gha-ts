@@ -12,10 +12,10 @@ jobs:
     steps: 
       - name: Push scoped ref (ctx.push + push.expr)
         if: "${{ contains(github.event_name, 'push') }}"
-        run: "echo ${{ github.event.push.ref }}"
+        run: "echo ${{ github.event.ref }}"
       - name: Push head commit sha
         if: "${{ contains(github.event_name, 'push') }}"
-        run: "echo ${{ github.event.push.head_commit.id }}"
+        run: "echo ${{ github.event.head_commit.id }}"
       - name: Push pusher email (safe example)
         if: "${{ contains(github.event_name, 'push') }}"
-        run: "echo ${{ github.event.push.pusher.email }}"
+        run: "echo ${{ github.event.pusher.email }}"

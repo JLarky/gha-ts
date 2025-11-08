@@ -38,7 +38,7 @@ sources = [
   ".github/build.ts",
   ".github/**/*.ts",
   "src/**/*.ts",
-  ".github/**/*.mjs"
+  ".github/**/*.mjs",
 ]
 outputs = [".github/workflows/*.generated.yml"]
 
@@ -52,7 +52,10 @@ description = "Run the extract-context Go helper"
 tools.go = "1.25.4"
 # depends = ["scripts:fetch-actionlint"]
 sources = ["scripts/actionlint/expr_sema.go", "scripts/extract-context.go"]
-outputs = ["scripts/actionlint/builtin-global-variable-types.json"]
+outputs = [
+  "scripts/actionlint/builtin-global-variable-types.json",
+  "scripts/actionlint/builtin-func-signatures.json",
+]
 run = "go run scripts/extract-context.go"
 
 [tasks."oc:colima"]

@@ -1,0 +1,193 @@
+{
+  "always": [
+    {
+      "name": "always",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": []
+    }
+  ],
+  "cancelled": [
+    {
+      "name": "cancelled",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": []
+    }
+  ],
+  "contains": [
+    {
+      "name": "contains",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": [
+        {
+          "kind": "string"
+        },
+        {
+          "kind": "string"
+        }
+      ]
+    },
+    {
+      "name": "contains",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": [
+        {
+          "kind": "array",
+          "elem": {
+            "kind": "any"
+          }
+        },
+        {
+          "kind": "any"
+        }
+      ]
+    }
+  ],
+  "endswith": [
+    {
+      "name": "endsWith",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": [
+        {
+          "kind": "string"
+        },
+        {
+          "kind": "string"
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "name": "failure",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": []
+    }
+  ],
+  "format": [
+    {
+      "name": "format",
+      "ret": {
+        "kind": "string"
+      },
+      "params": [
+        {
+          "kind": "string"
+        },
+        {
+          "kind": "any"
+        }
+      ],
+      "varargs": true
+    }
+  ],
+  "fromjson": [
+    {
+      "name": "fromJSON",
+      "ret": {
+        "kind": "any"
+      },
+      "params": [
+        {
+          "kind": "string"
+        }
+      ]
+    }
+  ],
+  "hashfiles": [
+    {
+      "name": "hashFiles",
+      "ret": {
+        "kind": "string"
+      },
+      "params": [
+        {
+          "kind": "string"
+        }
+      ],
+      "varargs": true
+    }
+  ],
+  "join": [
+    {
+      "name": "join",
+      "ret": {
+        "kind": "string"
+      },
+      "params": [
+        {
+          "kind": "array",
+          "elem": {
+            "kind": "string"
+          }
+        },
+        {
+          "kind": "string"
+        }
+      ]
+    },
+    {
+      "name": "join",
+      "ret": {
+        "kind": "string"
+      },
+      "params": [
+        {
+          "kind": "array",
+          "elem": {
+            "kind": "string"
+          }
+        }
+      ]
+    }
+  ],
+  "startswith": [
+    {
+      "name": "startsWith",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": [
+        {
+          "kind": "string"
+        },
+        {
+          "kind": "string"
+        }
+      ]
+    }
+  ],
+  "success": [
+    {
+      "name": "success",
+      "ret": {
+        "kind": "bool"
+      },
+      "params": []
+    }
+  ],
+  "tojson": [
+    {
+      "name": "toJSON",
+      "ret": {
+        "kind": "string"
+      },
+      "params": [
+        {
+          "kind": "any"
+        }
+      ]
+    }
+  ]
+}

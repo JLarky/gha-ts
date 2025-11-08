@@ -20,12 +20,16 @@ export interface Fragment<S extends Scope = "any"> {
   readonly inner: string;
   toString(): string;
   wrap(): string;
+  // phantom brand to distinguish scopes at compile time
+  readonly __scope?: S;
 }
 
 class FragmentImpl<S extends Scope = "any"> implements Fragment<S> {
   readonly inner: string;
+  readonly __scope: S | undefined;
   constructor(inner: string) {
     this.inner = inner;
+    this.__scope = undefined;
   }
   toString(): string {
     return this.inner;
@@ -58,11 +62,11 @@ export function unwrap(expr: string): string {
   return expr.slice(4, -3);
 }
 
-type Allowed<S extends Scope> = Fragment<"any"> | Fragment<S> | RawToken | string;
+type Allowed<S extends Scope> = Fragment<S> | RawToken | string;
 
 export function expr(
   parts: TemplateStringsArray,
-  ...vals: Array<Allowed<"any">>
+  ...vals: Array<ExprInterpolationValue>
 ): string {
   let inner = "";
   for (let i = 0; i < parts.length; i++) {
@@ -75,8 +79,9 @@ export function expr(
   return wrap(inner);
 }
 
-export type ExprInterpolationValue = Fragment | RawToken | string;
-export type ExprValue = Fragment | RawToken | string;
+export type AnyFragment = Fragment<Scope>;
+export type ExprInterpolationValue = AnyFragment | RawToken | string;
+export type ExprValue = AnyFragment | RawToken | string;
 
 function escapeSingle(str: string): string {
   return str.replace(/'/g, "\\'");

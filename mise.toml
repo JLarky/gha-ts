@@ -42,6 +42,11 @@ sources = [
 ]
 outputs = [".github/workflows/*.generated.yml"]
 
+[tasks."scripts:fetch-workflow"]
+description = "Fetch GitHub Workflow schema"
+outputs = ["scripts/github/github-workflow.json"]
+run = "curl -fsSL https://www.schemastore.org/github-workflow.json -o scripts/github/github-workflow.json"
+
 [tasks."scripts:fetch-actionlint"]
 description = "Fetch actionlint"
 outputs = ["scripts/actionlint/expr_sema.go"]

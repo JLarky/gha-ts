@@ -1,0 +1,270 @@
+{
+  "env": {
+    "kind": "object",
+    "strict": false,
+    "mapped": {
+      "kind": "string"
+    }
+  },
+  "github": {
+    "kind": "object",
+    "strict": true,
+    "props": {
+      "action": {
+        "kind": "string"
+      },
+      "action_path": {
+        "kind": "string"
+      },
+      "action_ref": {
+        "kind": "string"
+      },
+      "action_repository": {
+        "kind": "string"
+      },
+      "action_status": {
+        "kind": "string"
+      },
+      "actor": {
+        "kind": "string"
+      },
+      "actor_id": {
+        "kind": "string"
+      },
+      "api_url": {
+        "kind": "string"
+      },
+      "artifact_cache_size_limit": {
+        "kind": "number"
+      },
+      "base_ref": {
+        "kind": "string"
+      },
+      "env": {
+        "kind": "string"
+      },
+      "event": {
+        "kind": "object",
+        "strict": false
+      },
+      "event_name": {
+        "kind": "string"
+      },
+      "event_path": {
+        "kind": "string"
+      },
+      "graphql_url": {
+        "kind": "string"
+      },
+      "head_ref": {
+        "kind": "string"
+      },
+      "job": {
+        "kind": "string"
+      },
+      "output": {
+        "kind": "string"
+      },
+      "path": {
+        "kind": "string"
+      },
+      "ref": {
+        "kind": "string"
+      },
+      "ref_name": {
+        "kind": "string"
+      },
+      "ref_protected": {
+        "kind": "bool"
+      },
+      "ref_type": {
+        "kind": "string"
+      },
+      "repository": {
+        "kind": "string"
+      },
+      "repository_id": {
+        "kind": "string"
+      },
+      "repository_owner": {
+        "kind": "string"
+      },
+      "repository_owner_id": {
+        "kind": "string"
+      },
+      "repository_visibility": {
+        "kind": "string"
+      },
+      "repositoryurl": {
+        "kind": "string"
+      },
+      "retention_days": {
+        "kind": "number"
+      },
+      "run_attempt": {
+        "kind": "string"
+      },
+      "run_id": {
+        "kind": "string"
+      },
+      "run_number": {
+        "kind": "string"
+      },
+      "secret_source": {
+        "kind": "string"
+      },
+      "server_url": {
+        "kind": "string"
+      },
+      "sha": {
+        "kind": "string"
+      },
+      "state": {
+        "kind": "string"
+      },
+      "step_summary": {
+        "kind": "string"
+      },
+      "token": {
+        "kind": "string"
+      },
+      "triggering_actor": {
+        "kind": "string"
+      },
+      "workflow": {
+        "kind": "string"
+      },
+      "workflow_ref": {
+        "kind": "string"
+      },
+      "workflow_sha": {
+        "kind": "string"
+      },
+      "workspace": {
+        "kind": "string"
+      }
+    }
+  },
+  "inputs": {
+    "kind": "object",
+    "strict": true
+  },
+  "job": {
+    "kind": "object",
+    "strict": true,
+    "props": {
+      "check_run_id": {
+        "kind": "number"
+      },
+      "container": {
+        "kind": "object",
+        "strict": true,
+        "props": {
+          "id": {
+            "kind": "string"
+          },
+          "network": {
+            "kind": "string"
+          }
+        }
+      },
+      "services": {
+        "kind": "object",
+        "strict": false,
+        "mapped": {
+          "kind": "object",
+          "strict": true,
+          "props": {
+            "id": {
+              "kind": "string"
+            },
+            "network": {
+              "kind": "string"
+            },
+            "ports": {
+              "kind": "object",
+              "strict": false,
+              "mapped": {
+                "kind": "string"
+              }
+            }
+          }
+        }
+      },
+      "status": {
+        "kind": "string"
+      }
+    }
+  },
+  "matrix": {
+    "kind": "object",
+    "strict": true
+  },
+  "needs": {
+    "kind": "object",
+    "strict": true
+  },
+  "runner": {
+    "kind": "object",
+    "strict": true,
+    "props": {
+      "arch": {
+        "kind": "string"
+      },
+      "debug": {
+        "kind": "string"
+      },
+      "environment": {
+        "kind": "string"
+      },
+      "name": {
+        "kind": "string"
+      },
+      "os": {
+        "kind": "string"
+      },
+      "temp": {
+        "kind": "string"
+      },
+      "tool_cache": {
+        "kind": "string"
+      }
+    }
+  },
+  "secrets": {
+    "kind": "object",
+    "strict": false,
+    "mapped": {
+      "kind": "string"
+    }
+  },
+  "steps": {
+    "kind": "object",
+    "strict": true
+  },
+  "strategy": {
+    "kind": "object",
+    "strict": false,
+    "props": {
+      "fail-fast": {
+        "kind": "bool"
+      },
+      "job-index": {
+        "kind": "number"
+      },
+      "job-total": {
+        "kind": "number"
+      },
+      "max-parallel": {
+        "kind": "number"
+      }
+    }
+  },
+  "vars": {
+    "kind": "object",
+    "strict": false,
+    "mapped": {
+      "kind": "string"
+    }
+  }
+}

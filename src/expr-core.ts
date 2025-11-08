@@ -14,13 +14,15 @@ export type RawTokenPrefix =
   | "jobs";
 export type RawToken = `${RawTokenPrefix}.${string}`;
 
-export interface Fragment {
+import type { Scope } from "./event-types";
+
+export interface Fragment<S extends Scope = "any"> {
   readonly inner: string;
   toString(): string;
   wrap(): string;
 }
 
-class FragmentImpl implements Fragment {
+class FragmentImpl<S extends Scope = "any"> implements Fragment<S> {
   readonly inner: string;
   constructor(inner: string) {
     this.inner = inner;
@@ -33,8 +35,8 @@ class FragmentImpl implements Fragment {
   }
 }
 
-export function token(path: string): Fragment {
-  return new FragmentImpl(path);
+export function token<S extends Scope = "any">(path: string): Fragment<S> {
+  return new FragmentImpl<S>(path);
 }
 
 export function wrap(inner: string): string {
@@ -56,9 +58,11 @@ export function unwrap(expr: string): string {
   return expr.slice(4, -3);
 }
 
+type Allowed<S extends Scope> = Fragment<"any"> | Fragment<S> | RawToken | string;
+
 export function expr(
   parts: TemplateStringsArray,
-  ...vals: Array<ExprInterpolationValue>
+  ...vals: Array<Allowed<"any">>
 ): string {
   let inner = "";
   for (let i = 0; i < parts.length; i++) {
@@ -110,3 +114,12 @@ export function toInner(v: ExprValue): string {
   }
   return String(v);
 }
+
+// Scoped expr factories
+export function makeScopedExpr<S extends Scope>() {
+  return (parts: TemplateStringsArray, ...vals: Array<Allowed<S>>) =>
+    expr(parts, ...(vals as Array<Allowed<"any">>));
+}
+
+export const pr = { expr: makeScopedExpr<"pr">() };
+export const push = { expr: makeScopedExpr<"push">() };

@@ -3,7 +3,7 @@ import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { checkout } from "@jlarky/gha-ts/actions";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
-import { ctx, expr } from "../../src/context";
+import { ctx, expr, pr, push } from "../../src/context";
 import { fn } from "../../src/context-generated";
 
 const wf = workflow({
@@ -54,6 +54,20 @@ const wf = workflow({
         {
           name: "Join example",
           run: `echo ${expr`${fn.join(fn.fromJSON('["a","b","c"]'), ",")}`}`,
+        },
+        {
+          name: "PR scoped number (ctx.pull_request + pr.expr)",
+          if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
+          run: `echo ${pr.expr`${ctx.pull_request.number}`}`,
+        },
+        {
+          name: "PR head/base refs",
+          if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
+          env: {
+            HEAD_REF: pr.expr`${ctx.pull_request.head.ref}`,
+            BASE_REF: pr.expr`${ctx.pull_request.base.ref}`,
+          },
+          run: `echo "$HEAD_REF"; echo "$BASE_REF"`,
         },
       ],
     },

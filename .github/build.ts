@@ -9,3 +9,4 @@ import "./workflows/dependabot-updates.main";
 import "./workflows/check-pkl-workflows-converted.main";
 import "./workflows/create-release.main";
 import "./workflows/example-expr-ctx.main";
+import "./workflows/example-expr-ctx-push.main";

@@ -12,5 +12,3 @@ const okPr = pr.expr`${ctx.pull_request.number}`;
 const bad1 = push.expr`${ctx.pull_request.head.ref}`;
 // @ts-expect-error - Push fragment is not allowed in PR scope
 const bad2 = pr.expr`${ctx.push.ref}`;
-
-

@@ -25,7 +25,10 @@ describe("ctx + fn integration", () => {
           "runs-on": "ubuntu-latest",
           steps: [
             { name: "ref", run: `echo ${expr`${ctx.github.ref}`}` },
-            { name: "push ref (scoped)", run: `echo ${push.expr`${ctx.push.ref}`}` },
+            {
+              name: "push ref (scoped)",
+              run: `echo ${push.expr`${ctx.push.ref}`}`,
+            },
             {
               name: "startsWith",
               if: expr`${fn.startsWith(ctx.github.ref, "refs/heads/main")}`,
@@ -53,8 +56,9 @@ describe("ctx + fn integration", () => {
 
     const content = await Bun.file(out).text();
     expect(content).toContain("${{ github.ref }}");
-    expect(content).toContain("${{ startsWith(github.ref, 'refs/heads/main') }}");
+    expect(content).toContain(
+      "${{ startsWith(github.ref, 'refs/heads/main') }}",
+    );
     expect(content).toContain("${{ format('Run {0}', github.run_id) }}");
   });
 });
-

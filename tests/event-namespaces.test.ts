@@ -24,7 +24,10 @@ describe("event namespaces + scoped expr", () => {
         demo: {
           "runs-on": "ubuntu-latest",
           steps: [
-            { name: "events.push", run: `echo ${expr`${ctx.events.push.ref}`}` },
+            {
+              name: "events.push",
+              run: `echo ${expr`${ctx.events.push.ref}`}`,
+            },
             {
               name: "push.expr",
               run: `echo ${push.expr`${ctx.push.ref}`}`,
@@ -66,4 +69,3 @@ describe("event namespaces + scoped expr", () => {
     expect(y).toContain("${{ github.event.pull_request.number }}");
   });
 });
-

@@ -33,4 +33,3 @@ describe("expr-core", () => {
     expect(toInner("github.ref")).toBe("github.ref");
   });
 });
-

@@ -8637,13 +8637,12 @@ export type WebhookEvent = Schema;
 export type WebhookEventMap = EventPayloadMap;
 export type WebhookEventName = keyof EventPayloadMap;
 
-
 // Convenience aliases for consumers
 export type EventName = WebhookEventName;
 export type EventPayload<N extends EventName> = WebhookEventMap[N];
 export function narrowEvent<N extends EventName>(
   _name: N,
-  _payload: unknown
+  _payload: unknown,
 ): asserts _payload is EventPayload<N> {
   // compile-time only
 }

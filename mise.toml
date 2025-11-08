@@ -63,6 +63,19 @@ outputs = [
 ]
 run = "go run scripts/extract-context.go"
 
+[tasks."scripts:generate-context"]
+description = "Generate TypeScript context and functions from actionlint JSON"
+tools.bun = "1.3.0"
+depends = ["scripts:extract-context"]
+sources = [
+  "scripts/generate-context.ts",
+  "scripts/actionlint/builtin-global-variable-types.json",
+  "scripts/actionlint/builtin-func-signatures.json",
+  "src/expr-core.ts",
+]
+outputs = ["src/context-generated.ts"]
+run = "bun run scripts/generate-context.ts"
+
 [tasks."oc:colima"]
 description = "Start Colima"
 tools.lima = "1.2.1"

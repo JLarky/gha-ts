@@ -23,6 +23,7 @@
     "examples/**/*.mjs",
     ".github/**/*.ts",
     ".github/**/*.mjs",
+    "scripts/**/*.ts",
     "mise-tasks/**/*.ts"
   ]
 }

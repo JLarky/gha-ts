@@ -183,18 +183,18 @@ any(name: string) { return token(`${this.base}.${name}` as any); }
 
 import { toInner, type ExprValue } from "../src/expr-core";
 export const fn = {
-  always: () => `always()`,
-  cancelled: () => `cancelled()`,
-  contains: (a0: ExprValue, a1: ExprValue) => `contains(${toInner(a0)}, ${toInner(a1)})`,
-  endsWith: (a0: ExprValue, a1: ExprValue) => `endsWith(${toInner(a0)}, ${toInner(a1)})`,
-  failure: () => `failure()`,
-  format: (a0: ExprValue, a1: ExprValue, ...rest: ExprValue[]) => `format(${toInner(a0)}, ${toInner(a1)}, ...rest.map(toInner))`,
-  fromJSON: (a0: ExprValue) => `fromJSON(${toInner(a0)})`,
-  hashFiles: (a0: ExprValue, ...rest: ExprValue[]) => `hashFiles(${toInner(a0)}, ...rest.map(toInner))`,
-  join: (a0: ExprValue, a1: ExprValue) => `join(${toInner(a0)}, ${toInner(a1)})`,
-  startsWith: (a0: ExprValue, a1: ExprValue) => `startsWith(${toInner(a0)}, ${toInner(a1)})`,
-  success: () => `success()`,
-  toJSON: (a0: ExprValue) => `toJSON(${toInner(a0)})`,
+  always: (...args: ExprValue[]) => `always(${args.map(toInner).join(", ")})`,
+  cancelled: (...args: ExprValue[]) => `cancelled(${args.map(toInner).join(", ")})`,
+  contains: (...args: ExprValue[]) => `contains(${args.map(toInner).join(", ")})`,
+  endsWith: (...args: ExprValue[]) => `endsWith(${args.map(toInner).join(", ")})`,
+  failure: (...args: ExprValue[]) => `failure(${args.map(toInner).join(", ")})`,
+  format: (...args: ExprValue[]) => `format(${args.map(toInner).join(", ")})`,
+  fromJSON: (...args: ExprValue[]) => `fromJSON(${args.map(toInner).join(", ")})`,
+  hashFiles: (...args: ExprValue[]) => `hashFiles(${args.map(toInner).join(", ")})`,
+  join: (...args: ExprValue[]) => `join(${args.map(toInner).join(", ")})`,
+  startsWith: (...args: ExprValue[]) => `startsWith(${args.map(toInner).join(", ")})`,
+  success: (...args: ExprValue[]) => `success(${args.map(toInner).join(", ")})`,
+  toJSON: (...args: ExprValue[]) => `toJSON(${args.map(toInner).join(", ")})`,
 } as const;
 
 export class Ctx {

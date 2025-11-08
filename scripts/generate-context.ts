@@ -133,9 +133,7 @@ function genObjectClass(
   return [lines.join("\n"), ...nested].join("\n\n");
 }
 
-function typeDescToInvokeArg(name: string): string {
-  return `\${toInner(${name})}`;
-}
+// (kept for future typed overload generation)
 
 function genFn(functions: Record<string, FuncSigDesc[]>): string {
   const lines: string[] = [];
@@ -143,25 +141,8 @@ function genFn(functions: Record<string, FuncSigDesc[]>): string {
   lines.push(`export const fn = {`);
   for (const [key, overloads] of Object.entries(functions)) {
     const methodName = overloads[0]?.name || key;
-    // Pick the first overload for the signature, but allow flexible args
-    const maxParams = Math.max(...overloads.map((o) => o.params.length));
-    const usesVarargs = overloads.some((o) => o.varargs);
-    const params: string[] = [];
-    for (let i = 0; i < maxParams; i++) {
-      params.push(`a${i}: ExprValue`);
-    }
-    if (usesVarargs) {
-      params.push(`...rest: ExprValue[]`);
-    }
-    const callArgs: string[] = [];
-    for (let i = 0; i < maxParams; i++) {
-      callArgs.push(typeDescToInvokeArg(`a${i}`));
-    }
-    if (usesVarargs) {
-      callArgs.push(`...rest.map(toInner)`);
-    }
     lines.push(
-      `  ${methodName}: (${params.join(", ")}) => \`${methodName}(${callArgs.join(", ")})\`,`,
+      `  ${methodName}: (...args: ExprValue[]) => \`${methodName}(\${args.map(toInner).join(", ")})\`,`,
     );
   }
   lines.push(`} as const;`);

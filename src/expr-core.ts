@@ -49,12 +49,17 @@ export function wrap(inner: string): string {
 
 export function unwrap(expr: string): string {
   if (!expr.startsWith("${{ ") || !expr.endsWith(" }}")) {
-    throw new Error('Cannot unwrap: expression must start with "${{ " and end with " }}"');
+    throw new Error(
+      'Cannot unwrap: expression must start with "${{ " and end with " }}"',
+    );
   }
   return expr.slice(4, -3);
 }
 
-export function expr(parts: TemplateStringsArray, ...vals: Array<ExprInterpolationValue>): string {
+export function expr(
+  parts: TemplateStringsArray,
+  ...vals: Array<ExprInterpolationValue>
+): string {
   let inner = "";
   for (let i = 0; i < parts.length; i++) {
     inner += parts[i];
@@ -95,7 +100,7 @@ export function toInner(v: ExprValue): string {
       "jobs",
     ];
     if (prefixes.some((p) => v.startsWith(`${p}.`))) return v;
-    if (/[()]/.test(v) || /[|&<>!=]/.test(v) || v.includes(" ") || v.includes(",")) {
+    if (/[()]/.test(v) || /[|&<>!=]/.test(v)) {
       return v;
     }
     return `'${escapeSingle(v)}'`;
@@ -105,5 +110,3 @@ export function toInner(v: ExprValue): string {
   }
   return String(v);
 }
-
-

@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"regexp"
+	"strings"
 )
 
 type TypeDesc struct {
@@ -18,6 +20,8 @@ type TypeDesc struct {
 	Mapped *TypeDesc            `json:"mapped,omitempty"`
 	Elem   *TypeDesc            `json:"elem,omitempty"`
 	Deref  *bool                `json:"deref,omitempty"`
+	Doc    string               `json:"doc,omitempty"`
+	DocURLs []string            `json:"docUrls,omitempty"`
 }
 
 func boolPtr(b bool) *bool { return &b }
@@ -63,7 +67,57 @@ func parseBoolIdent(e ast.Expr) (bool, bool) {
 	return false, false
 }
 
-func parseMapLiteralProps(lit *ast.CompositeLit) map[string]*TypeDesc {
+type commentHelper struct {
+	fset     *token.FileSet
+	comments []*ast.CommentGroup
+}
+
+var urlRx = regexp.MustCompile(`https?://[^\s)]+`)
+
+func (h *commentHelper) leadingDoc(n ast.Node) (string, []string) {
+	if h == nil || n == nil {
+		return "", nil
+	}
+	start := h.fset.Position(n.Pos()).Line
+	var pick *ast.CommentGroup
+	var pickEndLine int
+	for _, cg := range h.comments {
+		end := h.fset.Position(cg.End()).Line
+		if end <= start && (pick == nil || end > pickEndLine) {
+			pick = cg
+			pickEndLine = end
+		}
+	}
+	if pick == nil {
+		return "", nil
+	}
+	// Consider as leading doc only if immediately above or same line
+	if start-pickEndLine > 1 {
+		return "", nil
+	}
+	var b strings.Builder
+	for i, c := range pick.List {
+		line := c.Text
+		if strings.HasPrefix(line, "//") {
+			line = strings.TrimPrefix(line, "//")
+		} else if strings.HasPrefix(line, "/*") {
+			line = strings.TrimPrefix(line, "/*")
+			line = strings.TrimSuffix(line, "*/")
+		}
+		if i > 0 {
+			b.WriteString("\n")
+		}
+		b.WriteString(strings.TrimSpace(line))
+	}
+	text := b.String()
+	var urls []string
+	for _, m := range urlRx.FindAllString(text, -1) {
+		urls = append(urls, m)
+	}
+	return strings.TrimSpace(text), urls
+}
+
+func parseMapLiteralProps(lit *ast.CompositeLit, h *commentHelper) map[string]*TypeDesc {
 	props := map[string]*TypeDesc{}
 	for _, elt := range lit.Elts {
 		kv, ok := elt.(*ast.KeyValueExpr)
@@ -78,12 +132,19 @@ func parseMapLiteralProps(lit *ast.CompositeLit) map[string]*TypeDesc {
 		if err != nil {
 			continue
 		}
-		props[name] = parseTypeExpr(kv.Value)
+		td := parseTypeExpr(kv.Value, h)
+		if doc, urls := h.leadingDoc(kv); doc != "" {
+			td.Doc = doc
+			if len(urls) > 0 {
+				td.DocURLs = urls
+			}
+		}
+		props[name] = td
 	}
 	return props
 }
 
-func parseArrayTypeFromComposite(lit *ast.CompositeLit) *TypeDesc {
+func parseArrayTypeFromComposite(lit *ast.CompositeLit, h *commentHelper) *TypeDesc {
 	desc := &TypeDesc{Kind: "array"}
 	// keyed fields
 	for _, elt := range lit.Elts {
@@ -92,7 +153,7 @@ func parseArrayTypeFromComposite(lit *ast.CompositeLit) *TypeDesc {
 			if key, ok := v.Key.(*ast.Ident); ok {
 				switch key.Name {
 				case "Elem":
-					desc.Elem = parseTypeExpr(v.Value)
+					desc.Elem = parseTypeExpr(v.Value, h)
 				case "Deref":
 					if b, ok := parseBoolIdent(v.Value); ok {
 						desc.Deref = boolPtr(b)
@@ -107,7 +168,7 @@ func parseArrayTypeFromComposite(lit *ast.CompositeLit) *TypeDesc {
 			if _, ok := elt.(*ast.KeyValueExpr); ok {
 				continue
 			}
-			desc.Elem = parseTypeExpr(elt)
+			desc.Elem = parseTypeExpr(elt, h)
 			break
 		}
 	}
@@ -117,7 +178,7 @@ func parseArrayTypeFromComposite(lit *ast.CompositeLit) *TypeDesc {
 	return desc
 }
 
-func parseObjectFromConstructor(fun string, call *ast.CallExpr) *TypeDesc {
+func parseObjectFromConstructor(fun string, call *ast.CallExpr, h *commentHelper) *TypeDesc {
 	switch fun {
 	case "NewStrictObjectType":
 		if len(call.Args) == 1 {
@@ -125,7 +186,7 @@ func parseObjectFromConstructor(fun string, call *ast.CallExpr) *TypeDesc {
 				return &TypeDesc{
 					Kind:   "object",
 					Strict: boolPtr(true),
-					Props:  parseMapLiteralProps(mlit),
+					Props:  parseMapLiteralProps(mlit, h),
 				}
 			}
 		}
@@ -136,7 +197,7 @@ func parseObjectFromConstructor(fun string, call *ast.CallExpr) *TypeDesc {
 				return &TypeDesc{
 					Kind:   "object",
 					Strict: boolPtr(false),
-					Props:  parseMapLiteralProps(mlit),
+					Props:  parseMapLiteralProps(mlit, h),
 				}
 			}
 		}
@@ -149,7 +210,7 @@ func parseObjectFromConstructor(fun string, call *ast.CallExpr) *TypeDesc {
 		// Object with dynamic keys mapped to the given type
 		var mapped *TypeDesc
 		if len(call.Args) == 1 {
-			mapped = parseTypeExpr(call.Args[0])
+			mapped = parseTypeExpr(call.Args[0], h)
 		}
 		return &TypeDesc{Kind: "object", Strict: boolPtr(false), Props: map[string]*TypeDesc{}, Mapped: mapped}
 	default:
@@ -157,13 +218,13 @@ func parseObjectFromConstructor(fun string, call *ast.CallExpr) *TypeDesc {
 	}
 }
 
-func parseTypeExpr(e ast.Expr) *TypeDesc {
+func parseTypeExpr(e ast.Expr, h *commentHelper) *TypeDesc {
 	switch t := e.(type) {
 	case *ast.CompositeLit:
 		// Handle primitives like StringType{}, NumberType{}, BoolType{}, AnyType{}, NullType{}
 		if name := identName(t.Type); name != "" {
 			if name == "ArrayType" {
-				return parseArrayTypeFromComposite(t)
+				return parseArrayTypeFromComposite(t, h)
 			}
 			if prim := parsePrimitiveFromIdent(name); prim != nil {
 				return prim
@@ -175,14 +236,14 @@ func parseTypeExpr(e ast.Expr) *TypeDesc {
 		return &TypeDesc{Kind: "any"}
 	case *ast.CallExpr:
 		if name := identName(t.Fun); name != "" {
-			if obj := parseObjectFromConstructor(name, t); obj != nil {
+			if obj := parseObjectFromConstructor(name, t, h); obj != nil {
 				return obj
 			}
 		}
 		return &TypeDesc{Kind: "any"}
 	case *ast.UnaryExpr:
 		// Handle pointer literals like &ArrayType{...} if ever present
-		return parseTypeExpr(t.X)
+		return parseTypeExpr(t.X, h)
 	default:
 		// Ident may appear without composite literal in some styles (rare here)
 		if id := identName(t); id != "" {
@@ -199,6 +260,8 @@ type FuncSigDesc struct {
 	Ret     *TypeDesc   `json:"ret"`
 	Params  []*TypeDesc `json:"params"`
 	Varargs bool        `json:"varargs,omitempty"`
+	Doc     string      `json:"doc,omitempty"`
+	DocURLs []string    `json:"docUrls,omitempty"`
 }
 
 func extractBuiltinGlobalVariableTypes(filePath string) (map[string]*TypeDesc, error) {
@@ -207,6 +270,7 @@ func extractBuiltinGlobalVariableTypes(filePath string) (map[string]*TypeDesc, e
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
+	h := &commentHelper{fset: fset, comments: astFile.Comments}
 
 	for _, decl := range astFile.Decls {
 		gen, ok := decl.(*ast.GenDecl)
@@ -244,7 +308,14 @@ func extractBuiltinGlobalVariableTypes(filePath string) (map[string]*TypeDesc, e
 					if err != nil {
 						continue
 					}
-					result[key] = parseTypeExpr(kv.Value)
+					td := parseTypeExpr(kv.Value, h)
+					if doc, urls := h.leadingDoc(kv); doc != "" {
+						td.Doc = doc
+						if len(urls) > 0 {
+							td.DocURLs = urls
+						}
+					}
+					result[key] = td
 				}
 				return result, nil
 			}
@@ -259,6 +330,7 @@ func extractBuiltinFuncSignatures(filePath string) (map[string][]*FuncSigDesc, e
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
+	h := &commentHelper{fset: fset, comments: astFile.Comments}
 	for _, decl := range astFile.Decls {
 		gen, ok := decl.(*ast.GenDecl)
 		if !ok || gen.Tok != token.VAR {
@@ -294,6 +366,8 @@ func extractBuiltinFuncSignatures(filePath string) (map[string][]*FuncSigDesc, e
 					if err != nil {
 						continue
 					}
+					// Leading doc for this function key
+					keyDoc, keyURLs := h.leadingDoc(kv)
 					listLit, ok := kv.Value.(*ast.CompositeLit)
 					if !ok {
 						continue
@@ -305,6 +379,18 @@ func extractBuiltinFuncSignatures(filePath string) (map[string][]*FuncSigDesc, e
 							continue
 						}
 						desc := &FuncSigDesc{}
+						// Overload-specific doc or fallback to function-level doc
+						if doc, urls := h.leadingDoc(slit); doc != "" {
+							desc.Doc = doc
+							if len(urls) > 0 {
+								desc.DocURLs = urls
+							}
+						} else if keyDoc != "" {
+							desc.Doc = keyDoc
+							if len(keyURLs) > 0 {
+								desc.DocURLs = keyURLs
+							}
+						}
 						for _, fld := range slit.Elts {
 							kvf, ok := fld.(*ast.KeyValueExpr)
 							if !ok {
@@ -322,12 +408,12 @@ func extractBuiltinFuncSignatures(filePath string) (map[string][]*FuncSigDesc, e
 									}
 								}
 							case "Ret":
-								desc.Ret = parseTypeExpr(kvf.Value)
+								desc.Ret = parseTypeExpr(kvf.Value, h)
 							case "Params":
 								if plit, ok := kvf.Value.(*ast.CompositeLit); ok {
 									var params []*TypeDesc
 									for _, pe := range plit.Elts {
-										params = append(params, parseTypeExpr(pe))
+										params = append(params, parseTypeExpr(pe, h))
 									}
 									desc.Params = params
 								} else {

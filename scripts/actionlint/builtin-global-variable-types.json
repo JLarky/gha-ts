@@ -4,7 +4,8 @@
     "strict": false,
     "mapped": {
       "kind": "string"
-    }
+    },
+    "doc": "env.\u003cenv_name\u003e"
   },
   "github": {
     "kind": "object",
@@ -14,19 +15,23 @@
         "kind": "string"
       },
       "action_path": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Composite actions only"
       },
       "action_ref": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Composite actions only"
       },
       "action_repository": {
         "kind": "string"
       },
       "action_status": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Composite actions only"
       },
       "actor": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Composite actions only"
       },
       "actor_id": {
         "kind": "string"
@@ -35,20 +40,24 @@
         "kind": "string"
       },
       "artifact_cache_size_limit": {
-        "kind": "number"
+        "kind": "number",
+        "doc": "Note: Undocumented"
       },
       "base_ref": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Undocumented"
       },
       "env": {
         "kind": "string"
       },
       "event": {
         "kind": "object",
-        "strict": false
+        "strict": false,
+        "doc": "Note: Stricter type check for this payload would be possible"
       },
       "event_name": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Stricter type check for this payload would be possible"
       },
       "event_path": {
         "kind": "string"
@@ -63,10 +72,12 @@
         "kind": "string"
       },
       "output": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Undocumented"
       },
       "path": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Undocumented"
       },
       "ref": {
         "kind": "string"
@@ -93,13 +104,16 @@
         "kind": "string"
       },
       "repository_visibility": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Undocumented"
       },
       "repositoryurl": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "repositoryUrl"
       },
       "retention_days": {
-        "kind": "number"
+        "kind": "number",
+        "doc": "repositoryUrl"
       },
       "run_attempt": {
         "kind": "string"
@@ -120,13 +134,16 @@
         "kind": "string"
       },
       "state": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Undocumented"
       },
       "step_summary": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Undocumented"
       },
       "token": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "Note: Undocumented"
       },
       "triggering_actor": {
         "kind": "string"
@@ -143,11 +160,20 @@
       "workspace": {
         "kind": "string"
       }
-    }
+    },
+    "doc": "https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#github-context",
+    "docUrls": [
+      "https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#github-context"
+    ]
   },
   "inputs": {
     "kind": "object",
-    "strict": true
+    "strict": true,
+    "doc": "https://docs.github.com/en/actions/learn-github-actions/contexts#inputs-context\nhttps://docs.github.com/en/actions/learn-github-actions/reusing-workflows",
+    "docUrls": [
+      "https://docs.github.com/en/actions/learn-github-actions/contexts#inputs-context",
+      "https://docs.github.com/en/actions/learn-github-actions/reusing-workflows"
+    ]
   },
   "job": {
     "kind": "object",
@@ -176,10 +202,12 @@
           "strict": true,
           "props": {
             "id": {
-              "kind": "string"
+              "kind": "string",
+              "doc": "job.services.\u003cservice id\u003e.id"
             },
             "network": {
-              "kind": "string"
+              "kind": "string",
+              "doc": "job.services.\u003cservice id\u003e.id"
             },
             "ports": {
               "kind": "object",
@@ -194,15 +222,21 @@
       "status": {
         "kind": "string"
       }
-    }
+    },
+    "doc": "https://docs.github.com/en/actions/learn-github-actions/contexts#job-context",
+    "docUrls": [
+      "https://docs.github.com/en/actions/learn-github-actions/contexts#job-context"
+    ]
   },
   "matrix": {
     "kind": "object",
-    "strict": true
+    "strict": true,
+    "doc": "This value will be updated contextually"
   },
   "needs": {
     "kind": "object",
-    "strict": true
+    "strict": true,
+    "doc": "This value will be updated contextually"
   },
   "runner": {
     "kind": "object",
@@ -215,7 +249,11 @@
         "kind": "string"
       },
       "environment": {
-        "kind": "string"
+        "kind": "string",
+        "doc": "https://github.com/github/docs/issues/32443",
+        "docUrls": [
+          "https://github.com/github/docs/issues/32443"
+        ]
       },
       "name": {
         "kind": "string"
@@ -229,18 +267,27 @@
       "tool_cache": {
         "kind": "string"
       }
-    }
+    },
+    "doc": "https://docs.github.com/en/actions/learn-github-actions/contexts#runner-context",
+    "docUrls": [
+      "https://docs.github.com/en/actions/learn-github-actions/contexts#runner-context"
+    ]
   },
   "secrets": {
     "kind": "object",
     "strict": false,
     "mapped": {
       "kind": "string"
-    }
+    },
+    "doc": "https://docs.github.com/en/actions/learn-github-actions/contexts#secrets-context",
+    "docUrls": [
+      "https://docs.github.com/en/actions/learn-github-actions/contexts#secrets-context"
+    ]
   },
   "steps": {
     "kind": "object",
-    "strict": true
+    "strict": true,
+    "doc": "This value will be updated contextually"
   },
   "strategy": {
     "kind": "object",
@@ -258,13 +305,18 @@
       "max-parallel": {
         "kind": "number"
       }
-    }
+    },
+    "doc": "https://docs.github.com/en/actions/learn-github-actions/contexts#strategy-context",
+    "docUrls": [
+      "https://docs.github.com/en/actions/learn-github-actions/contexts#strategy-context"
+    ]
   },
   "vars": {
     "kind": "object",
     "strict": false,
     "mapped": {
       "kind": "string"
-    }
+    },
+    "doc": "vars.\u003cvar_name\u003e"
   }
 }

@@ -6,3 +6,4 @@ export const ctx = Object.assign({}, baseCtx, {
   pull_request: prNS,
 });
 export * from "./expr-core";
+export { fn } from "./context-generated";

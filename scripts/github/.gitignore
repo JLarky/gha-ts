@@ -1,2 +1,4 @@
 # https://www.schemastore.org/github-workflow.json
 github-workflow.json
+# https://github.com/actions/languageservices/blob/main/languageservice/src/context-providers/descriptions.json
+descriptions.json

@@ -21,6 +21,28 @@ type FuncSigDesc = {
   docUrls?: string[];
 };
 
+// Types for Actions Language Services descriptions.json
+type LSDocEntry = {
+  description?: string;
+  [k: string]: any;
+};
+type LSDescriptions = {
+  root?: Record<string, LSDocEntry>;
+  functions?: Record<string, LSDocEntry>;
+  github?: Record<string, LSDocEntry>;
+  runner?: Record<string, LSDocEntry>;
+  env?: Record<string, LSDocEntry>;
+  vars?: Record<string, LSDocEntry>;
+  job?: Record<string, LSDocEntry>;
+  jobs?: Record<string, LSDocEntry>;
+  steps?: Record<string, LSDocEntry>;
+  secrets?: Record<string, LSDocEntry>;
+  strategy?: Record<string, LSDocEntry>;
+  matrix?: Record<string, LSDocEntry>;
+  needs?: Record<string, LSDocEntry>;
+  inputs?: Record<string, LSDocEntry>;
+};
+
 type DocOverlay = Record<
   string,
   {
@@ -29,6 +51,9 @@ type DocOverlay = Record<
     override?: boolean | "true";
   }
 >;
+
+// Actions Language Services descriptions.json (subset)
+// (merged above)
 
 function pascalCase(s: string): string {
   return s
@@ -144,14 +169,19 @@ function genObjectClass(
 
 // (kept for future typed overload generation)
 
-function genFn(functions: Record<string, FuncSigDesc[]>): string {
+function genFn(
+  functions: Record<string, FuncSigDesc[]>,
+  fnDocs?: Record<string, string>,
+): string {
   const lines: string[] = [];
   lines.push(`import { toInner, type ExprValue } from "../src/expr-core";`);
   lines.push(`export const fn = {`);
   for (const [key, overloads] of Object.entries(functions)) {
     const methodName = overloads[0]?.name || key;
+    const doc = fnDocs?.[methodName]?.trim();
+    const js = doc ? jsDoc([], doc) : "";
     lines.push(
-      `  ${methodName}: (...args: ExprValue[]) => \`${methodName}(\${args.map(toInner).join(", ")})\`,`,
+      `${js}  ${methodName}: (...args: ExprValue[]) => \`${methodName}(\${args.map(toInner).join(", ")})\`,`,
     );
   }
   lines.push(`} as const;`);
@@ -199,6 +229,65 @@ function applyDocOverlay(desc: TypeDesc, basePath: string, overlay: DocOverlay) 
   }
 }
 
+function setDocAtPath(vars: Record<string, TypeDesc>, path: string, doc?: string) {
+  if (!doc) return;
+  const parts = path.split(".");
+  const root = parts.shift()!;
+  let node = vars[root];
+  if (!node) return;
+  if (parts.length === 0) {
+    node.doc = doc;
+    return;
+  }
+  for (const p of parts) {
+    if (!node || node.kind !== "object" || !node.props) return;
+    node = node.props[p];
+  }
+  if (node) node.doc = doc;
+}
+
+function applyLanguageServicesDocs(
+  vars: Record<string, TypeDesc>,
+  ls: LSDescriptions,
+): Record<string, string> {
+  // contexts at root
+  if (ls.root) {
+    for (const [ctx, ent] of Object.entries(ls.root)) {
+      setDocAtPath(vars, ctx, ent.description);
+    }
+  }
+  // specific context fields
+  const sectionToCtx: Array<[keyof LSDescriptions, string]> = [
+    ["github", "github"],
+    ["runner", "runner"],
+    ["env", "env"],
+    ["vars", "vars"],
+    ["job", "job"],
+    ["jobs", "jobs"],
+    ["steps", "steps"],
+    ["secrets", "secrets"],
+    ["strategy", "strategy"],
+    ["matrix", "matrix"],
+    ["needs", "needs"],
+    ["inputs", "inputs"],
+  ];
+  for (const [section, ctx] of sectionToCtx) {
+    const table = ls[section];
+    if (!table) continue;
+    for (const [prop, ent] of Object.entries(table)) {
+      setDocAtPath(vars, `${ctx}.${prop}`, ent.description);
+    }
+  }
+  // function docs
+  const fndocs: Record<string, string> = {};
+  if (ls.functions) {
+    for (const [name, ent] of Object.entries(ls.functions)) {
+      if (ent.description) fndocs[name] = ent.description;
+    }
+  }
+  return fndocs;
+}
+
 async function main() {
   const repoRoot = process.cwd();
   const varsPath = join(
@@ -212,6 +301,12 @@ async function main() {
     "scripts",
     "actionlint",
     "builtin-func-signatures.json",
+  );
+  const lsPath = join(
+    repoRoot,
+    "scripts",
+    "github",
+    "descriptions.json",
   );
   const contextsOverlayPath = join(
     repoRoot,
@@ -228,6 +323,17 @@ async function main() {
     string,
     FuncSigDesc[]
   >;
+  // Optional Actions Language Services descriptions
+  let lsDocs: LSDescriptions | undefined;
+  let fnDocMap: Record<string, string> = {};
+  try {
+    lsDocs = JSON.parse(await readFile(lsPath, "utf8")) as LSDescriptions;
+  } catch {
+    // optional
+  }
+  if (lsDocs) {
+    fnDocMap = applyLanguageServicesDocs(vars, lsDocs);
+  }
   // Optional doc overlay for contexts
   let contextsOverlay: DocOverlay = {};
   try {
@@ -258,7 +364,7 @@ import { token, type Fragment } from "../src/expr-core";
     ctxProps.push(`  ${ctx} = new ${className}(${JSON.stringify(ctx)});`);
   }
 
-  const fnCode = genFn(fns);
+  const fnCode = genFn(fns, fnDocMap);
 
   const ctxAgg = `export class Ctx {
 ${ctxProps.join("\n")}

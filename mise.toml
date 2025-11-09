@@ -47,6 +47,16 @@ description = "Fetch GitHub Workflow schema"
 outputs = ["scripts/github/github-workflow.json"]
 run = "curl -fsSL https://www.schemastore.org/github-workflow.json -o scripts/github/github-workflow.json"
 
+[tasks."scripts:fetch-github-descriptions"]
+description = "Fetch contexts/functions descriptions from actions/languageservices"
+outputs = ["scripts/github/descriptions.json"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p scripts/github
+curl -fsSL https://raw.githubusercontent.com/actions/languageservices/main/languageservice/src/context-providers/descriptions.json -o scripts/github/descriptions.json
+"""
+
 [tasks."scripts:fetch-actionlint"]
 description = "Fetch actionlint"
 outputs = ["scripts/actionlint/expr_sema.go"]
@@ -79,6 +89,7 @@ sources = [
   "scripts/generate-context.ts",
   "scripts/actionlint/builtin-global-variable-types.json",
   "scripts/actionlint/builtin-func-signatures.json",
+  "scripts/github/descriptions.json",
   "src/expr-core.ts",
   "scripts/doc-overlays.contexts.json",
 ]

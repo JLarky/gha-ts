@@ -43,6 +43,33 @@ type LSDescriptions = {
   inputs?: Record<string, LSDocEntry>;
 };
 
+const CONTEXT_URLS: Record<string, string> = {
+  github:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context",
+  env: "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#env-context",
+  vars:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#vars-context",
+  job: "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#job-context",
+  jobs:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#jobs-context",
+  steps:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#steps-context",
+  runner:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#runner-context",
+  secrets:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#secrets-context",
+  strategy:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#strategy-context",
+  matrix:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#matrix-context",
+  needs:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#needs-context",
+  inputs:
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#inputs-context",
+};
+const FUNCTIONS_DOC_URL =
+  "https://docs.github.com/en/actions/learn-github-actions/expressions#functions";
+
 type DocOverlay = Record<
   string,
   {
@@ -126,7 +153,7 @@ function genObjectClass(
   nested: string[],
 ): string {
   const lines: string[] = [];
-  lines.push(`export class ${className} {`);
+  lines.push(`${jsDoc([], obj.doc, obj.docUrls)}export class ${className} {`);
   lines.push(
     `  constructor(private readonly base: string = ${JSON.stringify(ctxPath)}) {}`,
   );
@@ -179,7 +206,7 @@ function genFn(
   for (const [key, overloads] of Object.entries(functions)) {
     const methodName = overloads[0]?.name || key;
     const doc = fnDocs?.[methodName]?.trim();
-    const js = doc ? jsDoc([], doc) : "";
+    const js = doc ? jsDoc([], doc, [FUNCTIONS_DOC_URL]) : "";
     lines.push(
       `${js}  ${methodName}: (...args: ExprValue[]) => \`${methodName}(\${args.map(toInner).join(", ")})\`,`,
     );
@@ -225,6 +252,19 @@ function applyDocOverlay(desc: TypeDesc, basePath: string, overlay: DocOverlay) 
   if (desc.kind === "object" && desc.props) {
     for (const [prop, child] of Object.entries(desc.props)) {
       applyDocOverlay(child, `${basePath}.${prop}`, overlay);
+    }
+  }
+}
+
+function applyDefaultUrls(desc: TypeDesc, basePath: string) {
+  const root = basePath.split(".")[0]!;
+  const url = CONTEXT_URLS[root];
+  if (url && (!desc.docUrls || desc.docUrls.length === 0)) {
+    desc.docUrls = [url];
+  }
+  if (desc.kind === "object" && desc.props) {
+    for (const [prop, child] of Object.entries(desc.props)) {
+      applyDefaultUrls(child, `${basePath}.${prop}`);
     }
   }
 }
@@ -357,10 +397,17 @@ import { token, type Fragment } from "../src/expr-core";
   const ctxProps: string[] = [];
 
   for (const [ctx, desc] of Object.entries(vars)) {
+    // ensure urls defaulted
+    applyDefaultUrls(desc, ctx);
     const className = `${pascalCase(ctx)}Ctx`;
     if (desc.kind !== "object") continue;
     const classCode = genObjectClass(className, ctx, desc, []);
     classDecls.push(classCode);
+    const propDoc = jsDoc([], desc.doc, desc.docUrls)
+      .split("\n")
+      .map((l) => (l.length ? "  " + l : l))
+      .join("\n");
+    if (propDoc.trim().length > 0) ctxProps.push(propDoc);
     ctxProps.push(`  ${ctx} = new ${className}(${JSON.stringify(ctx)});`);
   }
 

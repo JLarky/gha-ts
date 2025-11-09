@@ -121,14 +121,13 @@ export function toInner(v: ExprValue): string {
 // Typed fragment-tree: mirrors the structure of T while behaving like a Fragment.
 // Nullables are treated as their non-null shape to preserve discoverability.
 type NonNull<T> = NonNullable<T>;
-export type FragmentTree<T> =
-  & Fragment
-  & (NonNull<T> extends readonly (infer U)[]
-      ? ReadonlyArray<FragmentTree<U>>
-      : unknown)
-  & (NonNull<T> extends object
-      ? { [K in keyof NonNull<T>]-?: FragmentTree<NonNull<T>[K]> }
-      : unknown);
+export type FragmentTree<T> = Fragment &
+  (NonNull<T> extends readonly (infer U)[]
+    ? ReadonlyArray<FragmentTree<U>>
+    : unknown) &
+  (NonNull<T> extends object
+    ? { [K in keyof NonNull<T>]-?: FragmentTree<NonNull<T>[K]> }
+    : unknown);
 
 // Generic fragment tree proxy for property-style access (e.g., github.event.*)
 export function makeFragmentTree<T = any>(prefix: string): FragmentTree<T> {

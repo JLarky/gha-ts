@@ -1,7 +1,7 @@
 import { ctx } from "../src/context";
 
 // Type-level helpers to detect `any`
-type IsAny<T> = 0 extends (1 & T) ? true : false;
+type IsAny<T> = 0 extends 1 & T ? true : false;
 type ExpectFalse<T extends false> = T;
 
 // Ensure event alias roots are not `any`
@@ -34,5 +34,3 @@ type _wd_inputs_not_any = ExpectFalse<
 type _rd_client_payload_not_any = ExpectFalse<
   IsAny<typeof ctx.repositoryDispatchEvent.client_payload>
 >;
-
-

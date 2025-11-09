@@ -120,7 +120,7 @@ function genPrimitiveGetter(
   urls?: string[],
 ): string {
   const j = jsDoc([], doc, urls);
-  return `${j}get ${propDecl(prop)}(): Fragment { return token(\`${pathExpr}\` as any); }`;
+  return `${j}get ${propDecl(prop)}(): Fragment { return token(\`${pathExpr}\`); }`;
 }
 
 function genMappedMethod(
@@ -138,7 +138,7 @@ function genMappedMethod(
   return `/**
  * Mapped entries under ${ctxPath}.${prop}
  */
-${method}(name: string) { return token(\`${ctxPath}.${prop}.\${name}\` as any); }`;
+${method}(name: string) { return token(\`${ctxPath}.${prop}.\${name}\`); }`;
 }
 
 function genEmptyObjectMethod(ctxPath: string, prop: string): string {
@@ -149,7 +149,7 @@ function genEmptyObjectMethod(ctxPath: string, prop: string): string {
   return `/**
  * Unstructured object under ${ctxPath}.${prop}
  */
-${prop}(path: string) { return token(\`${ctxPath}.${prop}.\${path}\` as any); }`;
+${prop}(path: string) { return token(\`${ctxPath}.${prop}.\${path}\`); }`;
 }
 
 function genObjectClass(

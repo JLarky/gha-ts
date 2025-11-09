@@ -91,3 +91,4 @@ Non JavaScript/TypeScript:
 - [github-workflows-kt (Kotlin)](https://github.com/typesafegithub/github-workflows-kt)
 - [kotlin-github-actions-dsl (Kotlin)](https://github.com/nefilim/kotlin-github-actions-dsl)
 - [pkl-gha (Pkl)](https://github.com/stefma/pkl-gha)
+- [sbt-github-actions (Scala)](https://github.com/sbt/sbt-github-actions)

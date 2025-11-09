@@ -26,6 +26,16 @@ describe("ctx + fn integration", () => {
           steps: [
             { name: "ref", run: `echo ${expr`${ctx.github.ref}`}` },
             { name: "push ref", run: `echo ${expr`${ctx.pushEvent.ref}`}` },
+            { name: "env var", run: `echo ${expr`${ctx.env.FOO}`}` },
+            { name: "vars var", run: `echo ${expr`${ctx.vars.BAR}`}` },
+            {
+              name: "secret token",
+              run: `echo ${expr`${ctx.secrets.GITHUB_TOKEN}`}`,
+            },
+            {
+              name: "job service",
+              run: `echo ${expr`${ctx.job.services.redis}`}`,
+            },
             {
               name: "startsWith",
               if: expr`${fn.startsWith(ctx.github.ref, "refs/heads/main")}`,
@@ -53,6 +63,9 @@ describe("ctx + fn integration", () => {
 
     const content = await Bun.file(out).text();
     expect(content).toContain("${{ github.ref }}");
+    expect(content).toContain("${{ env.FOO }}");
+    expect(content).toContain("${{ vars.BAR }}");
+    expect(content).toContain("${{ secrets.GITHUB_TOKEN }}");
     expect(content).toContain(
       "${{ startsWith(github.ref, 'refs/heads/main') }}",
     );

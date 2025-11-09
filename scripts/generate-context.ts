@@ -6,7 +6,6 @@ type TypeDesc = {
   kind: "string" | "number" | "bool" | "any" | "null" | "object" | "array";
   strict?: boolean;
   props?: Record<string, TypeDesc>;
-  mapped?: TypeDesc;
   elem?: TypeDesc;
   doc?: string;
   docUrls?: string[];
@@ -123,27 +122,15 @@ function genPrimitiveGetter(
   return `${j}get ${propDecl(prop)}(): Fragment { return token(\`${pathExpr}\`); }`;
 }
 
-function genMappedMethod(
-  ctxPath: string,
-  prop: string,
-  _desc: TypeDesc,
-): string {
-  // Special names for top-level contexts
-  const method =
-    prop === "secrets"
-      ? "secret"
-      : prop === "env" || prop === "vars"
-        ? "var"
-        : "any";
-  return `/**
- * Mapped entries under ${ctxPath}.${prop}
- */
-${method}(name: string) { return token(\`${ctxPath}.${prop}.\${name}\`); }`;
-}
+// removed mapped helpers; property-style proxies are used where appropriate
 
 function genEmptyObjectMethod(ctxPath: string, prop: string): string {
   if (prop === "event" && ctxPath === "${this.base}") {
     // skip generating github.event accessor; events are exposed via ctx.<event>.event views
+    return "";
+  }
+  if (prop === "services" && ctxPath === "${this.base}") {
+    // skip generating job.services(path); we expose property-style ctx.job.services.<name>
     return "";
   }
   return `/**
@@ -176,14 +163,11 @@ function genObjectClass(
               prop,
             )}() { return new ${childClass}(\`${basePropExpr(prop)}\`); }`,
           );
-        } else if (t.mapped) {
-          lines.push(
-            `  ${jsDoc([], t.doc, t.docUrls)}${genMappedMethod("${this.base}", prop, t)}`,
-          );
         } else {
-          lines.push(
-            `  ${jsDoc([], t.doc, t.docUrls)}${genEmptyObjectMethod("${this.base}", prop)}`,
-          );
+          const methodCode = genEmptyObjectMethod("${this.base}", prop);
+          if (methodCode && methodCode.length > 0) {
+            lines.push(`  ${jsDoc([], t.doc, t.docUrls)}${methodCode}`);
+          }
         }
       } else {
         lines.push(
@@ -191,10 +175,6 @@ function genObjectClass(
         );
       }
     }
-  } else if (obj.mapped) {
-    lines.push(
-      `  ${genMappedMethod("${this.base}", "", obj).replace(/\.\./g, ".")}`,
-    );
   }
   lines.push("}");
   return [lines.join("\n"), ...nested].join("\n\n");

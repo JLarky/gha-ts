@@ -1,8 +1,23 @@
 import { ctx as baseCtx } from "./context-generated";
 import { makeFragmentTree, type FragmentTree } from "./expr-core";
+import type { JobCtx } from "./context-generated";
 import type { EventPayload } from "./events-generated";
 
 export const ctx = Object.assign({}, baseCtx, {
+  env: makeFragmentTree<Record<string, string>>("env"),
+  secrets: makeFragmentTree<Record<string, string>>("secrets"),
+  vars: makeFragmentTree<Record<string, string>>("vars"),
+  // Property-style access for job.services: ctx.job.services.<name>
+  job: new Proxy(baseCtx.job as JobCtx, {
+    get(target, prop, receiver) {
+      if (prop === "services") {
+        return makeFragmentTree<Record<string, unknown>>("job.services");
+      }
+      // Delegate to original JobCtx instance
+      const value = Reflect.get(target as any, prop, receiver);
+      return value;
+    },
+  }) as JobCtx & { readonly services: FragmentTree<Record<string, unknown>> },
   /**
    * Direct push event payload alias (root of github.event for push).
    * https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#push

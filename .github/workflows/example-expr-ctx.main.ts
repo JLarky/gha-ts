@@ -29,7 +29,21 @@ const wf = workflow({
           env: {
             NODE_VERSION: "18.17.1",
           },
-          run: `echo ${expr`${ctx.env.any("NODE_VERSION")}`}`,
+          run: `echo ${expr`${ctx.env.NODE_VERSION}`}`,
+        },
+        {
+          name: "Use secret in env",
+          env: {
+            GITHUB_TOKEN: expr`${ctx.secrets.GITHUB_TOKEN}`,
+          },
+          run: "echo 'token is set'",
+        },
+        {
+          name: "Echo org variable via ctx.vars",
+          env: {
+            ORG_VAR: expr`${ctx.vars.MY_ORG_VAR}`,
+          },
+          run: `echo "$ORG_VAR"`,
         },
         {
           name: "Echo repo owner (github prop)",

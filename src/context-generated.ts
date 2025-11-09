@@ -7,12 +7,6 @@ import { token, type Fragment } from "../src/expr-core";
  */
 export class EnvCtx {
   constructor(private readonly base: string = "env") {}
-  /**
-   * Mapped entries under ${this.base}.
-   */
-  any(name: string) {
-    return token(`${this.base}.${name}`);
-  }
 }
 
 /**
@@ -97,11 +91,6 @@ export class GithubCtx {
   get env(): Fragment {
     return token(`${this.base}.env`);
   }
-  /**
-   * The full event webhook payload. You can access individual properties of the event using this context. This object is identical to the webhook payload of the event that triggered the workflow run, and is different for each event. The webhooks for each GitHub Actions event is linked in "[Events that trigger workflows](https://docs.github.com/actions/using-workflows/events-that-trigger-workflows)." For example, for a workflow run triggered by the [`push` event](https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#push), this object contains the contents of the [push webhook payload](https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#push).
-   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
-   */
-
   /**
    * The name of the event that triggered the workflow run.
    * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
@@ -354,15 +343,6 @@ export class JobCtx {
   /**
    * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#job-context
    */
-  /**
-   * Mapped entries under ${this.base}.services
-   */
-  any(name: string) {
-    return token(`${this.base}.services.${name}`);
-  }
-  /**
-   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#job-context
-   */
   get status(): Fragment {
     return token(`${this.base}.status`);
   }
@@ -465,12 +445,6 @@ export class RunnerCtx {
  */
 export class SecretsCtx {
   constructor(private readonly base: string = "secrets") {}
-  /**
-   * Mapped entries under ${this.base}.
-   */
-  any(name: string) {
-    return token(`${this.base}.${name}`);
-  }
 }
 
 /**
@@ -523,12 +497,6 @@ export class StrategyCtx {
  */
 export class VarsCtx {
   constructor(private readonly base: string = "vars") {}
-  /**
-   * Mapped entries under ${this.base}.
-   */
-  any(name: string) {
-    return token(`${this.base}.${name}`);
-  }
 }
 
 import { toInner, type ExprValue } from "../src/expr-core";

@@ -21,6 +21,14 @@ jobs:
         env: 
           NODE_VERSION: 18.17.1
         run: "echo ${{ env.NODE_VERSION }}"
+      - name: Use secret in env
+        env: 
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: "echo 'token is set'"
+      - name: Echo org variable via ctx.vars
+        env: 
+          ORG_VAR: "${{ vars.MY_ORG_VAR }}"
+        run: "echo \"$ORG_VAR\""
       - name: Echo repo owner (github prop)
         run: "echo ${{ github.repository_owner }}"
       - name: Echo PR number (ctx.prEvent.number)

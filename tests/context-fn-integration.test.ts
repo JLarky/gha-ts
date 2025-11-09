@@ -27,7 +27,7 @@ describe("ctx + fn integration", () => {
             { name: "ref", run: `echo ${expr`${ctx.github.ref}`}` },
             {
               name: "push ref (scoped)",
-              run: `echo ${push.expr`${ctx.push.ref}`}`,
+              run: `echo ${push.expr`${ctx.github.event.ref}`}`,
             },
             {
               name: "startsWith",
@@ -41,7 +41,7 @@ describe("ctx + fn integration", () => {
             {
               name: "PR number (scoped)",
               if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
-              run: `echo ${pr.expr`${ctx.pull_request.number}`}`,
+              run: `echo ${pr.expr`${ctx.github.event.pull_request.number}`}`,
             },
           ],
         },

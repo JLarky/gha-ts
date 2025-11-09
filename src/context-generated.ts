@@ -1,5 +1,5 @@
 /* Auto-generated from actionlint JSON. Do not edit by hand. */
-import { token, type Fragment } from "../src/expr-core";
+import { token, type Fragment, makeFragmentTree } from "../src/expr-core";
 
 /**
  * Contains variables set in a workflow, job, or step. For more information, see [`env` context](https://docs.github.com/actions/learn-github-actions/contexts#env-context).
@@ -104,8 +104,8 @@ export class GithubCtx {
   /**
    * Unstructured object under ${this.base}.event
    */
-  event(path: string) {
-    return token(`${this.base}.event.${path}` as any);
+  get event() {
+    return makeFragmentTree(`${this.base}.event`);
   }
   /**
    * The name of the event that triggered the workflow run.

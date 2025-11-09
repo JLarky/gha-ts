@@ -32,3 +32,9 @@
 - [ ] CI guardrails
   - Add a job that fails if generator outputs differ from committed files.
   - Run `actionlint` and golden tests automatically in CI.
+
+
+- [ ] Typed function overloads for fn.* from signatures JSON (with JSDoc).
+- [ ] Expand event namespaces beyond push/pr, and keep adding negative type tests for scoped expr.
+- [ ] Basic README section for expr/ctx usage with links to official docs.
+- [ ] remove "as any"

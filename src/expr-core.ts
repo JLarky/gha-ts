@@ -128,3 +128,23 @@ export function makeScopedExpr<S extends Scope>() {
 
 export const pr = { expr: makeScopedExpr<"pr">() };
 export const push = { expr: makeScopedExpr<"push">() };
+
+// Generic fragment tree proxy for property-style access (e.g., github.event.*)
+export function makeFragmentTree<S extends Scope = "any">(prefix: string): any {
+  const handler: ProxyHandler<any> = {
+    get(_t, prop) {
+      if (prop === "inner") return `${prefix}`;
+      if (prop === "toString") return () => `${prefix}`;
+      if (prop === "wrap") return () => token<S>(`${prefix}`).wrap();
+      return makeFragmentTree<S>(
+        prefix ? `${prefix}.${String(prop)}` : String(prop),
+      );
+    },
+    has(_t, prop) {
+      if (prop === "inner" || prop === "wrap" || prop === "toString")
+        return true;
+      return true;
+    },
+  };
+  return new Proxy({}, handler);
+}

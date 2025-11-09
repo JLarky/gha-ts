@@ -8,7 +8,7 @@ import { generateWorkflow } from "@jlarky/gha-ts/cli";
 import { ctx, expr, pr, push } from "../src/context";
 import { fn } from "../src/context-generated";
 
-describe("event namespaces + scoped expr", () => {
+describe("github.event property + scoped expr", () => {
   const tempDir = tmpdir();
   const files: string[] = [];
   const cleanup = () => {
@@ -16,7 +16,7 @@ describe("event namespaces + scoped expr", () => {
   };
   afterEach(cleanup);
 
-  test("push: ctx.events.push.ref and push.expr with ctx.push.ref", async () => {
+  test("push: expr with ctx.github.event.ref and push.expr with ctx.github.event.ref", async () => {
     const wf = workflow({
       name: "Push Demo",
       on: { push: {} },
@@ -25,12 +25,12 @@ describe("event namespaces + scoped expr", () => {
           "runs-on": "ubuntu-latest",
           steps: [
             {
-              name: "events.push",
-              run: `echo ${expr`${ctx.events.push.ref}`}`,
+              name: "github.event.ref",
+              run: `echo ${expr`${ctx.github.event.ref}`}`,
             },
             {
               name: "push.expr",
-              run: `echo ${push.expr`${ctx.push.ref}`}`,
+              run: `echo ${push.expr`${ctx.github.event.ref}`}`,
             },
           ],
         },
@@ -44,7 +44,7 @@ describe("event namespaces + scoped expr", () => {
     expect(y).toContain("${{ github.event.ref }}");
   });
 
-  test("pull_request: pr.expr with ctx.pull_request.number", async () => {
+  test("pull_request: pr.expr with ctx.github.event.pull_request.number", async () => {
     const wf = workflow({
       name: "PR Demo",
       on: { pull_request: {} },
@@ -55,7 +55,7 @@ describe("event namespaces + scoped expr", () => {
             {
               name: "pr number",
               if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
-              run: `echo ${pr.expr`${ctx.pull_request.number}`}`,
+              run: `echo ${pr.expr`${ctx.github.event.pull_request.number}`}`,
             },
           ],
         },

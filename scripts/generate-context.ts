@@ -144,6 +144,12 @@ ${method}(name: string) { return token(\`${ctxPath}.${prop}.\${name}\` as any); 
 }
 
 function genEmptyObjectMethod(ctxPath: string, prop: string): string {
+  if (prop === "event" && ctxPath === "${this.base}") {
+    return `/**
+ * Unstructured object under ${ctxPath}.${prop}
+ */
+get event() { return makeFragmentTree(\`${ctxPath}.event\`); }`;
+  }
   return `/**
  * Unstructured object under ${ctxPath}.${prop}
  */
@@ -420,7 +426,7 @@ async function main() {
   }
 
   const header = `/* Auto-generated from actionlint JSON. Do not edit by hand. */
-import { token, type Fragment } from "../src/expr-core";
+import { token, type Fragment, makeFragmentTree } from "../src/expr-core";
 `;
 
   const classDecls: string[] = [];

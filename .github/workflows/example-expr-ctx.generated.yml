@@ -34,7 +34,7 @@ jobs:
         run: "echo 'ref_name contains main'"
       - name: Join example
         run: "echo ${{ join(fromJSON('[\"a\",\"b\",\"c\"]'), ',') }}"
-      - name: PR scoped number (ctx.pull_request + pr.expr)
+      - name: PR scoped number (ctx.github.event + pr.expr)
         if: "${{ contains(github.event_name, 'pull_request') }}"
         run: "echo ${{ github.event.pull_request.number }}"
       - name: PR head/base refs

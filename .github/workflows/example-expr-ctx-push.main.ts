@@ -2,8 +2,7 @@
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
-import { ctx, expr, push } from "../../src/context";
-import { fn } from "@jlarky/gha-ts/context-generated";
+import { ctx, expr, push, fn } from "../../src/context";
 
 const wf = workflow({
   name: "Example: push events demo",
@@ -15,19 +14,19 @@ const wf = workflow({
       "runs-on": "ubuntu-latest",
       steps: [
         {
-          name: "Push scoped ref (ctx.push + push.expr)",
+          name: "Push scoped ref (ctx.github.event + push.expr)",
           if: expr`${fn.contains(ctx.github.event_name, "push")}`,
-          run: `echo ${push.expr`${ctx.push.ref}`}`,
+          run: `echo ${push.expr`${ctx.github.event.ref}`}`,
         },
         {
           name: "Push head commit sha",
           if: expr`${fn.contains(ctx.github.event_name, "push")}`,
-          run: `echo ${push.expr`${ctx.push.head_commit.id}`}`,
+          run: `echo ${push.expr`${ctx.github.event.head_commit.id}`}`,
         },
         {
           name: "Push pusher email (safe example)",
           if: expr`${fn.contains(ctx.github.event_name, "push")}`,
-          run: `echo ${push.expr`${ctx.push.pusher.email}`}`,
+          run: `echo ${push.expr`${ctx.github.event.pusher.email}`}`,
         },
       ],
     },

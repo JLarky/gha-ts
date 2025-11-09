@@ -118,14 +118,26 @@ export function toInner(v: ExprValue): string {
 
 // No scoped expr tags; a single expr is used everywhere.
 
+// Typed fragment-tree: mirrors the structure of T while behaving like a Fragment.
+// Nullables are treated as their non-null shape to preserve discoverability.
+type NonNull<T> = NonNullable<T>;
+export type FragmentTree<T> =
+  & Fragment
+  & (NonNull<T> extends readonly (infer U)[]
+      ? ReadonlyArray<FragmentTree<U>>
+      : unknown)
+  & (NonNull<T> extends object
+      ? { [K in keyof NonNull<T>]-?: FragmentTree<NonNull<T>[K]> }
+      : unknown);
+
 // Generic fragment tree proxy for property-style access (e.g., github.event.*)
-export function makeFragmentTree<S = "any">(prefix: string): any {
+export function makeFragmentTree<T = any>(prefix: string): FragmentTree<T> {
   const handler: ProxyHandler<any> = {
     get(_t, prop) {
       if (prop === "inner") return `${prefix}`;
       if (prop === "toString") return () => `${prefix}`;
-      if (prop === "wrap") return () => token<S>(`${prefix}`).wrap();
-      return makeFragmentTree<S>(
+      if (prop === "wrap") return () => token(`${prefix}`).wrap();
+      return makeFragmentTree<any>(
         prefix ? `${prefix}.${String(prop)}` : String(prop),
       );
     },
@@ -135,5 +147,5 @@ export function makeFragmentTree<S = "any">(prefix: string): any {
       return true;
     },
   };
-  return new Proxy({}, handler);
+  return new Proxy({}, handler) as FragmentTree<T>;
 }

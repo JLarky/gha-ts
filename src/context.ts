@@ -1,36 +1,43 @@
 import { ctx as baseCtx } from "./context-generated";
-import { makeFragmentTree } from "./expr-core";
+import { makeFragmentTree, type FragmentTree } from "./expr-core";
+import type { EventPayload } from "./events-generated";
 
 export const ctx = Object.assign({}, baseCtx, {
   /**
    * Direct push event payload alias (root of github.event for push).
    * https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#push
    */
-  get pushEvent() {
-    return makeFragmentTree("github.event");
+  get pushEvent(): FragmentTree<EventPayload<"push">> {
+    return makeFragmentTree<EventPayload<"push">>("github.event");
   },
   /**
    * Direct pull_request payload alias (github.event.pull_request).
    * https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
    */
-  get prEvent() {
-    return makeFragmentTree("github.event.pull_request");
+  get prEvent(): FragmentTree<EventPayload<"pull_request">["pull_request"]> {
+    return makeFragmentTree<EventPayload<"pull_request">["pull_request"]>(
+      "github.event.pull_request",
+    );
   },
   /**
    * Direct workflow_dispatch event alias (github.event).
    * Inputs are under .inputs.
    * https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
    */
-  get workflowDispatchEvent() {
-    return makeFragmentTree("github.event");
+  get workflowDispatchEvent(): FragmentTree<EventPayload<"workflow_dispatch">> {
+    return makeFragmentTree<EventPayload<"workflow_dispatch">>("github.event");
   },
   /**
    * Direct repository_dispatch event alias (github.event).
    * Custom payload is under .client_payload.
    * https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
    */
-  get repositoryDispatchEvent() {
-    return makeFragmentTree("github.event");
+  get repositoryDispatchEvent(): FragmentTree<
+    EventPayload<"repository_dispatch">
+  > {
+    return makeFragmentTree<EventPayload<"repository_dispatch">>(
+      "github.event",
+    );
   },
   /**
    * Push event view. The push webhook payload lives at the root of github.event.
@@ -38,8 +45,8 @@ export const ctx = Object.assign({}, baseCtx, {
    */
   get push() {
     return {
-      get event() {
-        return makeFragmentTree("github.event");
+      get event(): FragmentTree<EventPayload<"push">> {
+        return makeFragmentTree<EventPayload<"push">>("github.event");
       },
     };
   },
@@ -49,8 +56,10 @@ export const ctx = Object.assign({}, baseCtx, {
    */
   get pr() {
     return {
-      get event() {
-        return makeFragmentTree("github.event");
+      get event(): FragmentTree<EventPayload<"pull_request">["pull_request"]> {
+        return makeFragmentTree<EventPayload<"pull_request">["pull_request"]>(
+          "github.event.pull_request",
+        );
       },
     };
   },
@@ -60,8 +69,10 @@ export const ctx = Object.assign({}, baseCtx, {
    */
   get workflow_dispatch() {
     return {
-      get event() {
-        return makeFragmentTree("github.event");
+      get event(): FragmentTree<EventPayload<"workflow_dispatch">> {
+        return makeFragmentTree<EventPayload<"workflow_dispatch">>(
+          "github.event",
+        );
       },
     };
   },
@@ -71,8 +82,10 @@ export const ctx = Object.assign({}, baseCtx, {
    */
   get repository_dispatch() {
     return {
-      get event() {
-        return makeFragmentTree("github.event");
+      get event(): FragmentTree<EventPayload<"repository_dispatch">> {
+        return makeFragmentTree<EventPayload<"repository_dispatch">>(
+          "github.event",
+        );
       },
     };
   },

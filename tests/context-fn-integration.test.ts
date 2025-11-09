@@ -5,7 +5,7 @@ import { existsSync, unlinkSync } from "fs";
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
-import { ctx, expr, pr, push } from "../src/context";
+import { ctx, expr } from "../src/context";
 import { fn } from "../src/context-generated";
 
 describe("ctx + fn integration", () => {
@@ -25,10 +25,7 @@ describe("ctx + fn integration", () => {
           "runs-on": "ubuntu-latest",
           steps: [
             { name: "ref", run: `echo ${expr`${ctx.github.ref}`}` },
-            {
-              name: "push ref (scoped)",
-              run: `echo ${push.expr`${ctx.github.event.ref}`}`,
-            },
+            { name: "push ref", run: `echo ${expr`${ctx.pushEvent.ref}`}` },
             {
               name: "startsWith",
               if: expr`${fn.startsWith(ctx.github.ref, "refs/heads/main")}`,
@@ -39,9 +36,9 @@ describe("ctx + fn integration", () => {
               run: `echo ${expr`${fn.format("Run {0}", ctx.github.run_id)}`}`,
             },
             {
-              name: "PR number (scoped)",
+              name: "PR number",
               if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
-              run: `echo ${pr.expr`${ctx.github.event.pull_request.number}`}`,
+              run: `echo ${expr`${ctx.prEvent.number}`}`,
             },
           ],
         },

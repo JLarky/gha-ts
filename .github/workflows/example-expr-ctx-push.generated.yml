@@ -10,7 +10,7 @@ jobs:
   demo: 
     runs-on: ubuntu-latest
     steps: 
-      - name: Push scoped ref (ctx.github.event + push.expr)
+      - name: Push ref (ctx.pushEvent.ref)
         if: "${{ contains(github.event_name, 'push') }}"
         run: "echo ${{ github.event.ref }}"
       - name: Push head commit sha

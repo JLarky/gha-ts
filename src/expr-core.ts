@@ -14,9 +14,7 @@ export type RawTokenPrefix =
   | "jobs";
 export type RawToken = `${RawTokenPrefix}.${string}`;
 
-import type { Scope } from "./event-types";
-
-export interface Fragment<S extends Scope = "any"> {
+export interface Fragment<S = "any"> {
   readonly inner: string;
   toString(): string;
   wrap(): string;
@@ -24,7 +22,7 @@ export interface Fragment<S extends Scope = "any"> {
   readonly __scope?: S;
 }
 
-class FragmentImpl<S extends Scope = "any"> implements Fragment<S> {
+class FragmentImpl<S = "any"> implements Fragment<S> {
   readonly inner: string;
   readonly __scope: S | undefined;
   constructor(inner: string) {
@@ -39,7 +37,7 @@ class FragmentImpl<S extends Scope = "any"> implements Fragment<S> {
   }
 }
 
-export function token<S extends Scope = "any">(path: string): Fragment<S> {
+export function token<S = "any">(path: string): Fragment<S> {
   return new FragmentImpl<S>(path);
 }
 
@@ -62,8 +60,6 @@ export function unwrap(expr: string): string {
   return expr.slice(4, -3);
 }
 
-type Allowed<S extends Scope> = Fragment<S> | RawToken | string;
-
 export function expr(
   parts: TemplateStringsArray,
   ...vals: Array<ExprInterpolationValue>
@@ -79,7 +75,7 @@ export function expr(
   return wrap(inner);
 }
 
-export type AnyFragment = Fragment<Scope>;
+export type AnyFragment = Fragment<any>;
 export type ExprInterpolationValue = AnyFragment | RawToken | string;
 export type ExprValue = AnyFragment | RawToken | string;
 
@@ -120,17 +116,10 @@ export function toInner(v: ExprValue): string {
   return String(v);
 }
 
-// Scoped expr factories
-export function makeScopedExpr<S extends Scope>() {
-  return (parts: TemplateStringsArray, ...vals: Array<Allowed<S>>) =>
-    expr(parts, ...(vals as Array<Allowed<"any">>));
-}
-
-export const pr = { expr: makeScopedExpr<"pr">() };
-export const push = { expr: makeScopedExpr<"push">() };
+// No scoped expr tags; a single expr is used everywhere.
 
 // Generic fragment tree proxy for property-style access (e.g., github.event.*)
-export function makeFragmentTree<S extends Scope = "any">(prefix: string): any {
+export function makeFragmentTree<S = "any">(prefix: string): any {
   const handler: ProxyHandler<any> = {
     get(_t, prop) {
       if (prop === "inner") return `${prefix}`;

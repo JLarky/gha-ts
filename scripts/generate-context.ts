@@ -47,11 +47,9 @@ const CONTEXT_URLS: Record<string, string> = {
   github:
     "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context",
   env: "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#env-context",
-  vars:
-    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#vars-context",
+  vars: "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#vars-context",
   job: "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#job-context",
-  jobs:
-    "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#jobs-context",
+  jobs: "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#jobs-context",
   steps:
     "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#steps-context",
   runner:
@@ -145,10 +143,8 @@ ${method}(name: string) { return token(\`${ctxPath}.${prop}.\${name}\` as any); 
 
 function genEmptyObjectMethod(ctxPath: string, prop: string): string {
   if (prop === "event" && ctxPath === "${this.base}") {
-    return `/**
- * Unstructured object under ${ctxPath}.${prop}
- */
-get event() { return makeFragmentTree(\`${ctxPath}.event\`); }`;
+    // skip generating github.event accessor; events are exposed via ctx.<event>.event views
+    return "";
   }
   return `/**
  * Unstructured object under ${ctxPath}.${prop}
@@ -217,7 +213,8 @@ function genFn(
     const methodName = overloads[0]?.name || key;
     const entry = fnDocs?.[methodName];
     const doc = entry?.doc?.trim();
-    const urls = entry?.urls && entry.urls.length ? entry.urls : [FUNCTIONS_DOC_URL];
+    const urls =
+      entry?.urls && entry.urls.length ? entry.urls : [FUNCTIONS_DOC_URL];
     const js = jsDoc([], doc, urls);
     lines.push(
       `${js}  ${methodName}: (...args: ExprValue[]) => \`${methodName}(\${args.map(toInner).join(", ")})\`,`,
@@ -227,7 +224,11 @@ function genFn(
   return lines.join("\n");
 }
 
-function applyDocOverlay(desc: TypeDesc, basePath: string, overlay: DocOverlay) {
+function applyDocOverlay(
+  desc: TypeDesc,
+  basePath: string,
+  overlay: DocOverlay,
+) {
   const ov = overlay[basePath];
   if (ov) {
     const hasExistingDoc = !!(desc.doc && desc.doc.trim().length > 0);
@@ -281,7 +282,11 @@ function applyDefaultUrls(desc: TypeDesc, basePath: string) {
   }
 }
 
-function setDocAtPath(vars: Record<string, TypeDesc>, path: string, doc?: string) {
+function setDocAtPath(
+  vars: Record<string, TypeDesc>,
+  path: string,
+  doc?: string,
+) {
   if (!doc) return;
   const parts = path.split(".");
   const root = parts.shift()!;
@@ -354,12 +359,7 @@ async function main() {
     "actionlint",
     "builtin-func-signatures.json",
   );
-  const lsPath = join(
-    repoRoot,
-    "scripts",
-    "github",
-    "descriptions.json",
-  );
+  const lsPath = join(repoRoot, "scripts", "github", "descriptions.json");
   const contextsOverlayPath = join(
     repoRoot,
     "scripts",
@@ -395,7 +395,10 @@ async function main() {
   try {
     const fnOverlay = JSON.parse(
       await readFile(functionsOverlayPath, "utf8"),
-    ) as Record<string, { doc?: string; urls?: string[]; override?: boolean | "true" }>;
+    ) as Record<
+      string,
+      { doc?: string; urls?: string[]; override?: boolean | "true" }
+    >;
     for (const [name, ent] of Object.entries(fnOverlay)) {
       if (!ent) continue;
       const has = !!fnDocMap[name]?.doc;
@@ -426,7 +429,7 @@ async function main() {
   }
 
   const header = `/* Auto-generated from actionlint JSON. Do not edit by hand. */
-import { token, type Fragment, makeFragmentTree } from "../src/expr-core";
+import { token, type Fragment } from "../src/expr-core";
 `;
 
   const classDecls: string[] = [];

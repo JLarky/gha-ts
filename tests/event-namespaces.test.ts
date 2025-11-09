@@ -5,10 +5,10 @@ import { existsSync, unlinkSync } from "fs";
 import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
-import { ctx, expr, pr, push } from "../src/context";
+import { ctx, expr } from "../src/context";
 import { fn } from "../src/context-generated";
 
-describe("github.event property + scoped expr", () => {
+describe("event views + expr", () => {
   const tempDir = tmpdir();
   const files: string[] = [];
   const cleanup = () => {
@@ -16,7 +16,7 @@ describe("github.event property + scoped expr", () => {
   };
   afterEach(cleanup);
 
-  test("push: expr with ctx.github.event.ref and push.expr with ctx.github.event.ref", async () => {
+  test("push: expr with ctx.push.event.ref", async () => {
     const wf = workflow({
       name: "Push Demo",
       on: { push: {} },
@@ -24,14 +24,7 @@ describe("github.event property + scoped expr", () => {
         demo: {
           "runs-on": "ubuntu-latest",
           steps: [
-            {
-              name: "github.event.ref",
-              run: `echo ${expr`${ctx.github.event.ref}`}`,
-            },
-            {
-              name: "push.expr",
-              run: `echo ${push.expr`${ctx.github.event.ref}`}`,
-            },
+            { name: "push ref", run: `echo ${expr`${ctx.pushEvent.ref}`}` },
           ],
         },
       },
@@ -44,7 +37,7 @@ describe("github.event property + scoped expr", () => {
     expect(y).toContain("${{ github.event.ref }}");
   });
 
-  test("pull_request: pr.expr with ctx.github.event.pull_request.number", async () => {
+  test("pull_request: expr with ctx.pr.event.pull_request.number", async () => {
     const wf = workflow({
       name: "PR Demo",
       on: { pull_request: {} },
@@ -55,7 +48,7 @@ describe("github.event property + scoped expr", () => {
             {
               name: "pr number",
               if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
-              run: `echo ${pr.expr`${ctx.github.event.pull_request.number}`}`,
+              run: `echo ${expr`${ctx.prEvent.number}`}`,
             },
           ],
         },

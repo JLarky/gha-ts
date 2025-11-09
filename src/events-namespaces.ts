@@ -6,7 +6,7 @@ import type { Scope } from "./event-types";
 type Keys<T> = Extract<keyof T, string>;
 type Obj<T> = Extract<T, object>;
 
-type FragmentTree<T, S extends Scope> = {
+export type FragmentTree<T, S extends Scope> = {
   [K in Keys<T>]: [Obj<T[K]>] extends [never]
     ? Fragment<S>
     : FragmentTree<Obj<T[K]>, S>;

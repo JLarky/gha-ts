@@ -1,5 +1,5 @@
 /* Auto-generated from actionlint JSON. Do not edit by hand. */
-import { token, type Fragment, makeFragmentTree } from "../src/expr-core";
+import { token, type Fragment } from "../src/expr-core";
 
 /**
  * Contains variables set in a workflow, job, or step. For more information, see [`env` context](https://docs.github.com/actions/learn-github-actions/contexts#env-context).
@@ -101,12 +101,7 @@ export class GithubCtx {
    * The full event webhook payload. You can access individual properties of the event using this context. This object is identical to the webhook payload of the event that triggered the workflow run, and is different for each event. The webhooks for each GitHub Actions event is linked in "[Events that trigger workflows](https://docs.github.com/actions/using-workflows/events-that-trigger-workflows)." For example, for a workflow run triggered by the [`push` event](https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#push), this object contains the contents of the [push webhook payload](https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#push).
    * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
    */
-  /**
-   * Unstructured object under ${this.base}.event
-   */
-  get event() {
-    return makeFragmentTree(`${this.base}.event`);
-  }
+
   /**
    * The name of the event that triggered the workflow run.
    * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context

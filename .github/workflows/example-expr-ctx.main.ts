@@ -3,7 +3,7 @@ import { YAML } from "bun";
 import { workflow } from "@jlarky/gha-ts/workflow-types";
 import { checkout } from "@jlarky/gha-ts/actions";
 import { generateWorkflow } from "@jlarky/gha-ts/cli";
-import { ctx, expr, pr, fn } from "../../src/context";
+import { ctx, expr, fn } from "../../src/context";
 
 const wf = workflow({
   name: "Example: expr/ctx demo",
@@ -36,9 +36,9 @@ const wf = workflow({
           run: `echo ${expr`${ctx.github.repository_owner}`}`,
         },
         {
-          name: "Echo PR number (github.event.*)",
+          name: "Echo PR number (ctx.prEvent.number)",
           if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
-          run: `echo ${expr`${ctx.github.event.pull_request.number}`}`,
+          run: `echo ${expr`${ctx.prEvent.number}`}`,
         },
         {
           name: "Echo when on main using fn/expr",
@@ -55,16 +55,16 @@ const wf = workflow({
           run: `echo ${expr`${fn.join(fn.fromJSON('["a","b","c"]'), ",")}`}`,
         },
         {
-          name: "PR scoped number (ctx.github.event + pr.expr)",
+          name: "PR number via ctx.prEvent",
           if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
-          run: `echo ${pr.expr`${ctx.github.event.pull_request.number}`}`,
+          run: `echo ${expr`${ctx.prEvent.number}`}`,
         },
         {
           name: "PR head/base refs",
           if: expr`${fn.contains(ctx.github.event_name, "pull_request")}`,
           env: {
-            HEAD_REF: pr.expr`${ctx.github.event.pull_request.head.ref}`,
-            BASE_REF: pr.expr`${ctx.github.event.pull_request.base.ref}`,
+            HEAD_REF: expr`${ctx.prEvent.head.ref}`,
+            BASE_REF: expr`${ctx.prEvent.base.ref}`,
           },
           run: `echo "$HEAD_REF"; echo "$BASE_REF"`,
         },

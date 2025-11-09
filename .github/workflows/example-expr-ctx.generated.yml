@@ -23,7 +23,7 @@ jobs:
         run: "echo ${{ env.NODE_VERSION }}"
       - name: Echo repo owner (github prop)
         run: "echo ${{ github.repository_owner }}"
-      - name: Echo PR number (github.event.*)
+      - name: Echo PR number (ctx.prEvent.number)
         if: "${{ contains(github.event_name, 'pull_request') }}"
         run: "echo ${{ github.event.pull_request.number }}"
       - name: Echo when on main using fn/expr
@@ -34,7 +34,7 @@ jobs:
         run: "echo 'ref_name contains main'"
       - name: Join example
         run: "echo ${{ join(fromJSON('[\"a\",\"b\",\"c\"]'), ',') }}"
-      - name: PR scoped number (ctx.github.event + pr.expr)
+      - name: PR number via ctx.prEvent
         if: "${{ contains(github.event_name, 'pull_request') }}"
         run: "echo ${{ github.event.pull_request.number }}"
       - name: PR head/base refs

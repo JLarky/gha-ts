@@ -80,9 +80,14 @@ sources = [
   "scripts/actionlint/builtin-global-variable-types.json",
   "scripts/actionlint/builtin-func-signatures.json",
   "src/expr-core.ts",
+  "scripts/doc-overlays.contexts.json",
 ]
 outputs = ["src/context-generated.ts"]
-run = "bun run scripts/generate-context.ts"
+run = """
+#!/bin/bash
+bun run scripts/generate-context.ts
+bun run oxfmt src/context-generated.ts
+"""
 
 [tasks."oc:colima"]
 description = "Start Colima"

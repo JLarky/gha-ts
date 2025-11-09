@@ -74,7 +74,8 @@ export class GithubCtx {
     return token(`${this.base}.event.${path}` as any);
   }
   /**
-   * Note: Stricter type check for this payload would be possible
+   * Name of the event that triggered the workflow run.
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
    */
   get event_name(): Fragment {
     return token(`${this.base}.event_name` as any);
@@ -257,6 +258,10 @@ export class RunnerCtx {
   get name(): Fragment {
     return token(`${this.base}.name` as any);
   }
+  /**
+   * Operating system of the runner executing the job.
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#runner-context
+   */
   get os(): Fragment {
     return token(`${this.base}.os` as any);
   }

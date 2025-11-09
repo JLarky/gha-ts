@@ -21,6 +21,15 @@ type FuncSigDesc = {
   docUrls?: string[];
 };
 
+type DocOverlay = Record<
+  string,
+  {
+    doc?: string;
+    urls?: string[];
+    override?: boolean | "true";
+  }
+>;
+
 function pascalCase(s: string): string {
   return s
     .split(/[-_.]/g)
@@ -149,6 +158,47 @@ function genFn(functions: Record<string, FuncSigDesc[]>): string {
   return lines.join("\n");
 }
 
+function applyDocOverlay(desc: TypeDesc, basePath: string, overlay: DocOverlay) {
+  const ov = overlay[basePath];
+  if (ov) {
+    const hasExistingDoc = !!(desc.doc && desc.doc.trim().length > 0);
+    const hasExistingUrls = !!(desc.docUrls && desc.docUrls.length > 0);
+    const overrideFlag = ov.override === true || ov.override === "true";
+
+    if (ov.doc) {
+      if (hasExistingDoc && ov.doc.trim() !== desc.doc!.trim()) {
+        if (!overrideFlag) {
+          console.warn(`[doc-overlay] Overriding existing doc at ${basePath}`);
+        }
+      } else if (!hasExistingDoc && overrideFlag) {
+        console.warn(
+          `[doc-overlay] override=true but no existing doc at ${basePath}`,
+        );
+      }
+      desc.doc = ov.doc;
+    }
+    if (ov.urls) {
+      if (hasExistingUrls) {
+        if (!overrideFlag) {
+          console.warn(
+            `[doc-overlay] Overriding existing docUrls at ${basePath}`,
+          );
+        }
+      } else if (!hasExistingUrls && overrideFlag) {
+        console.warn(
+          `[doc-overlay] override=true but no existing docUrls at ${basePath}`,
+        );
+      }
+      desc.docUrls = ov.urls;
+    }
+  }
+  if (desc.kind === "object" && desc.props) {
+    for (const [prop, child] of Object.entries(desc.props)) {
+      applyDocOverlay(child, `${basePath}.${prop}`, overlay);
+    }
+  }
+}
+
 async function main() {
   const repoRoot = process.cwd();
   const varsPath = join(
@@ -163,6 +213,11 @@ async function main() {
     "actionlint",
     "builtin-func-signatures.json",
   );
+  const contextsOverlayPath = join(
+    repoRoot,
+    "scripts",
+    "doc-overlays.contexts.json",
+  );
   const outPath = join(repoRoot, "src", "context-generated.ts");
 
   const vars = JSON.parse(await readFile(varsPath, "utf8")) as Record<
@@ -173,6 +228,20 @@ async function main() {
     string,
     FuncSigDesc[]
   >;
+  // Optional doc overlay for contexts
+  let contextsOverlay: DocOverlay = {};
+  try {
+    contextsOverlay = JSON.parse(
+      await readFile(contextsOverlayPath, "utf8"),
+    ) as DocOverlay;
+  } catch {
+    // ignore if missing
+  }
+  if (contextsOverlay && Object.keys(contextsOverlay).length > 0) {
+    for (const [ctx, desc] of Object.entries(vars)) {
+      applyDocOverlay(desc, ctx, contextsOverlay);
+    }
+  }
 
   const header = `/* Auto-generated from actionlint JSON. Do not edit by hand. */
 import { token, type Fragment } from "../src/expr-core";

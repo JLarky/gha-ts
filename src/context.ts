@@ -39,56 +39,6 @@ export const ctx = Object.assign({}, baseCtx, {
       "github.event",
     );
   },
-  /**
-   * Push event view. The push webhook payload lives at the root of github.event.
-   * https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#push
-   */
-  get push() {
-    return {
-      get event(): FragmentTree<EventPayload<"push">> {
-        return makeFragmentTree<EventPayload<"push">>("github.event");
-      },
-    };
-  },
-  /**
-   * Pull request event view. The pull_request payload is under github.event.pull_request.
-   * https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
-   */
-  get pr() {
-    return {
-      get event(): FragmentTree<EventPayload<"pull_request">["pull_request"]> {
-        return makeFragmentTree<EventPayload<"pull_request">["pull_request"]>(
-          "github.event.pull_request",
-        );
-      },
-    };
-  },
-  /**
-   * workflow_dispatch event view. Inputs are under github.event.inputs.
-   * https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
-   */
-  get workflow_dispatch() {
-    return {
-      get event(): FragmentTree<EventPayload<"workflow_dispatch">> {
-        return makeFragmentTree<EventPayload<"workflow_dispatch">>(
-          "github.event",
-        );
-      },
-    };
-  },
-  /**
-   * repository_dispatch event view. Custom payload is under github.event.client_payload.
-   * https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
-   */
-  get repository_dispatch() {
-    return {
-      get event(): FragmentTree<EventPayload<"repository_dispatch">> {
-        return makeFragmentTree<EventPayload<"repository_dispatch">>(
-          "github.event",
-        );
-      },
-    };
-  },
 });
 
 export * from "./expr-core";

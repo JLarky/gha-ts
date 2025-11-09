@@ -61,9 +61,6 @@ export class GithubCtx {
   get api_url(): Fragment {
     return token(`${this.base}.api_url` as any);
   }
-  /**
-   * Note: Undocumented
-   */
   get artifact_cache_size_limit(): Fragment {
     return token(`${this.base}.artifact_cache_size_limit` as any);
   }
@@ -119,9 +116,6 @@ Note: This context property is set by the Actions runner, and is only available 
   get job(): Fragment {
     return token(`${this.base}.job` as any);
   }
-  /**
-   * Note: Undocumented
-   */
   get output(): Fragment {
     return token(`${this.base}.output` as any);
   }
@@ -179,15 +173,9 @@ Note: This context property is set by the Actions runner, and is only available 
   get repository_owner_id(): Fragment {
     return token(`${this.base}.repository_owner_id` as any);
   }
-  /**
-   * Note: Undocumented
-   */
   get repository_visibility(): Fragment {
     return token(`${this.base}.repository_visibility` as any);
   }
-  /**
-   * repositoryUrl
-   */
   get repositoryurl(): Fragment {
     return token(`${this.base}.repositoryurl` as any);
   }
@@ -233,15 +221,9 @@ Note: This context property is set by the Actions runner, and is only available 
   get sha(): Fragment {
     return token(`${this.base}.sha` as any);
   }
-  /**
-   * Note: Undocumented
-   */
   get state(): Fragment {
     return token(`${this.base}.state` as any);
   }
-  /**
-   * Note: Undocumented
-   */
   get step_summary(): Fragment {
     return token(`${this.base}.step_summary` as any);
   }
@@ -339,10 +321,6 @@ export class RunnerCtx {
   get debug(): Fragment {
     return token(`${this.base}.debug` as any);
   }
-  /**
-   * https://github.com/github/docs/issues/32443
-   * https://github.com/github/docs/issues/32443
-   */
   get environment(): Fragment {
     return token(`${this.base}.environment` as any);
   }

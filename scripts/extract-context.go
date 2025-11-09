@@ -9,8 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"regexp"
-	"strings"
 )
 
 type TypeDesc struct {
@@ -72,51 +70,6 @@ type commentHelper struct {
 	comments []*ast.CommentGroup
 }
 
-var urlRx = regexp.MustCompile(`https?://[^\s)]+`)
-
-func (h *commentHelper) leadingDoc(n ast.Node) (string, []string) {
-	if h == nil || n == nil {
-		return "", nil
-	}
-	start := h.fset.Position(n.Pos()).Line
-	var pick *ast.CommentGroup
-	var pickEndLine int
-	for _, cg := range h.comments {
-		end := h.fset.Position(cg.End()).Line
-		if end <= start && (pick == nil || end > pickEndLine) {
-			pick = cg
-			pickEndLine = end
-		}
-	}
-	if pick == nil {
-		return "", nil
-	}
-	// Consider as leading doc only if immediately above or same line
-	if start-pickEndLine > 1 {
-		return "", nil
-	}
-	var b strings.Builder
-	for i, c := range pick.List {
-		line := c.Text
-		if strings.HasPrefix(line, "//") {
-			line = strings.TrimPrefix(line, "//")
-		} else if strings.HasPrefix(line, "/*") {
-			line = strings.TrimPrefix(line, "/*")
-			line = strings.TrimSuffix(line, "*/")
-		}
-		if i > 0 {
-			b.WriteString("\n")
-		}
-		b.WriteString(strings.TrimSpace(line))
-	}
-	text := b.String()
-	var urls []string
-	for _, m := range urlRx.FindAllString(text, -1) {
-		urls = append(urls, m)
-	}
-	return strings.TrimSpace(text), urls
-}
-
 func parseMapLiteralProps(lit *ast.CompositeLit, h *commentHelper) map[string]*TypeDesc {
 	props := map[string]*TypeDesc{}
 	for _, elt := range lit.Elts {
@@ -133,12 +86,6 @@ func parseMapLiteralProps(lit *ast.CompositeLit, h *commentHelper) map[string]*T
 			continue
 		}
 		td := parseTypeExpr(kv.Value, h)
-		if doc, urls := h.leadingDoc(kv); doc != "" {
-			td.Doc = doc
-			if len(urls) > 0 {
-				td.DocURLs = urls
-			}
-		}
 		props[name] = td
 	}
 	return props
@@ -309,12 +256,6 @@ func extractBuiltinGlobalVariableTypes(filePath string) (map[string]*TypeDesc, e
 						continue
 					}
 					td := parseTypeExpr(kv.Value, h)
-					if doc, urls := h.leadingDoc(kv); doc != "" {
-						td.Doc = doc
-						if len(urls) > 0 {
-							td.DocURLs = urls
-						}
-					}
 					result[key] = td
 				}
 				return result, nil
@@ -366,8 +307,6 @@ func extractBuiltinFuncSignatures(filePath string) (map[string][]*FuncSigDesc, e
 					if err != nil {
 						continue
 					}
-					// Leading doc for this function key
-					keyDoc, keyURLs := h.leadingDoc(kv)
 					listLit, ok := kv.Value.(*ast.CompositeLit)
 					if !ok {
 						continue
@@ -379,18 +318,6 @@ func extractBuiltinFuncSignatures(filePath string) (map[string][]*FuncSigDesc, e
 							continue
 						}
 						desc := &FuncSigDesc{}
-						// Overload-specific doc or fallback to function-level doc
-						if doc, urls := h.leadingDoc(slit); doc != "" {
-							desc.Doc = doc
-							if len(urls) > 0 {
-								desc.DocURLs = urls
-							}
-						} else if keyDoc != "" {
-							desc.Doc = keyDoc
-							if len(keyURLs) > 0 {
-								desc.DocURLs = keyURLs
-							}
-						}
 						for _, fld := range slit.Elts {
 							kvf, ok := fld.(*ast.KeyValueExpr)
 							if !ok {

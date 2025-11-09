@@ -149,8 +149,7 @@
             "kind": "string"
           }
         }
-      ],
-      "doc": "When the second parameter is omitted, values are concatenated with ','."
+      ]
     }
   ],
   "startswith": [

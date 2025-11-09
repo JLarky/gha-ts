@@ -136,10 +136,10 @@ export class GithubCtx {
     return token(`${this.base}.head_ref` as any);
   }
   /**
- * The [`job_id`](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_id) of the current job.
-Note: This context property is set by the Actions runner, and is only available within the execution `steps` of a job. Otherwise, the value of this property will be `null`.
- * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
- */
+   * The [`job_id`](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_id) of the current job.
+   * Note: This context property is set by the Actions runner, and is only available within the execution `steps` of a job. Otherwise, the value of this property will be `null`.
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
+   */
   get job(): Fragment {
     return token(`${this.base}.job` as any);
   }
@@ -286,10 +286,10 @@ Note: This context property is set by the Actions runner, and is only available 
     return token(`${this.base}.step_summary` as any);
   }
   /**
- * A token to authenticate on behalf of the GitHub App installed on your repository. This is functionally equivalent to the `GITHUB_TOKEN` secret. For more information, see "[Automatic token authentication](https://docs.github.com/actions/security-guides/automatic-token-authentication)."
-Note: This context property is set by the Actions runner, and is only available within the execution `steps` of a job. Otherwise, the value of this property will be `null`.
- * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
- */
+   * A token to authenticate on behalf of the GitHub App installed on your repository. This is functionally equivalent to the `GITHUB_TOKEN` secret. For more information, see "[Automatic token authentication](https://docs.github.com/actions/security-guides/automatic-token-authentication)."
+   * Note: This context property is set by the Actions runner, and is only available within the execution `steps` of a job. Otherwise, the value of this property will be `null`.
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
+   */
   get token(): Fragment {
     return token(`${this.base}.token` as any);
   }
@@ -540,39 +540,95 @@ import { toInner, type ExprValue } from "../src/expr-core";
 export const fn = {
   /**
    * Causes the step to always execute, and returns `true`, even when canceled. The `always` expression is best used at the step level or on tasks that you expect to run even when a job is canceled. For example, you can use `always` to send logs even when a job is canceled.
-   * https://docs.github.com/en/actions/learn-github-actions/expressions#functions
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#always
    */
   always: (...args: ExprValue[]) => `always(${args.map(toInner).join(", ")})`,
   /**
    * Returns `true` if the workflow was canceled.
-   * https://docs.github.com/en/actions/learn-github-actions/expressions#functions
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#cancelled
    */
   cancelled: (...args: ExprValue[]) =>
     `cancelled(${args.map(toInner).join(", ")})`,
+  /**
+   * Returns true if the search value is found within the container (string or array).
+   * - Strings: case-sensitive substring match.
+   * - Arrays: true if any element strictly equals the search value.
+   * Example:
+   *   contains('Hello', 'He') => true
+   *   contains(fromJSON('[1,2,3]'), 2) => true
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#contains
+   */
   contains: (...args: ExprValue[]) =>
     `contains(${args.map(toInner).join(", ")})`,
+  /**
+   * Returns true if the string ends with the given search string.
+   * Example:
+   *   endsWith('feature/my-branch', '/my-branch') => true
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#endswith
+   */
   endsWith: (...args: ExprValue[]) =>
     `endsWith(${args.map(toInner).join(", ")})`,
   /**
    * Returns `true` when any previous step of a job fails. If you have a chain of dependent jobs, `failure()` returns `true` if any ancestor job fails.
-   * https://docs.github.com/en/actions/learn-github-actions/expressions#functions
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#failure
    */
   failure: (...args: ExprValue[]) => `failure(${args.map(toInner).join(", ")})`,
+  /**
+   * Formats a string using {0}, {1}, ... placeholders.
+   * - Placeholders are zero-based.
+   * - To render a literal '{' or '}', escape as '{{' or '}}'.
+   * Example:
+   *   format('Run {0} on {1}', 42, 'ubuntu-latest') => 'Run 42 on ubuntu-latest'
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#format
+   */
   format: (...args: ExprValue[]) => `format(${args.map(toInner).join(", ")})`,
+  /**
+   * Parses a JSON string and returns the corresponding JSON value.
+   * - Useful to construct arrays/objects for other functions.
+   * Example:
+   *   fromJSON('["a","b"]') => array<string>
+   *   join(fromJSON('["a","b"]'), ',') => 'a,b'
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#fromjson
+   */
   fromJSON: (...args: ExprValue[]) =>
     `fromJSON(${args.map(toInner).join(", ")})`,
   /**
- * Returns a single hash for the set of files that matches the `path` pattern. You can provide a single `path` pattern or multiple `path` patterns separated by commas. The `path` is relative to the `GITHUB_WORKSPACE` directory and can only include files inside of the `GITHUB_WORKSPACE`. This function calculates an individual SHA-256 hash for each matched file, and then uses those hashes to calculate a final SHA-256 hash for the set of files. If the `path` pattern does not match any files, this returns an empty string. For more information about SHA-256, see "[SHA-2](https://wikipedia.org/wiki/SHA-2)."
-
-You can use pattern matching characters to match file names. Pattern matching is case-insensitive on Windows. For more information about supported pattern matching characters, see "[Workflow syntax for GitHub Actions](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet)."
- * https://docs.github.com/en/actions/learn-github-actions/expressions#functions
- */
+   * Returns a single hash for the set of files that matches the `path` pattern. You can provide a single `path` pattern or multiple `path` patterns separated by commas. The `path` is relative to the `GITHUB_WORKSPACE` directory and can only include files inside of the `GITHUB_WORKSPACE`. This function calculates an individual SHA-256 hash for each matched file, and then uses those hashes to calculate a final SHA-256 hash for the set of files. If the `path` pattern does not match any files, this returns an empty string. For more information about SHA-256, see "[SHA-2](https://wikipedia.org/wiki/SHA-2)."
+   *
+   * You can use pattern matching characters to match file names. Pattern matching is case-insensitive on Windows. For more information about supported pattern matching characters, see "[Workflow syntax for GitHub Actions](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet)."
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#hashfiles
+   */
   hashFiles: (...args: ExprValue[]) =>
     `hashFiles(${args.map(toInner).join(", ")})`,
+  /**
+   * Joins the elements of an array into a single string, separated by the optional delimiter.
+   * - First argument must be array<string>.
+   * Example:
+   *   join(fromJSON('["a","b","c"]'), ',') => 'a,b,c'
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#join
+   */
   join: (...args: ExprValue[]) => `join(${args.map(toInner).join(", ")})`,
+  /**
+   * Returns true if the string starts with the given search string.
+   * Example:
+   *   startsWith('refs/heads/main', 'refs/heads/') => true
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#startswith
+   */
   startsWith: (...args: ExprValue[]) =>
     `startsWith(${args.map(toInner).join(", ")})`,
+  /**
+   * Returns true when all previous steps have succeeded.
+   * Example:
+   *   if: ${{ success() }}
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#success
+   */
   success: (...args: ExprValue[]) => `success(${args.map(toInner).join(", ")})`,
+  /**
+   * Converts a value to a JSON string representation.
+   * Example:
+   *   toJSON(matrix) => '{"node":[14,16]}'
+   * https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#tojson
+   */
   toJSON: (...args: ExprValue[]) => `toJSON(${args.map(toInner).join(", ")})`,
 } as const;
 

@@ -91,7 +91,11 @@ function pascalCase(s: string): string {
 
 function jsDoc(lines: string[], doc?: string, docUrls?: string[]): string {
   const rows: string[] = [];
-  if (doc && doc.trim().length > 0) rows.push(doc.trim());
+  if (doc && doc.trim().length > 0) {
+    for (const ln of doc.split("\n")) {
+      rows.push(ln.trimEnd());
+    }
+  }
   if (docUrls && docUrls.length > 0) rows.push(...docUrls);
   if (lines.length > 0) rows.push(...lines);
   if (rows.length === 0) return "";
@@ -198,15 +202,17 @@ function genObjectClass(
 
 function genFn(
   functions: Record<string, FuncSigDesc[]>,
-  fnDocs?: Record<string, string>,
+  fnDocs?: Record<string, { doc?: string; urls?: string[] }>,
 ): string {
   const lines: string[] = [];
   lines.push(`import { toInner, type ExprValue } from "../src/expr-core";`);
   lines.push(`export const fn = {`);
   for (const [key, overloads] of Object.entries(functions)) {
     const methodName = overloads[0]?.name || key;
-    const doc = fnDocs?.[methodName]?.trim();
-    const js = doc ? jsDoc([], doc, [FUNCTIONS_DOC_URL]) : "";
+    const entry = fnDocs?.[methodName];
+    const doc = entry?.doc?.trim();
+    const urls = entry?.urls && entry.urls.length ? entry.urls : [FUNCTIONS_DOC_URL];
+    const js = jsDoc([], doc, urls);
     lines.push(
       `${js}  ${methodName}: (...args: ExprValue[]) => \`${methodName}(\${args.map(toInner).join(", ")})\`,`,
     );
@@ -289,7 +295,7 @@ function setDocAtPath(vars: Record<string, TypeDesc>, path: string, doc?: string
 function applyLanguageServicesDocs(
   vars: Record<string, TypeDesc>,
   ls: LSDescriptions,
-): Record<string, string> {
+): Record<string, { doc?: string; urls?: string[] }> {
   // contexts at root
   if (ls.root) {
     for (const [ctx, ent] of Object.entries(ls.root)) {
@@ -319,10 +325,10 @@ function applyLanguageServicesDocs(
     }
   }
   // function docs
-  const fndocs: Record<string, string> = {};
+  const fndocs: Record<string, { doc?: string; urls?: string[] }> = {};
   if (ls.functions) {
     for (const [name, ent] of Object.entries(ls.functions)) {
-      if (ent.description) fndocs[name] = ent.description;
+      if (ent.description) fndocs[name] = { doc: ent.description };
     }
   }
   return fndocs;
@@ -353,6 +359,11 @@ async function main() {
     "scripts",
     "doc-overlays.contexts.json",
   );
+  const functionsOverlayPath = join(
+    repoRoot,
+    "scripts",
+    "doc-overlays.functions.json",
+  );
   const outPath = join(repoRoot, "src", "context-generated.ts");
 
   const vars = JSON.parse(await readFile(varsPath, "utf8")) as Record<
@@ -365,7 +376,7 @@ async function main() {
   >;
   // Optional Actions Language Services descriptions
   let lsDocs: LSDescriptions | undefined;
-  let fnDocMap: Record<string, string> = {};
+  let fnDocMap: Record<string, { doc?: string; urls?: string[] }> = {};
   try {
     lsDocs = JSON.parse(await readFile(lsPath, "utf8")) as LSDescriptions;
   } catch {
@@ -373,6 +384,25 @@ async function main() {
   }
   if (lsDocs) {
     fnDocMap = applyLanguageServicesDocs(vars, lsDocs);
+  }
+  // Optional functions overlay docs
+  try {
+    const fnOverlay = JSON.parse(
+      await readFile(functionsOverlayPath, "utf8"),
+    ) as Record<string, { doc?: string; urls?: string[]; override?: boolean | "true" }>;
+    for (const [name, ent] of Object.entries(fnOverlay)) {
+      if (!ent) continue;
+      const has = !!fnDocMap[name]?.doc;
+      const override = ent.override === true || ent.override === "true";
+      if (ent.doc && (override || !has)) {
+        fnDocMap[name] = { ...(fnDocMap[name] || {}), doc: ent.doc };
+      }
+      if (ent.urls && ent.urls.length) {
+        fnDocMap[name] = { ...(fnDocMap[name] || {}), urls: ent.urls };
+      }
+    }
+  } catch {
+    // optional
   }
   // Optional doc overlay for contexts
   let contextsOverlay: DocOverlay = {};

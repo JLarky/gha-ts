@@ -1,0 +1,76 @@
+{
+  "contains": {
+    "doc": "Returns true if the search value is found within the container (string or array).\n- Strings: case-sensitive substring match.\n- Arrays: true if any element strictly equals the search value.\nExample:\n  contains('Hello', 'He') => true\n  contains(fromJSON('[1,2,3]'), 2) => true",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#contains"
+    ]
+  },
+  "startsWith": {
+    "doc": "Returns true if the string starts with the given search string.\nExample:\n  startsWith('refs/heads/main', 'refs/heads/') => true",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#startswith"
+    ]
+  },
+  "endsWith": {
+    "doc": "Returns true if the string ends with the given search string.\nExample:\n  endsWith('feature/my-branch', '/my-branch') => true",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#endswith"
+    ]
+  },
+  "format": {
+    "doc": "Formats a string using {0}, {1}, ... placeholders.\n- Placeholders are zero-based.\n- To render a literal '{' or '}', escape as '{{' or '}}'.\nExample:\n  format('Run {0} on {1}', 42, 'ubuntu-latest') => 'Run 42 on ubuntu-latest'",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#format"
+    ]
+  },
+  "join": {
+    "doc": "Joins the elements of an array into a single string, separated by the optional delimiter.\n- First argument must be array<string>.\nExample:\n  join(fromJSON('[\"a\",\"b\",\"c\"]'), ',') => 'a,b,c'",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#join"
+    ]
+  },
+  "toJSON": {
+    "doc": "Converts a value to a JSON string representation.\nExample:\n  toJSON(matrix) => '{\"node\":[14,16]}'",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#tojson"
+    ]
+  },
+  "fromJSON": {
+    "doc": "Parses a JSON string and returns the corresponding JSON value.\n- Useful to construct arrays/objects for other functions.\nExample:\n  fromJSON('[\"a\",\"b\"]') => array<string>\n  join(fromJSON('[\"a\",\"b\"]'), ',') => 'a,b'",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#fromjson"
+    ]
+  },
+  "hashFiles": {
+    "doc": "Returns a single SHA-256 hash for the set of files that matches the path patterns.\n- Paths are relative to GITHUB_WORKSPACE.\n- Multiple patterns may be comma-separated.\n- Returns empty string if no files matched.\nExample:\n  hashFiles('**/package-lock.json')",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#hashfiles"
+    ]
+  },
+  "success": {
+    "doc": "Returns true when all previous steps have succeeded.\nExample:\n  if: ${{ success() }}",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#success"
+    ]
+  },
+  "always": {
+    "doc": "Returns true even if a previous step has failed or been canceled.\n- Useful for cleanup steps.\nExample:\n  if: ${{ always() }}",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#always"
+    ]
+  },
+  "cancelled": {
+    "doc": "Returns true if the workflow run was canceled.\nExample:\n  if: ${{ cancelled() }}",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#cancelled"
+    ]
+  },
+  "failure": {
+    "doc": "Returns true when any previous step has failed.\nExample:\n  if: ${{ failure() }}",
+    "urls": [
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#failure"
+    ]
+  }
+}
+
+

@@ -92,6 +92,7 @@ sources = [
   "scripts/github/descriptions.json",
   "src/expr-core.ts",
   "scripts/doc-overlays.contexts.json",
+  "scripts/doc-overlays.functions.json",
 ]
 outputs = ["src/context-generated.ts"]
 run = """

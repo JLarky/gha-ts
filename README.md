@@ -87,6 +87,7 @@ MIT
 Non JavaScript/TypeScript:
 
 - [dagger](https://docs.dagger.io/getting-started/quickstarts/ci/)
-- [github-workflows-kt](https://github.com/typesafegithub/github-workflows-kt)
-- [kotlin-github-actions-dsl](https://github.com/nefilim/kotlin-github-actions-dsl)
-- [pkl-gha](https://github.com/stefma/pkl-gha)
+- [gh-workflow (Rust)](https://github.com/tailcallhq/gh-workflow)
+- [github-workflows-kt (Kotlin)](https://github.com/typesafegithub/github-workflows-kt)
+- [kotlin-github-actions-dsl (Kotlin)](https://github.com/nefilim/kotlin-github-actions-dsl)
+- [pkl-gha (Pkl)](https://github.com/stefma/pkl-gha)

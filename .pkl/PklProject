@@ -3,7 +3,7 @@ amends "pkl:Project"
 package {
   name = "com.github.action"
   baseUri = "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/\(name)"
-  version = "0.0.5"
+  version = "0.0.6"
   packageZipUrl = "https://github.com/stefma/pkl-gha/releases/download/\(name)@\(version)/\(name)@\(version).zip"
   description = "A Pkl template for writing GitHub Action workflows"
   authors {

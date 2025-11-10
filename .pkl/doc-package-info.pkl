@@ -2,7 +2,7 @@
 amends "pkl:DocPackageInfo"
 
 name = "com.github.action"
-version = "0.0.5"
+version = "0.0.6"
 importUri = "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@\(version)/"
 issueTracker = "https://github.com/stefma/pkl-gha/issues"
 sourceCode = "https://github.com/stefma/pkl-gha"

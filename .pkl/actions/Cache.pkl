@@ -1,75 +1,127 @@
 /// Actions for managing cache in GitHub workflows.
 /// This module is a low-level module not indended for direct use.
 /// Use the [Action](../Action) module instead to access these actions.
-@ModuleInfo { minPklVersion = "0.25.3" }
 module com.github.action.actions.Cache
+
 import "../Workflow.pkl"
 
 /// Type-safe GitHub Action of the [cache](https://github.com/actions/cache) action.
-class Cache extends Workflow.Step {
-  uses = "actions/cache@v4"
+class Cache extends Workflow.TypedStep {
+  fixed uses: "actions/cache@v4"
+  with: CacheInputs?
+}
 
-  hidden path: (String|Number|Boolean)?
-  hidden key: (String|Number|Boolean)?
-  hidden restoreKeys: (String|Number|Boolean)?
-  hidden uploadChunkSize: (String|Number|Boolean)?
-  hidden enableCrossOsArchive: (String|Number|Boolean)?
-  hidden failOnCacheMiss: (String|Number|Boolean)?
-  hidden lookupOnly: (String|Number|Boolean)?
-  hidden saveAlways: (String|Number|Boolean)?
+class CacheInputs {
+  /// A list of files, directories, and wildcard patterns to cache and restore
+  ///
+  /// Each entry should be separated by newlines.
+  ///
+  /// Example:
+  ///
+  /// ```
+  /// path =
+  ///   """
+  ///   path/to/dependencies
+  ///   some/other/dependencies
+  ///   """
+  /// ```
+  path: String
 
-  local localWith = new Mapping {
-    ["path"] = path
-    ["key"] = key
-    ["restore-keys"] = restoreKeys
-    ["upload-chunk-size"] = uploadChunkSize
-    ["enableCrossOsArchive"] = enableCrossOsArchive
-    ["fail-on-cache-miss"] = failOnCacheMiss
-    ["lookup-only"] = lookupOnly
-    ["save-always"] = saveAlways
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+  /// An explicit key for restoring and saving the cache
+  key: String
+
+  /// An ordered multiline string listing the prefix-matched keys, that are used for restoring stale cache if no cache
+  /// hit occurred for key.
+  ///
+  /// Note `cache-hit` returns false in this case.
+  `restore-keys`: String?
+
+  /// The chunk size used to split up large files during upload, in bytes
+  `upload-chunk-size`: Int?
+
+  /// An optional boolean when enabled, allows windows runners to save or restore caches that can be restored or saved
+  /// respectively on other platforms
+  enableCrossOsArchive: Boolean?
+
+  /// Fail the workflow if cache entry is not found
+  `fail-on-cache-miss`: Boolean?
+
+  /// Check if a cache entry exists for the given input(s) ([key], [restoreKeys]) without downloading the cache.
+  `lookup-only`: Boolean?
+
+  /// Run the post step to save the cache even if another step before fails
+  `save-always`: Boolean?
 }
 
 /// Type-safe GitHub Action of the [cache/save](https://github.com/actions/cache/tree/main/save) action.
-class Save extends Workflow.Step {
-  uses = "actions/cache/save@v4"
+class Save extends Workflow.TypedStep {
+  fixed uses: "actions/cache/save@v4"
+  with: SaveInputs?
+}
 
-  hidden path: (String|Number|Boolean)?
-  hidden key: (String|Number|Boolean)?
-  hidden uploadChunkSize: (String|Number|Boolean)?
-  hidden enableCrossOsArchive: (String|Number|Boolean)?
+class SaveInputs {
+  /// A list of files, directories, and wildcard patterns to cache and restore
+  ///
+  /// Each entry should be separated by newlines.
+  ///
+  /// Example:
+  ///
+  /// ```
+  /// path =
+  ///   """
+  ///   path/to/dependencies
+  ///   some/other/dependencies
+  ///   """
+  /// ```
+  path: String
 
-  local localWith = new Mapping {
-    ["path"] = path
-    ["key"] = key
-    ["upload-chunk-size"] = uploadChunkSize
-    ["enableCrossOsArchive"] = enableCrossOsArchive
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+  /// An explicit key for saving the cache
+  key: String
+
+  /// The chunk size used to split up large files during upload, in bytes.
+  `upload-chunk-size`: Int?
+
+  /// An optional boolean when enabled, allows windows runners to save caches that can be restored on other platforms.
+  enableCrossOsArchive: Boolean?
 }
 
 /// Type-safe GitHub Action of the [cache/save](https://github.com/actions/cache/tree/main/restore) action.
-class Restore extends Workflow.Step {
-  uses = "actions/cache/restore@v4"
+class Restore extends Workflow.TypedStep {
+  fixed uses: "actions/cache/restore@v4"
+  with: RestoreInputs
+}
 
-  hidden path: (String|Number|Boolean)?
-  hidden key: (String|Number|Boolean)?
-  hidden restoreKeys: (String|Number|Boolean)?
-  hidden enableCrossOsArchive: (String|Number|Boolean)?
-  hidden failOnCacheMiss: (String|Number|Boolean)?
-  hidden lookupOnly: (String|Number|Boolean)?
+class RestoreInputs {
+  /// A list of files, directories, and wildcard patterns to restore
+  ///
+  /// Each entry should be separated by newlines.
+  ///
+  /// Example:
+  ///
+  /// ```
+  /// path =
+  ///   """
+  ///   path/to/dependencies
+  ///   some/other/dependencies
+  ///   """
+  /// ```
+  path: String
 
-  local localWith = new Mapping {
-    ["path"] = path
-    ["key"] = key
-    ["restore-keys"] = restoreKeys
-    ["enableCrossOsArchive"] = enableCrossOsArchive
-    ["fail-on-cache-miss"] = failOnCacheMiss
-    ["lookup-only"] = lookupOnly
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+  /// An explicit key for restoring the cache
+  key: String
+
+  /// An ordered multiline string listing the prefix-matched keys, that are used for restoring stale cache if no cache
+  /// hit occurred for key.
+  ///
+  /// Note `cache-hit` returns false in this case.
+  `restore-keys`: Boolean?
+
+  /// An optional boolean when enabled, allows windows runners to restore caches that were saved on other platforms.
+  enableCrossOsArchive: Boolean?
+
+  /// Fail the workflow if cache entry is not found.
+  `fail-on-cache-miss`: Boolean?
+
+  /// Check if a cache entry exists for the given input(s) (key, restore-keys) without downloading the cache.
+  `lookup-only`: Boolean?
 }

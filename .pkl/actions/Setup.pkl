@@ -1,177 +1,223 @@
 /// Actions for managing "setup-programming language"" in GitHub workflows.
 /// This module is a low-level module not indended for direct use.
 /// Use the [Action](../Action) module instead to access these actions.
-@ModuleInfo { minPklVersion = "0.25.3" }
 module com.github.action.actions.Setup
+
 import "../Workflow.pkl"
 
 /// Type-safe GitHub Action of the [setup-java](https://github.com/actions/setup-java) action.
-class Java extends Workflow.Step {
-  uses = "actions/setup-java@v4"
-
-  hidden javaVersion: (String|Number|Boolean)?
-  hidden javaVersionFile: (String|Number|Boolean)?
-  hidden distribution: (String|Number|Boolean)?
-  hidden javaPackage: (String|Number|Boolean)?
-  hidden architecture: (String|Number|Boolean)?
-  hidden jdkFile: (String|Number|Boolean)?
-  hidden checkLatest: (String|Number|Boolean)?
-  hidden serverId: (String|Number|Boolean)?
-  hidden serverUsername: (String|Number|Boolean)?
-  hidden serverPassword: (String|Number|Boolean)?
-  hidden settingsPath: (String|Number|Boolean)?
-  hidden overwriteSettings: (String|Number|Boolean)?
-  hidden gpgPrivateKey: (String|Number|Boolean)?
-  hidden gpgPassphrase: (String|Number|Boolean)?
-  hidden cache: (String|Number|Boolean)?
-  hidden cacheDependencyPath: (String|Number|Boolean)?
-  hidden jobStatus: (String|Number|Boolean)?
-  hidden token: (String|Number|Boolean)?
-  hidden mvnToolchainId: (String|Number|Boolean)?
-  hidden mvnToolchainVendor: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["java-version"] = javaVersion
-    ["java-version-file"] = javaVersionFile
-    ["distribution"] = distribution
-    ["java-package"] = javaPackage
-    ["architecture"] = architecture
-    ["jdkFile"] = jdkFile
-    ["check-latest"] = checkLatest
-    ["server-id"] = serverId
-    ["server-username"] = serverUsername
-    ["server-password"] = serverPassword
-    ["settings-path"] = settingsPath
-    ["overwrite-settings"] = overwriteSettings
-    ["gpg-private-key"] = gpgPrivateKey
-    ["gpg-passphrase"] = gpgPassphrase
-    ["cache"] = cache
-    ["cache-dependency-path"] = cacheDependencyPath
-    ["job-status"] = jobStatus
-    ["token"] = token
-    ["mvn-toolchain-id"] = mvnToolchainId
-    ["mvn-toolchain-vendor"] = mvnToolchainVendor
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class Java extends Workflow.TypedStep {
+  fixed uses: "actions/setup-java@v5"
+  with: JavaInputs?
 }
-setupJava: Java = new {}
+
+class JavaInputs {
+  /// The Java version that is going to be set up.
+  ///
+  /// Takes a whole or [semver](https://github.com/actions/setup-java?tab=readme-ov-file#supported-version-syntax)
+  /// Java version.
+  /// If not specified, the action will expect java-version-file input to be specified
+  `java-version`: String?
+
+  /// The path to a file containing java version.
+  ///
+  /// If the `java-version-file` input is specified, the action will extract the version from the file and install it.
+  ///
+  /// Supported files are .java-version and .tool-versions.
+  /// In .java-version file, only the version should be specified (e.g., 17.0.7).
+  /// In .tool-versions file, java version should be preceded by the java keyword (e.g., java 17.0.7).
+  /// The `.java-version` file recognizes all variants of the version description according to
+  /// [jenv](https://github.com/jenv/jenv).
+  /// Similarly, the `.tool-versions` file supports version specifications in accordance with
+  /// [asdf](https://github.com/asdf-vm/asdf) standards, adhering to Semantic Versioning ([semver](https://semver.org/)).
+  ///
+  /// If both java-version and java-version-file inputs are provided, the java-version input will be used.
+  ///
+  /// Valid entry options:
+  /// ```
+  /// major versions: 8, 11, 16, 17, 21
+  /// more specific versions: 8.0.282+8, 8.0.232, 11.0, 11.0.4, 17.0
+  /// early access (EA) versions: 15-ea, 15.0.0-ea
+  /// versions with specified distribution: openjdk64-11.0.2
+  /// ```
+  `java-version-file`: String?
+
+  /// Java [distribution](https://github.com/actions/setup-java?tab=readme-ov-file#supported-distributions)
+  distribution: JavaDistribution
+
+  /// The packaging variant of the chosen distribution. Possible values: `jdk`, `jre`, `jdk+fx`, `jre+fx`.
+  ///
+  /// Default value: `jdk`
+  `java-package`: ("jdk"|"jre"|"jdk+fx"|"jre+fx")?
+
+  /// The target architecture of the package.
+  ///
+  /// Possible values: `x86`, `x64`, `armv7`, `aarch64`, `ppc64le`.
+  ///
+  /// Default value: Derived from the runner machine.
+  architecture: ("x86"|"x64"|"armv7"|"aarch64"|"ppc64le")?
+
+  /// If a use-case requires a custom distribution setup-java uses the compressed JDK from the location pointed by this
+  /// input and will take care of the installation and caching on the VM.
+  jdkFile: String?
+
+  /// Setting this option makes the action to check for the latest available version for the version spec.
+  `check-latest`: Boolean?
+
+  // region Maven options
+  // The action has a bunch of inputs to generate maven's [settings.xml](https://maven.apache.org/settings.html) on
+  // the fly and pass the values to Apache Maven GPG Plugin as well as Apache Maven Toolchains.
+  // See [advanced usage](docs/advanced-usage.md) for more.
+
+  /// ID of the distributionManagement repository in the pom.xml file.
+  ///
+  /// Default is `github`.
+  `server-id`: String?
+
+  /// Environment variable name for the username for authentication to the Apache Maven repository.
+  ///
+  /// Default is GITHUB_ACTOR.
+  `server-username`: String?
+
+  /// Environment variable name for password or token for authentication to the Apache Maven repository.
+  ///
+  /// Default is GITHUB_TOKEN.
+  `server-password`: String?
+
+  /// Maven related setting to point to the directory where the settings.xml file will be written.
+  ///
+  /// Default is ~/.m2.
+  `settings-path`: String?
+
+  /// By default action overwrites the settings.xml.
+  ///
+  /// In order to skip generation of file if it exists, set this to `false`.
+  `overwrite-settings`: Boolean?
+
+  /// GPG private key to import.
+  ///
+  /// Default is empty string.
+  `gpg-private-key`: String?
+
+  /// Environment variable name for the GPG private key passphrase.
+  ///
+  /// Default is GPG_PASSPHRASE.
+  `gpg-passphrase`: String?
+
+  /// Quick [setup caching](#caching-packages-dependencies) for the dependencies managed through one of the predefined
+  /// package managers.
+  ///
+  /// It can be one of "maven", "gradle" or "sbt"
+  cache: ("maven"|"gradle"|"sbt")?
+
+  /// The path to a dependency file: pom.xml, build.gradle, build.sbt, etc.
+  ///
+  /// This option can be used with the [cache] option.
+  /// If this option is omitted, the action searches for the dependency file in the entire repository.
+  /// This option supports wildcards and a list of file names for caching multiple dependencies
+  `cache-dependency-path`: String?
+
+  /// Workaround to pass job status to post job step. This variable is not intended for manual setting
+  `job-status`: String?
+
+  /// The token used to authenticate when fetching version manifests hosted on github.com, such as for the Microsoft Build of OpenJDK.
+  /// When running this action on github.com, the default value is sufficient.
+  /// When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting.
+  token: String?
+
+  /// Name of Maven Toolchain ID if the default name of `${distribution}_${java-version}` is not wanted.
+  `mvn-toolchain-id`: String?
+
+  /// Name of Maven Toolchain Vendor if the default name of `${distribution}` is not wanted
+  `mvn-toolchain-vendor`: String?
+}
+
+typealias JavaDistribution =
+  "temurin"
+  |"zulu"
+  |"adopt"
+  |"liberica"
+  |"microsoft"
+  |"corretto"
+  |"semeru"
+  |"oracle"
+  |"dragonwell"
+  |"sapmachine"
+  |"graalvm"
+  |"jetbrains"
 
 /// Type-safe GitHub Action of the [setup-dotnet](https://github.com/actions/setup-dotnet) action.
-class SetupDotnet extends Workflow.Step {
-  uses = "actions/setup-dotnet@v4"
-
-  hidden dotnetVersion: (String|Number|Boolean)?
-  hidden dotnetQuality: (String|Number|Boolean)?
-  hidden globalJsonFile: (String|Number|Boolean)?
-  hidden sourceUrl: (String|Number|Boolean)?
-  hidden owner: (String|Number|Boolean)?
-  hidden configFile: (String|Number|Boolean)?
-  hidden cache: (String|Number|Boolean)?
-  hidden cacheDependencyPath: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["dotnet-version"] = dotnetVersion
-    ["dotnet-quality"] = dotnetQuality
-    ["global-json-file"] = globalJsonFile
-    ["source-url"] = sourceUrl
-    ["owner"] = owner
-    ["config-file"] = configFile
-    ["cache"] = cache
-    ["cache-dependency-path"] = cacheDependencyPath
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class SetupDotnet extends Workflow.TypedStep {
+  fixed uses: "actions/setup-dotnet@v5"
+  with: SetupDotnetInputs?
 }
-setupDotnet: SetupDotnet = new {}
+
+class SetupDotnetInputs {
+  `dotnet-version`: (String|Number|Boolean)?
+  `dotnet-quality`: (String|Number|Boolean)?
+  `global-json-file`: (String|Number|Boolean)?
+  `source-url`: (String|Number|Boolean)?
+  owner: (String|Number|Boolean)?
+  `config-file`: (String|Number|Boolean)?
+  cache: (String|Number|Boolean)?
+  `cache-dependency-path`: (String|Number|Boolean)?
+}
 
 /// Type-safe GitHub Action of the [setup-go](https//github.com/actions/setup-go) action.
-class Go extends Workflow.Step {
-  uses = "actions/setup-go@v5"
+class Go extends Workflow.TypedStep {
+  fixed uses: "actions/setup-go@v6"
+  with: GoInputs?
+}
 
-  hidden goVersion: (String|Number|Boolean)?
-  hidden goVersionFile: (String|Number|Boolean)?
-  hidden checkLatest: (String|Number|Boolean)?
-  hidden token: (String|Number|Boolean)?
-  hidden cache: (String|Number|Boolean)?
-  hidden cacheDependencyPath: (String|Number|Boolean)?
-  hidden architecture: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["go-version"] = goVersion
-    ["go-version-file"] = goVersionFile
-    ["check-latest"] = checkLatest
-    ["token"] = token
-    ["cache"] = cache
-    ["cache-dependency-path"] = cacheDependencyPath
-    ["architecture"] = architecture
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class GoInputs {
+  `go-version`: (String|Number|Boolean)?
+  `go-version-file`: (String|Number|Boolean)?
+  `check-latest`: (String|Number|Boolean)?
+  token: (String|Number|Boolean)?
+  cache: (String|Number|Boolean)?
+  `cache-dependency-path`: (String|Number|Boolean)?
+  architecture: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [setup-node](
-class Node extends Workflow.Step {
-  uses = "actions/setup-node@v4"
+class Node extends Workflow.TypedStep {
+  fixed uses: "actions/setup-node@v6"
+  with: NodeInputs?
+}
 
-  hidden alwaysAuth: (String|Number|Boolean)?
-  hidden nodeVersion: (String|Number|Boolean)?
-  hidden nodeVersionFile: (String|Number|Boolean)?
-  hidden architecture: (String|Number|Boolean)?
-  hidden checkLatest: (String|Number|Boolean)?
-  hidden registryUrl: (String|Number|Boolean)?
-  hidden scope: (String|Number|Boolean)?
-  hidden token: (String|Number|Boolean)?
-  hidden cache: (String|Number|Boolean)?
-  hidden cacheDependencyPath: (String|Number|Boolean)?
-  hidden mirror: (String|Number|Boolean)?
-  hidden mirrorToken: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["always-auth"] = alwaysAuth
-    ["node-version"] = nodeVersion
-    ["node-version-file"] = nodeVersionFile
-    ["architecture"] = architecture
-    ["check-latest"] = checkLatest
-    ["registry-url"] = registryUrl
-    ["scope"] = scope
-    ["token"] = token
-    ["cache"] = cache
-    ["cache-dependency-path"] = cacheDependencyPath
-    ["mirror"] = mirror
-    ["mirror-token"] = mirrorToken
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class NodeInputs {
+  `always-auth`: (String|Number|Boolean)?
+  `node-version`: (String|Number|Boolean)?
+  `node-version-file`: (String|Number|Boolean)?
+  architecture: (String|Number|Boolean)?
+  `check-latest`: (String|Number|Boolean)?
+  `registry-url`: (String|Number|Boolean)?
+  scope: (String|Number|Boolean)?
+  token: (String|Number|Boolean)?
+  cache: (String|Number|Boolean)?
+  `package-manager-cache`: (String|Number|Boolean)?
+  `cache-dependency-path`: (String|Number|Boolean)?
+  mirror: (String|Number|Boolean)?
+  `mirror-token`: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [setup-python](https://github.com/actions/setup-python) action.
-class Python extends Workflow.Step {
-  uses = "actions/setup-python@v5"
+class Python extends Workflow.TypedStep {
+  fixed uses: "actions/setup-python@v6"
+  with: PythonInputs?
+}
 
-  hidden pythonVersion: (String|Number|Boolean)?
-  hidden pythonVersionFile: (String|Number|Boolean)?
-  hidden cache: (String|Number|Boolean)?
-  hidden architecture: (String|Number|Boolean)?
-  hidden checkLatest: (String|Number|Boolean)?
-  hidden token: (String|Number|Boolean)?
-  hidden cacheDependencyPath: (String|Number|Boolean)?
-  hidden updateEnvironment: (String|Number|Boolean)?
-  hidden allowPrereleases: (String|Number|Boolean)?
-  hidden freethreaded: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["python-version"] = pythonVersion
-    ["python-version-file"] = pythonVersionFile
-    ["cache"] = cache
-    ["architecture"] = architecture
-    ["check-latest"] = checkLatest
-    ["token"] = token
-    ["cache-dependency-path"] = cacheDependencyPath
-    ["update-environment"] = updateEnvironment
-    ["allow-prereleases"] = allowPrereleases
-    ["freethreaded"] = freethreaded
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class PythonInputs {
+  `python-version`: (String|Number|Boolean)?
+  `python-version-file`: (String|Number|Boolean)?
+  cache: (String|Number|Boolean)?
+  architecture: (String|Number|Boolean)?
+  `check-latest`: (String|Number|Boolean)?
+  token: (String|Number|Boolean)?
+  `cache-dependency-path`: (String|Number|Boolean)?
+  `update-environment`: (String|Number|Boolean)?
+  `allow-prereleases`: (String|Number|Boolean)?
+  freethreaded: (String|Number|Boolean)?
+  `pip-version`: (String|Number|Boolean)?
+  `pip-install`: (String|Number|Boolean)?
 }

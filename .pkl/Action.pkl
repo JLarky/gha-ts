@@ -12,8 +12,8 @@
 ///     goVersion = "1.20.2"
 ///    }
 /// }
-@ModuleInfo { minPklVersion = "0.25.3" }
 module com.github.action.Action
+
 import "actions/Artifact.pkl"
 import "actions/Cache.pkl"
 import "actions/Common.pkl"
@@ -21,36 +21,36 @@ import "actions/Pages.pkl"
 import "actions/Setup.pkl"
 
 // Default Actions:
-checkout: Common.Checkout = new {}
-addToProject: Common.AddToProject = new {}
-gitHubScript: Common.GitHubScript = new {}
-labeler: Common.Labeler = new {}
-deletePackageVersion: Common.DeletePackageVersion = new {}
-stale: Common.Stale = new {}
-dependencyReviewAction: Common.DependencyReviewAction = new {}
-goDependencySubmission: Common.GoDependencySubmission = new {}
-attestSbom: Common.AttestSbom = new {}
-aiInference: Common.AiInference = new {}
-createGitHubAppToken: Common.CreateGitHubAppToken = new {}
+checkout: Common.Checkout
+addToProject: Common.AddToProject
+gitHubScript: Common.GitHubScript
+labeler: Common.Labeler
+deletePackageVersion: Common.DeletePackageVersion
+stale: Common.Stale
+dependencyReviewAction: Common.DependencyReviewAction
+goDependencySubmission: Common.GoDependencySubmission
+attestSbom: Common.AttestSbom
+aiInference: Common.AiInference
+createGitHubAppToken: Common.CreateGitHubAppToken
 
 // Artifact Actions:
-downloadArtifact: Artifact.Download = new {}
-uploadArtitact: Artifact.Upload = new {}
-uploadArtifactMerge: Artifact.UploadArtifactMerge = new {}
+downloadArtifact: Artifact.Download
+uploadArtitact: Artifact.Upload
+uploadArtifactMerge: Artifact.UploadArtifactMerge
 
 // Page Actions:
-configurePages: Pages.Configure = new {}
-uploadPagesArtifact: Pages.UploadArtifact = new {}
-jekyllBuildPages: Pages.JekyllBuild = new {}
-deployPages: Pages.Deploy = new {}
+configurePages: Pages.Configure
+uploadPagesArtifact: Pages.UploadArtifact
+jekyllBuildPages: Pages.JekyllBuild
+deployPages: Pages.Deploy
 
 // Cache Actions:
-cache: Cache.Cache = new {}
-cacheSave: Cache.Save = new {}
-cacheRestore: Cache.Restore = new {}
+cache: Cache.Cache
+cacheSave: Cache.Save
+cacheRestore: Cache.Restore
 
 // Setup Actions:
-setupGo: Setup.Go = new {}
-setupNode: Setup.Node = new {}
-setupPython: Setup.Python = new {}
-setupJava: Setup.Java = new {}
+setupGo: Setup.Go
+setupNode: Setup.Node
+setupPython: Setup.Python
+setupJava: Setup.Java

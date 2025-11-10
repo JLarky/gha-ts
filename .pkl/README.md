@@ -23,9 +23,9 @@ is definitely YAML validated and ready to be used as your Action Workflows.
 **1. Write a `Pkl` file and `amend` this template**
 
 ```pkl
-amends "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@[LATEST_VERSION]#/Workflow.pkl"
-import "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@[LATEST_VERSION]#/Context.pkl" // Optional
-import "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@[LATEST_VERSION]#/Action.pkl" // Optional
+amends "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@0.0.5#/Workflow.pkl"
+import "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@0.0.5#/Context.pkl" // Optional
+import "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@0.0.5#/Action.pkl" // Optional
 
 name = "Test"
 
@@ -52,8 +52,8 @@ jobs {
         name = "Setup nexus credentials"
         run = """
           mkdir ~/.gradle
-          echo "systemProp.nexusUsername=\(Context.secret("NEXUS_USERNAME")) >> ~/.gradle/gradle.properties
-          echo "systemProp.nexusPassword=\(Context.secret("NEXUS_PASSWORD")) >> ~/.gradle/gradle.properties
+          echo "systemProp.nexusUsername=\(Context.secrets("NEXUS_USERNAME")) >> ~/.gradle/gradle.properties
+          echo "systemProp.nexusPassword=\(Context.secrets("NEXUS_PASSWORD")) >> ~/.gradle/gradle.properties
         """
       }
       new {

@@ -14,7 +14,7 @@ on {
 jobs {
   ["matrixTest"] {
     `runs-on` = "ubuntu-latest"
-    `timeout-minutes` = 5.5
+    `timeout-minutes` = 5
     strategy {
       matrix {
         ["os"] = new {
@@ -41,7 +41,7 @@ jobs {
     steps {
       (Action.checkout) {
         name = "Checkout"
-        `timeout-minutes` = 2.3
+        `timeout-minutes` = 2
       }
       new {
         name = "Run on ${{ matrix.os }}"

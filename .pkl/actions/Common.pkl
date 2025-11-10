@@ -1,514 +1,528 @@
 /// Actions for managing common things in GitHub workflows.
 /// This module is a low-level module not indended for direct use.
 /// Use the [Action](../Action) module instead to access these actions.
-@ModuleInfo { minPklVersion = "0.25.3" }
 module com.github.action.actions.Common
+
 import "../Workflow.pkl"
 
 /// Type-safe GitHub Action of the [checkout](https://github.com/actions/checkout) action.
-class Checkout extends Workflow.Step {
-  uses = "actions/checkout@v4"
-
-  hidden repository: (String|Number|Boolean)?
-  hidden ref: (String|Number|Boolean)?
-  hidden token: (String|Number|Boolean)?
-  hidden sshKey: (String|Number|Boolean)?
-  hidden sshKnownHosts: (String|Number|Boolean)?
-  hidden sshStrict: (String|Number|Boolean)?
-  hidden sshUser: (String|Number|Boolean)?
-  hidden persistCredentials: (String|Number|Boolean)?
-  hidden path: (String|Number|Boolean)?
-  hidden clean: (String|Number|Boolean)?
-  hidden filter: (String|Number|Boolean)?
-  hidden sparseCheckout: (String|Number|Boolean)?
-  hidden sparseCheckoutConeMode: (String|Number|Boolean)?
-  hidden fetchDepth: (String|Number|Boolean)?
-  hidden fetchTags: (String|Number|Boolean)?
-  hidden showProgress: (String|Number|Boolean)?
-  hidden lfs: (String|Number|Boolean)?
-  hidden submodules: (String|Number|Boolean)?
-  hidden setSafeDirectory: (String|Number|Boolean)?
-  hidden githubServerUrl: (String|Number|Boolean)?
-  local localWith = new Mapping {
-    ["repository"] = repository
-    ["ref"] = ref
-    ["token"] = token
-    ["ssh-key"] = sshKey
-    ["ssh-known-hosts"] = sshKnownHosts
-    ["ssh-strict"] = sshStrict
-    ["ssh-user"] = sshUser
-    ["persist-credentials"] = persistCredentials
-    ["path"] = path
-    ["clean"] = clean
-    ["filter"] = filter
-    ["sparse-checkout"] = sparseCheckout
-    ["sparse-checkout-cone-mode"] = sparseCheckoutConeMode
-    ["fetch-depth"] = fetchDepth
-    ["fetch-tags"] = fetchTags
-    ["show-progress"] = showProgress
-    ["lfs"] = lfs
-    ["submodules"] = submodules
-    ["set-safe-directory"] = setSafeDirectory
-    ["github-server-url"] = githubServerUrl
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class Checkout extends Workflow.TypedStep {
+  fixed uses: "actions/checkout@v5"
+  with: CheckoutInputs?
 }
+
+class CheckoutInputs {
+
+  /// Repository name with owner.
+  ///
+  /// For example, `actions/checkout`
+  ///
+  /// Default: `${{ github.repository }}`
+  repository: String?
+
+  /// The branch, tag or SHA to checkout.
+  ///
+  /// When checking out the repository that triggered a workflow, this defaults to the reference or SHA for that event.
+  /// Otherwise, uses the default branch.
+  ref: String?
+
+  /// Personal access token (PAT) used to fetch the repository.
+  ///
+  /// The PAT is configured with the local git config, which enables your scripts to run authenticated git
+  /// commands. The post-job step removes the PAT.
+  ///
+  /// We recommend using a service account with the least permissions necessary. Also
+  /// when generating a new PAT, select the least scopes necessary.
+  ///
+  /// [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+  ///
+  /// Default: `${{ github.token }}`
+  token: String?
+
+  /// SSH key used to fetch the repository.
+  ///
+  /// The SSH key is configured with the local git config, which enables your scripts to run authenticated git commands.
+  /// The post-job step removes the SSH key.
+  ///
+  /// We recommend using a service account with the least permissions necessary.
+  ///
+  /// [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+  `ssh-key`: String?
+
+  /// Known hosts in addition to the user and global host key database.
+  ///
+  /// The public SSH keys for a host may be obtained using the utility `ssh-keyscan`.
+  /// For example, `ssh-keyscan github.com`.
+  /// The public key for github.com is always implicitly added.
+  `ssh-known-hosts`: String?
+
+  /// Whether to perform strict host key checking.
+  ///
+  /// When true, adds the options `StrictHostKeyChecking=yes` and `CheckHostIP=no` to the SSH command line.
+  /// Use the input `ssh-known-hosts` to configure additional hosts.
+  ///
+  /// Default: `true`
+  `ssh-strict`: Boolean?
+
+  /// The user to use when connecting to the remote SSH host.
+  ///
+  /// By default 'git' is used.
+  ///
+  /// Default: `"git"`
+  `ssh-user`: String?
+
+  /// Whether to configure the token or SSH key with the local git config
+  ///
+  /// Default: `true`
+  `persist-credentials`: Boolean?
+
+  /// Relative path under `$GITHUB_WORKSPACE` to place the repository
+  path: String?
+
+  /// Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching
+  ///
+  /// Default: true
+  clean: Boolean?
+
+  /// Partially clone against a given filter. Overrides sparse-checkout if set.
+  ///
+  /// Default: null
+  filter: Boolean?
+
+  /// Do a sparse checkout on given patterns.
+  ///
+  /// Each pattern should be separated with new lines.
+  ///
+  /// Default: `null`
+  `sparse-checkout`: Boolean?
+
+  /// Specifies whether to use cone-mode when doing a sparse checkout.
+  ///
+  /// Default: `true`
+  `sparse-checkout-cone-mode`: Boolean?
+
+  /// Number of commits to fetch.
+  ///
+  /// `0` indicates all history for all branches and tags.
+  /// Default: 1
+  `fetch-depth`: Int?
+
+  /// Whether to fetch tags, even if [fetchDepth] > 0.
+  ///
+  /// Default: false
+  `fetch-tags`: Boolean?
+
+  /// Whether to show progress status output when fetching.
+  ///
+  /// Default: `true`
+  `show-progress`: Boolean?
+
+  /// Whether to download Git-LFS files
+  ///
+  /// Default: `false`
+  lfs: Boolean?
+
+  /// Whether to checkout submodules: `true` to checkout submodules or `recursive` to
+  /// recursively checkout submodules.
+  ///
+  /// When the `ssh-key` input is not provided, SSH URLs beginning with
+  /// `git@github.com:` are converted to HTTPS.
+  ///
+  /// Default: false
+  submodules: (Boolean|"recursive")?
+
+  /// Add repository path as safe.directory for Git global config by running `git
+  /// config --global --add safe.directory <path>`
+  ///
+  /// Default: `true`
+  `set-safe-directory`: (String|Number|Boolean)?
+
+  /// The base URL for the GitHub instance that you are trying to clone from, will use
+  /// environment defaults to fetch from the same instance that the workflow is
+  /// running from unless specified.
+  ///
+  /// Example URLs are `https://github.com` or `https://my-ghes-server.example.com`
+  `github-server-url`: String?
+}
+
 
 /// Type-safe GitHub Action of the [actions/add-to-project](https://github.com/actions/add-to-project) action.
-class AddToProject extends Workflow.Step {
-  uses = "actions/add-to-project@v1"
-
-  hidden javaVersion: (String|Number|Boolean)?
-  hidden projectUrl: (String|Number|Boolean)?
-  hidden githubToken: (String|Number|Boolean)?
-  hidden labeled: (String|Number|Boolean)?
-  hidden labelOperator: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["hava-version"] = javaVersion
-    ["project-url"] = projectUrl
-    ["github-token"] = githubToken
-    ["labeled"] = labeled
-    ["label-operator"] = labelOperator
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class AddToProject extends Workflow.TypedStep {
+  fixed uses: "actions/add-to-project@v1"
+  with: AddToProjectInputs?
 }
 
-class GoDependencySubmission extends Workflow.Step {
-  uses = "actions/go-dependency-submission@v2"
+class AddToProjectInputs {
+  `project-url`: (String|Number|Boolean)?
+  `github-token`: (String|Number|Boolean)?
+  labeled: (String|Number|Boolean)?
+  `label-operator`: (String|Number|Boolean)?
+}
 
-  hidden token: (String|Number|Boolean)?
-  hidden metadata: (String|Number|Boolean)?
-  hidden goModPath: (String|Number|Boolean)?
-  hidden goBuildTarget: (String|Number|Boolean)?
-  hidden snapshotSha: (String|Number|Boolean)?
-  hidden snapshotRef: (String|Number|Boolean)?
-  hidden detectorName: (String|Number|Boolean)?
-  hidden detectorVersion: (String|Number|Boolean)?
-  hidden detectorUrl: (String|Number|Boolean)?
+class GoDependencySubmission extends Workflow.TypedStep {
+  fixed uses: "actions/go-dependency-submission@v2"
+  with: GoDependencySubmissionInputs?
+}
 
-  local localWith = new Mapping {
-    ["token"] = token
-    ["metadata"] = metadata
-    ["go-mod-path"] = goModPath
-    ["go-build-target"] = goBuildTarget
-    ["snapshot-sha"] = snapshotSha
-    ["snapshot-ref"] = snapshotRef
-    ["detector-name"] = detectorName
-    ["detector-version"] = detectorVersion
-    ["detector-url"] = detectorUrl
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class GoDependencySubmissionInputs {
+  token: (String|Number|Boolean)?
+  metadata: (String|Number|Boolean)?
+  `go-mod-path`: (String|Number|Boolean)?
+  `go-build-target`: (String|Number|Boolean)?
+  `snapshot-sha`: (String|Number|Boolean)?
+  `snapshot-ref`: (String|Number|Boolean)?
+  `detector-name`: (String|Number|Boolean)?
+  `detector-version`: (String|Number|Boolean)?
+  `detector-url`: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [actions/github-script](https://github.com/actions/github-script) action.
-class GitHubScript extends Workflow.Step {
-  uses = "actions/github-script@v7"
+class GitHubScript extends Workflow.TypedStep {
+  fixed uses: "actions/github-script@v8"
+  with: GitHubScriptInputs?
+}
 
-  hidden script: (String|Number|Boolean)?
-  hidden githubToken: (String|Number|Boolean)?
-  hidden debug: (String|Number|Boolean)?
-  hidden userAgent: (String|Number|Boolean)?
-  hidden previews: (String|Number|Boolean)?
-  hidden resultEncoding: (String|Number|Boolean)?
-  hidden retries: (String|Number|Boolean)?
-  hidden retryExemptStatusCodes: (String|Number|Boolean)?
-  hidden baseUrl: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["script"] = script
-    ["github-token"] = githubToken
-    ["debug"] = debug
-    ["user-agent"] = userAgent
-    ["previews"] = previews
-    ["result-encoding"] = resultEncoding
-    ["retries"] = retries
-    ["retry-exempt-status-codes"] = retryExemptStatusCodes
-    ["base-url"] = baseUrl
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class GitHubScriptInputs {
+  script: (String|Number|Boolean)?
+  `github-token`: (String|Number|Boolean)?
+  debug: (String|Number|Boolean)?
+  `user-agent`: (String|Number|Boolean)?
+  previews: (String|Number|Boolean)?
+  `result-encoding`: (String|Number|Boolean)?
+  retries: (String|Number|Boolean)?
+  `retry-exempt-status-codes`: (String|Number|Boolean)?
+  `base-url`: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [actions/labeler](https://github.com/actions/labeler) action.
-class Labeler extends Workflow.Step {
-  uses = "actions/labeler@v5"
-
-  hidden repoToken: (String|Number|Boolean)?
-  hidden configurationPath: (String|Number|Boolean)?
-  hidden syncLabels: (String|Number|Boolean)?
-  hidden dot: (String|Number|Boolean)?
-  hidden prNumber: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["repo-token"] = repoToken
-    ["configuration-path"] = configurationPath
-    ["sync-labels"] = syncLabels
-    ["dot"] = dot
-    ["pr-number"] = prNumber
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class Labeler extends Workflow.TypedStep {
+  fixed uses: "actions/labeler@v6"
+  with: LabelerInputs?
 }
 
-class AttestSbom extends Workflow.Step {
-  uses = "attest-sbom@v2"
+class LabelerInputs {
+  `repo-token`: (String|Number|Boolean)?
+  `configuration-path`: (String|Number|Boolean)?
+  `sync-labels`: (String|Number|Boolean)?
+  dot: (String|Number|Boolean)?
+  `pr-number`: (String|Number|Boolean)?
+}
 
-  hidden sbomPath: (String|Number|Boolean)?
+class AttestSbom extends Workflow.TypedStep {
+  fixed uses: "attest-sbom@v2"
+  with: AttestSbomInputs?
+}
 
-  local localWith = new Mapping {
-    ["sbom-path"] = sbomPath
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class AttestSbomInputs {
+  `subject-path`: (String|Number|Boolean)?
+  `subject-digest`: (String|Number|Boolean)?
+  `subject-name`: (String|Number|Boolean)?
+  `subject-checksums`: (String|Number|Boolean)?
+  `sbom-path`: (String|Number|Boolean)?
+  `push-to-registry`: (String|Number|Boolean)?
+  `show-summary`: (String|Number|Boolean)?
+  `github-token`: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [actions/ai-inference](https://github.com/actions/ai-inference) action.
-class AiInference extends Workflow.Step {
-  uses = "actions/ai-inference@v1"
+class AiInference extends Workflow.TypedStep {
+  fixed uses: "actions/ai-inference@v2"
+  with: AiInferenceInputs?
+}
 
-  hidden prompt: (String|Number|Boolean)?
-  hidden promptFile: (String|Number|Boolean)?
-  hidden model: (String|Number|Boolean)?
-  hidden endpoint: (String|Number|Boolean)?
-  hidden systemPrompt: (String|Number|Boolean)?
-  hidden systemPromptFile: (String|Number|Boolean)?
-  hidden maxTokens: (String|Number|Boolean)?
-  hidden token: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["prompt"] = prompt
-    ["prompt-file"] = promptFile
-    ["model"] = model
-    ["endpoint"] = endpoint
-    ["system-prompt"] = systemPrompt
-    ["system-prompt-file"] = systemPromptFile
-    ["max-tokens"] = maxTokens
-    ["token"] = token
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class AiInferenceInputs {
+  prompt: (String|Number|Boolean)?
+  `prompt-file`: (String|Number|Boolean)?
+  input: (String|Number|Boolean)?
+  file_input: (String|Number|Boolean)?
+  model: (String|Number|Boolean)?
+  endpoint: (String|Number|Boolean)?
+  `system-prompt`: (String|Number|Boolean)?
+  `system-prompt-file`: (String|Number|Boolean)?
+  `max-tokens`: (String|Number|Boolean)?
+  token: (String|Number|Boolean)?
+  `enable-github-mcp`: (String|Number|Boolean)?
+  `github-mcp-token`: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [actions/create-github-app-token](https://github.com/actions/create-github-app-token) action.
-class CreateGitHubAppToken extends Workflow.Step {
-  uses = "actions/create-github-app-token@v2"
+class CreateGitHubAppToken extends Workflow.TypedStep {
+  fixed uses: "actions/create-github-app-token@v2"
+  with: CreateGitHubAppTokenInputs?
+}
 
-  hidden appId: (String|Number|Boolean)?
-  hidden privateKey: (String|Number|Boolean)?
-  hidden owner: (String|Number|Boolean)?
-  hidden repositories: (String|Number|Boolean)?
-  hidden skipTokenRevoke: (String|Number|Boolean)?
-  hidden githubApiUrl: (String|Number|Boolean)?
-  hidden permissionActions: (String|Number|Boolean)?
-  hidden permissionAdministration: (String|Number|Boolean)?
-  hidden permissionChecks: (String|Number|Boolean)?
-  hidden permissionCodespaces: (String|Number|Boolean)?
-  hidden permissionContents: (String|Number|Boolean)?
-  hidden permissionDependabotSecrets: (String|Number|Boolean)?
-  hidden permissionDeployments: (String|Number|Boolean)?
-  hidden permissionEmailAddresses: (String|Number|Boolean)?
-  hidden permissionEnvironments: (String|Number|Boolean)?
-  hidden permissionFollowers: (String|Number|Boolean)?
-  hidden permissionGitSshKeys: (String|Number|Boolean)?
-  hidden permissionGpgKeys: (String|Number|Boolean)?
-  hidden permissionInteractionLimits: (String|Number|Boolean)?
-  hidden permissionIssues: (String|Number|Boolean)?
-  hidden permissionMembers: (String|Number|Boolean)?
-  hidden permissionMetadata: (String|Number|Boolean)?
-  hidden permissionOrganizationAdministration: (String|Number|Boolean)?
-  hidden permissionOrganizationAnnouncementBanners: (String|Number|Boolean)?
-  hidden permissionOrganizationCopilotSeatManagement: (String|Number|Boolean)?
-  hidden permissionOrganizationCustomOrgRoles: (String|Number|Boolean)?
-  hidden permissionOrganizationCustomProperties: (String|Number|Boolean)?
-  hidden permissionOrganizationCustomRoles: (String|Number|Boolean)?
-  hidden permissionOrganizationEvents: (String|Number|Boolean)?
-  hidden permissionOrganizationHooks: (String|Number|Boolean)?
-  hidden permissionOrganizationPackages: (String|Number|Boolean)?
-  hidden permissionOrganizationPersonalAccessTokenRequests: (String|Number|Boolean)?
-  hidden permissionOrganizationPersonalAccessTokens: (String|Number|Boolean)?
-  hidden permissionOrganizationPlan: (String|Number|Boolean)?
-  hidden permissionOrganizationProjects: (String|Number|Boolean)?
-  hidden permissionOrganizationSecrets: (String|Number|Boolean)?
-  hidden permissionOrganizationSelfHostedRunners: (String|Number|Boolean)?
-  hidden permissionOrganizationUserBlocking: (String|Number|Boolean)?
-  hidden permissionPackages: (String|Number|Boolean)?
-  hidden permissionPages: (String|Number|Boolean)?
-  hidden permissionProfile: (String|Number|Boolean)?
-  hidden permissionPullRequests: (String|Number|Boolean)?
-  hidden permissionRepositoryCustomProperties: (String|Number|Boolean)?
-  hidden permissionRepositoryHooks: (String|Number|Boolean)?
-  hidden permissionRepositoryProjects: (String|Number|Boolean)?
-  hidden permissionSecretScanningAlerts: (String|Number|Boolean)?
-  hidden permissionSecrets: (String|Number|Boolean)?
-  hidden permissionSecurityEvents: (String|Number|Boolean)?
-  hidden permissionSingleFile: (String|Number|Boolean)?
-  hidden permissionStarring: (String|Number|Boolean)?
-  hidden permissionStatuses: (String|Number|Boolean)?
-  hidden permissionTeamDiscussions: (String|Number|Boolean)?
-  hidden permissionVulnerabilityAlerts: (String|Number|Boolean)?
-  hidden permissionWorkflows: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["app-id"] = appId
-    ["private-key"] = privateKey
-    ["owner"] = owner
-    ["repositories"] = repositories
-    ["skip-token-revoke"] = skipTokenRevoke
-    ["github-api-url"] = githubApiUrl
-    ["permission-actions"] = permissionActions
-    ["permission-administration"] = permissionAdministration
-    ["permission-checks"] = permissionChecks
-    ["permission-codespaces"] = permissionCodespaces
-    ["permission-contents"] = permissionContents
-    ["permission-dependabot-secrets"] = permissionDependabotSecrets
-    ["permission-deployments"] = permissionDeployments
-    ["permission-email-addresses"] = permissionEmailAddresses
-    ["permission-environments"] = permissionEnvironments
-    ["permission-followers"] = permissionFollowers
-    ["permission-git-ssh-keys"] = permissionGitSshKeys
-    ["permission-gpg-keys"] = permissionGpgKeys
-    ["permission-interaction-limits"] = permissionInteractionLimits
-    ["permission-issues"] = permissionIssues
-    ["permission-members"] = permissionMembers
-    ["permission-metadata"] = permissionMetadata
-    ["permission-organization-administration"] = permissionOrganizationAdministration
-    ["permission-organization-announcement-banners"] = permissionOrganizationAnnouncementBanners
-    ["permission-organization-copilot-seat-management"] = permissionOrganizationCopilotSeatManagement
-    ["permission-organization-custom-org-roles"] = permissionOrganizationCustomOrgRoles
-    ["permission-organization-custom-properties"] = permissionOrganizationCustomProperties
-    ["permission-organization-custom-roles"] = permissionOrganizationCustomRoles
-    ["permission-organization-events"] = permissionOrganizationEvents
-    ["permission-organization-hooks"] = permissionOrganizationHooks
-    ["permission-organization-packages"] = permissionOrganizationPackages
-    ["permission-organization-personal-access-token-requests"] = permissionOrganizationPersonalAccessTokenRequests
-    ["permission-organization-personal-access-tokens"] = permissionOrganizationPersonalAccessTokens
-    ["permission-organization-plan"] = permissionOrganizationPlan
-    ["permission-organization-projects"] = permissionOrganizationProjects
-    ["permission-organization-secrets"] = permissionOrganizationSecrets
-    ["permission-organization-self-hosted-runners"] = permissionOrganizationSelfHostedRunners
-    ["permission-organization-user-blocking"] = permissionOrganizationUserBlocking
-    ["permission-packages"] = permissionPackages
-    ["permission-pages"] = permissionPages
-    ["permission-profile"] = permissionProfile
-    ["permission-pull-requests"] = permissionPullRequests
-    ["permission-repository-custom-properties"] = permissionRepositoryCustomProperties
-    ["permission-repository-hooks"] = permissionRepositoryHooks
-    ["permission-repository-projects"] = permissionRepositoryProjects
-    ["permission-secret-scanning-alerts"] = permissionSecretScanningAlerts
-    ["permission-secrets"] = permissionSecrets
-    ["permission-security-events"] = permissionSecurityEvents
-    ["permission-single-file"] = permissionSingleFile
-    ["permission-starring"] = permissionStarring
-    ["permission-statuses"] = permissionStatuses
-    ["permission-team-discussions"] = permissionTeamDiscussions
-    ["permission-vulnerability-alerts"] = permissionVulnerabilityAlerts
-    ["permission-workflows"] = permissionWorkflows
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class CreateGitHubAppTokenInputs {
+  `app-id`: (String|Number|Boolean)?
+  `private-key`: (String|Number|Boolean)?
+  owner: (String|Number|Boolean)?
+  repositories: (String|Number|Boolean)?
+  `skip-token-revoke`: (String|Number|Boolean)?
+  `github-api-url`: (String|Number|Boolean)?
+  `permission-actions`: (String|Number|Boolean)?
+  `permission-administration`: (String|Number|Boolean)?
+  `permission-checks`: (String|Number|Boolean)?
+  `permission-codespaces`: (String|Number|Boolean)?
+  `permission-contents`: (String|Number|Boolean)?
+  `permission-dependabot-secrets`: (String|Number|Boolean)?
+  `permission-deployments`: (String|Number|Boolean)?
+  `permission-email-addresses`: (String|Number|Boolean)?
+  `permission-environments`: (String|Number|Boolean)?
+  `permission-followers`: (String|Number|Boolean)?
+  `permission-git-ssh-keys`: (String|Number|Boolean)?
+  `permission-gpg-keys`: (String|Number|Boolean)?
+  `permission-interaction-limits`: (String|Number|Boolean)?
+  `permission-issues`: (String|Number|Boolean)?
+  `permission-members`: (String|Number|Boolean)?
+  `permission-metadata`: (String|Number|Boolean)?
+  `permission-organization-administration`: (String|Number|Boolean)?
+  `permission-organization-announcement-banners`: (String|Number|Boolean)?
+  `permission-organization-copilot-seat-management`: (String|Number|Boolean)?
+  `permission-organization-custom-org-roles`: (String|Number|Boolean)?
+  `permission-organization-custom-properties`: (String|Number|Boolean)?
+  `permission-organization-custom-roles`: (String|Number|Boolean)?
+  `permission-organization-events`: (String|Number|Boolean)?
+  `permission-organization-hooks`: (String|Number|Boolean)?
+  `permission-organization-packages`: (String|Number|Boolean)?
+  `permission-organization-personal-access-token-requests`: (String|Number|Boolean)?
+  `permission-organization-personal-access-tokens`: (String|Number|Boolean)?
+  `permission-organization-plan`: (String|Number|Boolean)?
+  `permission-organization-projects`: (String|Number|Boolean)?
+  `permission-organization-secrets`: (String|Number|Boolean)?
+  `permission-organization-self-hosted-runners`: (String|Number|Boolean)?
+  `permission-organization-user-blocking`: (String|Number|Boolean)?
+  `permission-packages`: (String|Number|Boolean)?
+  `permission-pages`: (String|Number|Boolean)?
+  `permission-profile`: (String|Number|Boolean)?
+  `permission-pull-requests`: (String|Number|Boolean)?
+  `permission-repository-custom-properties`: (String|Number|Boolean)?
+  `permission-repository-hooks`: (String|Number|Boolean)?
+  `permission-repository-projects`: (String|Number|Boolean)?
+  `permission-secret-scanning-alerts`: (String|Number|Boolean)?
+  `permission-secrets`: (String|Number|Boolean)?
+  `permission-security-events`: (String|Number|Boolean)?
+  `permission-single-file`: (String|Number|Boolean)?
+  `permission-starring`: (String|Number|Boolean)?
+  `permission-statuses`: (String|Number|Boolean)?
+  `permission-team-discussions`: (String|Number|Boolean)?
+  `permission-vulnerability-alerts`: (String|Number|Boolean)?
+  `permission-workflows`: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [actions/delete-package-versions](https://github.com/actions/delete-package-versions) action.
-class DeletePackageVersion extends Workflow.Step {
-  uses = "actions/delete-package-versions@v5"
+class DeletePackageVersion extends Workflow.TypedStep {
+  fixed uses: "actions/delete-package-versions@v5"
+  with: DeletePackageVersionInputs?
+}
 
-  hidden packageVersionIds: (String|Number|Boolean)?
-  hidden owner: (String|Number|Boolean)?
-  hidden packageName: (String|Number|Boolean)?
-  hidden packageType: (String|Number|Boolean)?
-  hidden numOldVersionsToDelete: (String|Number|Boolean)?
-  hidden minVersionsToKeep: (String|Number|Boolean)?
-  hidden ignoreVersions: (String|Number|Boolean)?
-  hidden deleteOnlyPreReleaseVersions: (String|Number|Boolean)?
-  hidden deleteOnlyUntaggedVersions: (String|Number|Boolean)?
-  hidden token: (String|Number|Boolean)?
+class DeletePackageVersionInputs {
+  /// Comma separated string of package version ids to delete.
+  `package-version-ids`: (String|Number|Boolean)?
 
-  local localWith = new Mapping {
-    ["package-version-ids"] = packageVersionIds
-    ["owner"] = owner
-    ["package-name"] = packageName
-    ["package-type"] = packageType
-    ["num-old-versions-to-delete"] = numOldVersionsToDelete
-    ["min-versions-to-keep"] = minVersionsToKeep
-    ["ignore-versions"] = ignoreVersions
-    ["delete-only-pre-release-versions"] = deleteOnlyPreReleaseVersions
-    ["delete-only-untagged-versions"] = deleteOnlyUntaggedVersions
-    ["token"] = token
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+  /// Owner of the repo containing the package version to delete.
+  /// Defaults to the owner of the repo running the action.
+  owner: (String|Number|Boolean)?
+
+  /// Name of the package containing the version to delete.
+  `package-name`: (String|Number|Boolean)?
+
+  /// Type of package. Can be one of container, maven, npm, nuget, or rubygems.
+  `package-type`: (String|Number|Boolean)?
+
+  /// Number of versions to delete starting with the oldest version.
+  /// Defaults to 1.
+  `num-old-versions-to-delete`: (String|Number|Boolean)?
+
+  /// Number of versions to keep starting with the latest version.
+  /// By default keeps no version. To delete all versions set this as 0.
+  `min-versions-to-keep`: (String|Number|Boolean)?
+
+  /// Regex pattern for package versions to ignore. Defaults to delete all versions.
+  `ignore-versions`: (String|Number|Boolean)?
+
+  /// Deletes only pre-release versions. The number of pre-release versions to keep can be specified by min-versions-to-keep.
+  /// When this is set num-old-versions-to-delete and ignore-versions will not be taken into account.
+  /// By default this is set to false
+  `delete-only-pre-release-versions`: (String|Number|Boolean)?
+
+  /// Deletes only untagged versions in case of a container package. Does not work for other package types.
+  /// The number of untagged versions to keep can be specified by min-versions-to-keep.
+  /// When this is set num-old-versions-to-delete will not be taken into account.
+  /// By default this is set to false
+  `delete-only-untagged-versions`: (String|Number|Boolean)?
+
+  /// Token with the necessary scopes to delete package versions.
+  /// If num-old-versions-to-delete is used the token also needs the read packages scope.
+  /// Defaults to github.token scoped to the repo running the action. To delete package versions
+  /// of a package outside the repo the action is running in use a Personal Access Token stored as a secret.
+  token: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [actions/stale](https://github.com/actions/stale) action.
-class Stale extends Workflow.Step {
-  uses = "actions/stale@v9"
+class Stale extends Workflow.TypedStep {
+  fixed uses: "actions/stale@v10"
+  with: StaleInputs?
+}
 
-  hidden repoToken: (String|Number|Boolean)?
-  hidden staleIssueMessage: (String|Number|Boolean)?
-  hidden stalePrMessage: (String|Number|Boolean)?
-  hidden closeIssueMessage: (String|Number|Boolean)?
-  hidden closePrMessage: (String|Number|Boolean)?
-  hidden daysBeforeStale: (String|Number|Boolean)?
-  hidden daysBeforeIssueStale: (String|Number|Boolean)?
-  hidden daysBeforePrStale: (String|Number|Boolean)?
-  hidden daysBeforeClose: (String|Number|Boolean)?
-  hidden daysBeforeIssueClose: (String|Number|Boolean)?
-  hidden daysBeforePrClose: (String|Number|Boolean)?
-  hidden staleIssueLabel: (String|Number|Boolean)?
-  hidden closeIssueLabel: (String|Number|Boolean)?
-  hidden exemptIssueLabels: (String|Number|Boolean)?
-  hidden closeIssueReason: (String|Number|Boolean)?
-  hidden stalePrLabel: (String|Number|Boolean)?
-  hidden closePrLabel: (String|Number|Boolean)?
-  hidden exemptPrLabels: (String|Number|Boolean)?
-  hidden exemptMilestones: (String|Number|Boolean)?
-  hidden exemptIssueMilestones: (String|Number|Boolean)?
-  hidden exemptPrMilestones: (String|Number|Boolean)?
-  hidden exemptAllMilestones: (String|Number|Boolean)?
-  hidden exemptAllIssueMilestones: (String|Number|Boolean)?
-  hidden exemptAllPrMilestones: (String|Number|Boolean)?
-  hidden onlyLabels: (String|Number|Boolean)?
-  hidden anyOfLabels: (String|Number|Boolean)?
-  hidden anyOfIssueLabels: (String|Number|Boolean)?
-  hidden anyOfPrLabels: (String|Number|Boolean)?
-  hidden onlyIssueLabels: (String|Number|Boolean)?
-  hidden onlyPrLabels: (String|Number|Boolean)?
-  hidden operationsPerRun: (String|Number|Boolean)?
-  hidden removeStaleWhenUpdated: (String|Number|Boolean)?
-  hidden removeIssueStaleWhenUpdated: (String|Number|Boolean)?
-  hidden removePrStaleWhenUpdated: (String|Number|Boolean)?
-  hidden debugOnly: (String|Number|Boolean)?
-  hidden ascending: (String|Number|Boolean)?
-  hidden deleteBranch: (String|Number|Boolean)?
-  hidden startDate: (String|Number|Boolean)?
-  hidden exemptAssignees: (String|Number|Boolean)?
-  hidden exemptIssueAssignees: (String|Number|Boolean)?
-  hidden exemptPrAssignees: (String|Number|Boolean)?
-  hidden exemptAllAssignees: (String|Number|Boolean)?
-  hidden exemptAllIssueAssignees: (String|Number|Boolean)?
-  hidden exemptAllPrAssignees: (String|Number|Boolean)?
-  hidden exemptDraftPr: (String|Number|Boolean)?
-  hidden enableStatistics: (String|Number|Boolean)?
-  hidden labelsToAddWhenUnstale: (String|Number|Boolean)?
-  hidden labelsToRemoveWhenStale: (String|Number|Boolean)?
-  hidden labelsToRemoveWhenUnstale: (String|Number|Boolean)?
-  hidden ignoreUpdates: (String|Number|Boolean)?
-  hidden ignoreIssueUpdates: (String|Number|Boolean)?
-  hidden ignorePrUpdates: (String|Number|Boolean)?
-  hidden includeOnlyAssigned: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["repo-token"] = repoToken
-    ["stale-issue-message"] = staleIssueMessage
-    ["stale-pr-message"] = stalePrMessage
-    ["close-issue-message"] = closeIssueMessage
-    ["close-pr-message"] = closePrMessage
-    ["days-before-stale"] = daysBeforeStale
-    ["days-before-issue-stale"] = daysBeforeIssueStale
-    ["days-before-pr-stale"] = daysBeforePrStale
-    ["days-before-close"] = daysBeforeClose
-    ["days-before-issue-close"] = daysBeforeIssueClose
-    ["days-before-pr-close"] = daysBeforePrClose
-    ["stale-issue-label"] = staleIssueLabel
-    ["close-issue-label"] = closeIssueLabel
-    ["exempt-issue-labels"] = exemptIssueLabels
-    ["close-issue-reason"] = closeIssueReason
-    ["stale-pr-label"] = stalePrLabel
-    ["close-pr-label"] = closePrLabel
-    ["exempt-pr-labels"] = exemptPrLabels
-    ["exempt-milestones"] = exemptMilestones
-    ["exempt-issue-milestones"] = exemptIssueMilestones
-    ["exempt-pr-milestones"] = exemptPrMilestones
-    ["exempt-all-milestones"] = exemptAllMilestones
-    ["exempt-all-issue-milestones"] = exemptAllIssueMilestones
-    ["exempt-all-pr-milestones"] = exemptAllPrMilestones
-    ["only-labels"] = onlyLabels
-    ["any-of-labels"] = anyOfLabels
-    ["any-of-issue-labels"] = anyOfIssueLabels
-    ["any-of-pr-labels"] = anyOfPrLabels
-    ["only-issue-labels"] = onlyIssueLabels
-    ["only-pr-labels"] = onlyPrLabels
-    ["operations-per-run"] = operationsPerRun
-    ["remove-stale-when-updated"] = removeStaleWhenUpdated
-    ["remove-issue-stale-when-updated"] = removeIssueStaleWhenUpdated
-    ["remove-pr-stale-when-updated"] = removePrStaleWhenUpdated
-    ["debug-only"] = debugOnly
-    ["ascending"] = ascending
-    ["delete-branch"] = deleteBranch
-    ["start-date"] = startDate
-    ["exempt-assignees"] = exemptAssignees
-    ["exempt-issue-assignees"] = exemptIssueAssignees
-    ["exempt-pr-assignees"] = exemptPrAssignees
-    ["exempt-all-assignees"] = exemptAllAssignees
-    ["exempt-all-issue-assignees"] = exemptAllIssueAssignees
-    ["exempt-all-pr-assignees"] = exemptAllPrAssignees
-    ["exempt-draft-pr"] = exemptDraftPr
-    ["enable-statistics"] = enableStatistics
-    ["labels-to-add-when-unstale"] = labelsToAddWhenUnstale
-    ["labels-to-remove-when-stale"] = labelsToRemoveWhenStale
-    ["labels-to-remove-when-unstale"] = labelsToRemoveWhenUnstale
-    ["ignore-updates"] = ignoreUpdates
-    ["ignore-issue-updates"] = ignoreIssueUpdates
-    ["ignore-pr-updates"] = ignorePrUpdates
-    ["include-only-assigned"] = includeOnlyAssigned
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class StaleInputs {
+  /// Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.
+  `repo-token`: (String|Number|Boolean)?
+  /// The message to post on the issue when tagging it. If none provided, will not mark issues stale.
+  `stale-issue-message`: (String|Number|Boolean)?
+  /// The message to post on the pull request when tagging it. If none provided, will not mark pull requests stale.
+  `stale-pr-message`: (String|Number|Boolean)?
+  /// The message to post on the issue when closing it. If none provided, will not comment when closing an issue.
+  `close-issue-message`: (String|Number|Boolean)?
+  /// The message to post on the pull request when closing it. If none provided, will not comment when closing a pull requests.
+  `close-pr-message`: (String|Number|Boolean)?
+  /// The number of days old an issue or a pull request can be before marking it stale. Set to -1 to never mark issues or pull requests as stale automatically.
+  `days-before-stale`: (String|Number|Boolean)?
+  /// The number of days old an issue can be before marking it stale. Set to -1 to never mark issues as stale automatically. Override "days-before-stale" option regarding only the issues.
+  `days-before-issue-stale`: (String|Number|Boolean)?
+  /// The number of days old a pull request can be before marking it stale. Set to -1 to never mark pull requests as stale automatically. Override "days-before-stale" option regarding only the pull requests.
+  `days-before-pr-stale`: (String|Number|Boolean)?
+  /// The number of days to wait to close an issue or a pull request after it being marked stale. Set to -1 to never close stale issues or pull requests.
+  `days-before-close`: (String|Number|Boolean)?
+  /// The number of days to wait to close an issue after it being marked stale. Set to -1 to never close stale issues. Override "days-before-close" option regarding only the issues.
+  `days-before-issue-close`: (String|Number|Boolean)?
+  /// The number of days to wait to close a pull request after it being marked stale. Set to -1 to never close stale pull requests. Override "days-before-close" option regarding only the pull requests.
+  `days-before-pr-close`: (String|Number|Boolean)?
+  /// The label to apply when an issue is stale.
+  `stale-issue-label`: (String|Number|Boolean)?
+  /// The label to apply when an issue is closed.
+  `close-issue-label`: (String|Number|Boolean)?
+  /// The labels that mean an issue is exempt from being marked stale. Separate multiple labels with commas (eg. "label1,label2").
+  `exempt-issue-labels`: (String|Number|Boolean)?
+  /// The reason to use when closing an issue.
+  `close-issue-reason`: (String|Number|Boolean)?
+  /// The label to apply when a pull request is stale.
+  `stale-pr-label`: (String|Number|Boolean)?
+  /// The label to apply when a pull request is closed.
+  `close-pr-label`: (String|Number|Boolean)?
+  /// The labels that mean a pull request is exempt from being marked as stale. Separate multiple labels with commas (eg. "label1,label2").
+  `exempt-pr-labels`: (String|Number|Boolean)?
+  /// The milestones that mean an issue or a pull request is exempt from being marked as stale. Separate multiple milestones with commas (eg. "milestone1,milestone2").
+  `exempt-milestones`: (String|Number|Boolean)?
+  /// The milestones that mean an issue is exempt from being marked as stale. Separate multiple milestones with commas (eg. "milestone1,milestone2"). Override "exempt-milestones" option regarding only the issues.
+  `exempt-issue-milestones`: (String|Number|Boolean)?
+  /// The milestones that mean a pull request is exempt from being marked as stale. Separate multiple milestones with commas (eg. "milestone1,milestone2"). Override "exempt-milestones" option regarding only the pull requests.
+  `exempt-pr-milestones`: (String|Number|Boolean)?
+  /// Exempt all issues and pull requests with milestones from being marked as stale. Default to false.
+  `exempt-all-milestones`: (String|Number|Boolean)?
+  /// Exempt all issues with milestones from being marked as stale. Override "exempt-all-milestones" option regarding only the issues.
+  `exempt-all-issue-milestones`: (String|Number|Boolean)?
+  /// Exempt all pull requests with milestones from being marked as stale. Override "exempt-all-milestones" option regarding only the pull requests.
+  `exempt-all-pr-milestones`: (String|Number|Boolean)?
+  /// Only issues or pull requests with all of these labels are checked if stale. Defaults to `` (disabled) and can be a comma-separated list of labels.
+  `only-labels`: (String|Number|Boolean)?
+  /// Only issues or pull requests with at least one of these labels are checked if stale. Defaults to `` (disabled) and can be a comma-separated list of labels.
+  `any-of-labels`: (String|Number|Boolean)?
+  /// Only issues with at least one of these labels are checked if stale. Defaults to `` (disabled) and can be a comma-separated list of labels. Override "any-of-labels" option regarding only the issues.
+  `any-of-issue-labels`: (String|Number|Boolean)?
+  /// Only pull requests with at least one of these labels are checked if stale. Defaults to `` (disabled) and can be a comma-separated list of labels. Override "any-of-labels" option regarding only the pull requests.
+  `any-of-pr-labels`: (String|Number|Boolean)?
+  /// Only issues with all of these labels are checked if stale. Defaults to `[]` (disabled) and can be a comma-separated list of labels. Override "only-labels" option regarding only the issues.
+  `only-issue-labels`: (String|Number|Boolean)?
+  /// Only pull requests with all of these labels are checked if stale. Defaults to `[]` (disabled) and can be a comma-separated list of labels. Override "only-labels" option regarding only the pull requests.
+  `only-pr-labels`: (String|Number|Boolean)?
+  /// The maximum number of operations per run, used to control rate limiting (GitHub API CRUD related).
+  `operations-per-run`: (String|Number|Boolean)?
+  /// Remove stale labels from issues and pull requests when they are updated or commented on.
+  `remove-stale-when-updated`: (String|Number|Boolean)?
+  /// Remove stale labels from issues when they are updated or commented on. Override "remove-stale-when-updated" option regarding only the issues.
+  `remove-issue-stale-when-updated`: (String|Number|Boolean)?
+  /// Remove stale labels from pull requests when they are updated or commented on. Override "remove-stale-when-updated" option regarding only the pull requests.
+  `remove-pr-stale-when-updated`: (String|Number|Boolean)?
+  /// Run the processor in debug mode without actually performing any operations on live issues.
+  `debug-only`: (String|Number|Boolean)?
+  /// The order to get issues or pull requests. Defaults to false, which is descending.
+  ascending: (String|Number|Boolean)?
+  /// What to sort results by. Valid options are `created`, `updated`, and `comments`. Defaults to `created`.
+  `sort-by`: (String|Number|Boolean)?
+  /// Delete the git branch after closing a stale pull request.
+  `delete-branch`: (String|Number|Boolean)?
+  /// The date used to skip the stale action on issue/pull request created before it (ISO 8601 or RFC 2822).
+  `start-date`: (String|Number|Boolean)?
+  /// The assignees which exempt an issue or a pull request from being marked as stale. Separate multiple assignees with commas (eg. "user1,user2").
+  `exempt-assignees`: (String|Number|Boolean)?
+  /// The assignees which exempt an issue from being marked as stale. Separate multiple assignees with commas (eg. "user1,user2"). Override "exempt-assignees" option regarding only the issues.
+  `exempt-issue-assignees`: (String|Number|Boolean)?
+  /// The assignees which exempt a pull request from being marked as stale. Separate multiple assignees with commas (eg. "user1,user2"). Override "exempt-assignees" option regarding only the pull requests.
+  `exempt-pr-assignees`: (String|Number|Boolean)?
+  /// Exempt all issues and pull requests with assignees from being marked as stale. Default to false.
+  `exempt-all-assignees`: (String|Number|Boolean)?
+  /// Exempt all issues with assignees from being marked as stale. Override "exempt-all-assignees" option regarding only the issues.
+  `exempt-all-issue-assignees`: (String|Number|Boolean)?
+  /// Exempt all pull requests with assignees from being marked as stale. Override "exempt-all-assignees" option regarding only the pull requests.
+  `exempt-all-pr-assignees`: (String|Number|Boolean)?
+  /// Exempt draft pull requests from being marked as stale. Default to false.
+  `exempt-draft-pr`: (String|Number|Boolean)?
+  /// Display some statistics at the end regarding the stale workflow (only when the logs are enabled).
+  `enable-statistics`: (String|Number|Boolean)?
+  /// A comma delimited list of labels to add when an issue or pull request becomes unstale.
+  `labels-to-add-when-unstale`: (String|Number|Boolean)?
+  /// A comma delimited list of labels to remove when an issue or pull request becomes stale.
+  `labels-to-remove-when-stale`: (String|Number|Boolean)?
+  /// A comma delimited list of labels to remove when an issue or pull request becomes unstale.
+  `labels-to-remove-when-unstale`: (String|Number|Boolean)?
+  /// Any update (update/comment) can reset the stale idle time on the issues and pull requests.
+  `ignore-updates`: (String|Number|Boolean)?
+  /// Any update (update/comment) can reset the stale idle time on the issues. Override "ignore-updates" option regarding only the issues.
+  `ignore-issue-updates`: (String|Number|Boolean)?
+  /// Any update (update/comment) can reset the stale idle time on the pull requests. Override "ignore-updates" option regarding only the pull requests.
+  `ignore-pr-updates`: (String|Number|Boolean)?
+  /// Only the issues or the pull requests with an assignee will be marked as stale automatically.
+  `include-only-assigned`: (String|Number|Boolean)?
+  /// Only issues with a matching type are processed as stale/closed. Defaults to `[]` (disabled) and can be a comma-separated list of issue types.
+  `only-issue-types`: (String|Number|Boolean)?
 }
 
 /// Type-safe GitHub Action of the [actions/dependency-review-action](https://github.com/actions/dependency-review-action) action.
-class DependencyReviewAction extends Workflow.Step {
-  uses = "actions/dependency-review-action@v4"
+class DependencyReviewAction extends Workflow.TypedStep {
+  fixed uses: "actions/dependency-review-action@v4"
+  with: DependencyReviewActionInputs?
+}
 
-  hidden repoToken: (String|Number|Boolean)?
-  hidden failOnSeverity: (String|Number|Boolean)?
-  hidden failOnScopes: (String|Number|Boolean)?
-  hidden baseRef: (String|Number|Boolean)?
-  hidden headRef: (String|Number|Boolean)?
-  hidden configFile: (String|Number|Boolean)?
-  hidden allowLicenses: (String|Number|Boolean)?
-  hidden denyLicenses: (String|Number|Boolean)?
-  hidden allowDependenciesLicenses: (String|Number|Boolean)?
-  hidden allowGhsas: (String|Number|Boolean)?
-  hidden externalRepoToken: (String|Number|Boolean)?
-  hidden licenseCheck: (String|Number|Boolean)?
-  hidden vulnerabilityCheck: (String|Number|Boolean)?
-  hidden commentSummaryInPr: (String|Number|Boolean)?
-  hidden denyPackages: (String|Number|Boolean)?
-  hidden denyGroups: (String|Number|Boolean)?
-  hidden retryOnSnapshotWarnings: (String|Number|Boolean)?
-  hidden retryOnSnapshotWarningsTimeout: (String|Number|Boolean)?
-  hidden warnOnly: (String|Number|Boolean)?
-  hidden showOpenssfScorecard: (String|Number|Boolean)?
-  hidden warnOnOpenssfScorecardLevel: (String|Number|Boolean)?
-
-  local localWith = new Mapping {
-    ["repo-token"] = repoToken
-    ["fail-on-severity"] = failOnSeverity
-    ["fail-on-scopes"] = failOnScopes
-    ["base-ref"] = baseRef
-    ["head-ref"] = headRef
-    ["config-file"] = configFile
-    ["allow-licenses"] = allowLicenses
-    ["deny-licenses"] = denyLicenses
-    ["allow-dependencies-licenses"] = allowDependenciesLicenses
-    ["allow-ghsas"] = allowGhsas
-    ["external-repo-token"] = externalRepoToken
-    ["license-check"] = licenseCheck
-    ["vulnerability-check"] = vulnerabilityCheck
-    ["comment-summary-in-pr"] = commentSummaryInPr
-    ["deny-packages"] = denyPackages
-    ["deny-groups"] = denyGroups
-    ["retry-on-snapshot-warnings"] = retryOnSnapshotWarnings
-    ["retry-on-snapshot-warnings-timeout"] = retryOnSnapshotWarningsTimeout
-    ["warn-only"] = warnOnly
-    ["show-openssf-scorecard"] = showOpenssfScorecard
-    ["warn-on-openssf-scorecard-level"] = warnOnOpenssfScorecardLevel
-  }
-  local filteredWith = localWith.toMap().filter((_, value) -> value != null)
-  with = if (filteredWith.isEmpty) null else filteredWith.toMapping()
+class DependencyReviewActionInputs {
+  /// Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.
+  `repo-token`: (String|Number|Boolean)?
+  /// Don't block PRs below this severity. Possible values are `low`, `moderate`, `high`, `critical`.
+  `fail-on-severity`: (String|Number|Boolean)?
+  /// Dependency scopes to block PRs on. Comma-separated list. Possible values are 'unknown', 'runtime', and 'development' (e.g. "runtime, development")
+  `fail-on-scopes`: (String|Number|Boolean)?
+  /// The base git ref to be used for this check. Has a default value when the workflow event is `pull_request` or `pull_request_target`. Must be provided otherwise.
+  `base-ref`: (String|Number|Boolean)?
+  /// The head git ref to be used for this check. Has a default value when the workflow event is `pull_request` or `pull_request_target`. Must be provided otherwise.
+  `head-ref`: (String|Number|Boolean)?
+  /// A path to the configuration file for the action.
+  `config-file`: (String|Number|Boolean)?
+  /// Comma-separated list of allowed licenses (e.g. "MIT, GPL 3.0, BSD 2 Clause")
+  `allow-licenses`: (String|Number|Boolean)?
+  /// Comma-separated list of forbidden licenses (e.g. "MIT, GPL 3.0, BSD 2 Clause")
+  `deny-licenses`: (String|Number|Boolean)?
+  /// Comma-separated list of dependencies in purl format (e.g. "pkg:npm/express, pkg:pypi/pycrypto"). These dependencies will be permitted to use any license, no matter what license policy[...]
+  `allow-dependencies-licenses`: (String|Number|Boolean)?
+  /// Comma-separated list of allowed GitHub Advisory IDs (e.g. "GHSA-abcd-1234-5679, GHSA-efgh-1234-5679")
+  `allow-ghsas`: (String|Number|Boolean)?
+  /// A token for fetching external configuration file if it lives in another repository. It is required if the repository is private
+  `external-repo-token`: (String|Number|Boolean)?
+  /// A boolean to determine if license checks should be performed
+  `license-check`: (String|Number|Boolean)?
+  /// A boolean to determine if vulnerability checks should be performed
+  `vulnerability-check`: (String|Number|Boolean)?
+  /// Determines if the summary is posted as a comment in the PR itself. Setting this to `always` or `on-failure` requires you to give the workflow the write permissions for pull-requests
+  `comment-summary-in-pr`: (String|Number|Boolean)?
+  /// A comma-separated list of package URLs to deny (e.g. "pkg:npm/express, pkg:pypi/pycrypto"). If version specified, only deny matching packages and version; else, deny all regardless of[...]
+  `deny-packages`: (String|Number|Boolean)?
+  /// A comma-separated list of package URLs for group(s)/namespace(s) to deny (e.g. "pkg:npm/express/, pkg:pypi/pycrypto/"). Please note that the group name must be followed by a `/`.
+  `deny-groups`: (String|Number|Boolean)?
+  /// Whether to retry on snapshot warnings
+  `retry-on-snapshot-warnings`: (String|Number|Boolean)?
+  /// Number of seconds to wait before stopping snapshot retries.
+  `retry-on-snapshot-warnings-timeout`: (String|Number|Boolean)?
+  /// When set to `true` this action will always complete with success, overriding the `fail-on-severity` parameter.
+  `warn-only`: (String|Number|Boolean)?
+  /// Show a summary of the OpenSSF Scorecard scores.
+  `show-openssf-scorecard`: (String|Number|Boolean)?
+  /// Numeric threshold for the OpenSSF Scorecard score. If the score is below this threshold, the action will warn you.
+  `warn-on-openssf-scorecard-level`: (String|Number|Boolean)?
 }

@@ -19,7 +19,9 @@ jobs {
     steps {
       Action.checkout
       (Action.setupGo) {
-        goVersion = "1.17.7"
+        with {
+          `go-version` = "1.17.7"
+        }
       }
       new {
         run = "go run wiki/generateWikiToc.go"

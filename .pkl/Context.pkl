@@ -3,15 +3,28 @@
 ///
 /// For more check the
 /// [GitHub documentation](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs)
-@ModuleInfo { minPklVersion = "0.25.3" }
 module com.github.action.Context
+
+github: GitHub
+
+job: Job
+
+jobs: Jobs
+
+steps: Steps
+
+runner: Runner
+
+strategy: Strategy
+
+needs: Needs
 
 class GitHub {
   action: String = custom("action")
   actionPath: String = custom("action_path")
   actionRef: String = custom("action_ref")
   actionRepository: String = custom("action_repository")
-  actionStatus: String = custom("action_action")
+  actionStatus: String = custom("action_status")
   actor: String = custom("actor")
   actorId: String = custom("actor_id")
   apiUrl: String = custom("api_url")
@@ -29,9 +42,9 @@ class GitHub {
   repository: String = custom("repository")
   repositoryId: String = custom("repository_id")
   repositoryOwner: String = custom("repository_owner")
-  repositoryownerId: String = custom("repository_owner_id")
+  repositoryOwnerId: String = custom("repository_owner_id")
   repositoryUrl: String = custom("repository_url")
-  retentionDays: String = custom("reention_dayus")
+  retentionDays: String = custom("retention_days")
   runId: String = custom("run_id")
   runNumber: String = custom("run_number")
   runAttempt: String = custom("run_attempt")
@@ -41,13 +54,12 @@ class GitHub {
   triggeringActor: String = custom("triggering_actor")
   workflow: String = custom("workflow")
   workflowRef: String = custom("workflow_ref")
-  workflowSha: String = custom("workflow_rsha")
+  workflowSha: String = custom("workflow_sha")
   workspace: String = custom("workspace")
 
   function event(name: String): String = custom("event.\(name)")
   function custom(name: String): String = "${{ github.\(name) }}"
 }
-github: GitHub = new GitHub {}
 
 const function env(name: String): String = "${{ env.\(name) }}"
 
@@ -60,6 +72,7 @@ class Job {
 
   function custom(name: String): String = "${{ job.\(name) }}"
 }
+
 class JobServices {
   function id(serviceId: String): String = custom("\(serviceId).id")
   function network(serviceId: String): String = custom("\(serviceId).network")
@@ -67,7 +80,6 @@ class JobServices {
 
   function custom(serviceId: String): String = "${{ job.services.\(serviceId) }}"
 }
-job: Job = new Job {}
 
 class Jobs {
   function result(jobId: String): String = custom("\(jobId).result")
@@ -75,7 +87,6 @@ class Jobs {
 
   function custom(name: String): String = "${{ jobs.\(name) }}"
 }
-jobs: Jobs = new Jobs {}
 
 class Steps {
   function conclusion(stepId: String): String = custom("\(stepId).conclusion")
@@ -84,7 +95,6 @@ class Steps {
 
   function custom(name: String): String = "${{ steps.\(name) }}"
 }
-steps: Steps = new Steps {}
 
 class Runner {
   name: String = custom("name")
@@ -97,7 +107,6 @@ class Runner {
 
   function custom(name: String): String = "${{ runner.\(name) }}"
 }
-runner: Runner = new Runner {}
 
 const function secrets(name: String): String = "${{ secrets.\(name) }}"
 
@@ -109,7 +118,6 @@ class Strategy {
 
   function custom(name: String): String = "${{ strategy.\(name) }}"
 }
-strategy: Strategy = new Strategy {}
 
 const function matrix(propertyName: String): String = "${{ matrix.\(propertyName) }}"
 
@@ -119,6 +127,5 @@ class Needs {
 
   function custom(name: String): String = "${{ needs.\(name) }}"
 }
-needs: Needs = new Needs {}
 
 const function inputs(name: String): String = "${{ inputs.\(name) }}"

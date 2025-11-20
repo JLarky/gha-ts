@@ -11,10 +11,36 @@ export interface PushTrigger {
   paths?: string[];
   "paths-ignore"?: string[];
 }
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+ */
+export type PullRequestType =
+  | "assigned"
+  | "unassigned"
+  | "review_requested"
+  | "review_request_removed"
+  | "labeled"
+  | "unlabeled"
+  | "opened"
+  | "edited"
+  | "closed"
+  | "reopened"
+  | "synchronize"
+  | "ready_for_review"
+  | "locked"
+  | "unlocked"
+  | "converted_to_draft"
+  | "demilestoned"
+  | "milestoned"
+  | "auto_merge_enabled"
+  | "auto_merge_disabled"
+  | (string & {});
+
 export interface PullRequestTrigger {
   branches?: string[];
   "branches-ignore"?: string[];
-  types?: string[];
+  types?: PullRequestType[];
   paths?: string[];
   "paths-ignore"?: string[];
 }
@@ -34,22 +60,80 @@ export interface WorkflowDispatchTrigger {
 export interface ScheduleTrigger {
   cron: string[];
 }
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#check_suite
+ */
+export type CheckSuiteType =
+  | "completed"
+  | "requested"
+  | "rerequested"
+  | (string & {});
+
 export interface CheckSuiteTrigger {
-  types?: string[];
+  types?: CheckSuiteType[];
 }
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#issues
+ */
+export type IssuesType =
+  | "opened"
+  | "edited"
+  | "deleted"
+  | "transferred"
+  | "pinned"
+  | "unpinned"
+  | "closed"
+  | "reopened"
+  | "assigned"
+  | "unassigned"
+  | "labeled"
+  | "unlabeled"
+  | "locked"
+  | "unlocked"
+  | "milestoned"
+  | "demilestoned"
+  | (string & {});
+
 export interface IssuesTrigger {
-  types?: string[];
+  types?: IssuesType[];
 }
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#issue_comment
+ */
+export type IssueCommentType =
+  | "created"
+  | "edited"
+  | "deleted"
+  | (string & {});
+
 export interface IssueCommentTrigger {
-  types?: string[];
+  types?: IssueCommentType[];
 }
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
+ */
+export type ReleaseType =
+  | "published"
+  | "unpublished"
+  | "created"
+  | "edited"
+  | "deleted"
+  | "prereleased"
+  | "released"
+  | (string & {});
+
 export interface ReleaseTrigger {
-  types?: string[];
+  types?: ReleaseType[];
 }
 export interface CreateTrigger {}
 export interface DeleteTrigger {}
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#registry_package
+ */
+export type RegistryPackageType = "published" | "updated" | (string & {});
+
 export interface RegistryPackageTrigger {
-  types?: string[];
+  types?: RegistryPackageType[];
 }
 export interface PageBuildTrigger {}
 export interface WorkflowCallTrigger {
@@ -68,17 +152,135 @@ export interface WorkflowCallTrigger {
   outputs?: Record<string, { description?: string; value: string }>;
 }
 
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#branch_protection_rule
+ */
+export type BranchProtectionRuleType =
+  | "created"
+  | "edited"
+  | "deleted"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#discussion
+ */
+export type DiscussionType =
+  | "created"
+  | "edited"
+  | "deleted"
+  | "transferred"
+  | "pinned"
+  | "unpinned"
+  | "labeled"
+  | "unlabeled"
+  | "locked"
+  | "unlocked"
+  | "category_changed"
+  | "answered"
+  | "unanswered"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#discussion_comment
+ */
+export type DiscussionCommentType =
+  | "created"
+  | "edited"
+  | "deleted"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#label
+ */
+export type LabelType = "created" | "edited" | "deleted" | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#merge_group
+ */
+export type MergeGroupType = "checked_requested" | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#milestone
+ */
+export type MilestoneType =
+  | "created"
+  | "closed"
+  | "opened"
+  | "edited"
+  | "deleted"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#project
+ */
+export type ProjectType =
+  | "created"
+  | "updated"
+  | "closed"
+  | "reopened"
+  | "edited"
+  | "deleted"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#project_card
+ */
+export type ProjectCardType =
+  | "created"
+  | "moved"
+  | "converted"
+  | "edited"
+  | "deleted"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#project_column
+ */
+export type ProjectColumnType =
+  | "created"
+  | "updated"
+  | "moved"
+  | "deleted"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_review
+ */
+export type PullRequestReviewType =
+  | "submitted"
+  | "edited"
+  | "dismissed"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_review_comment
+ */
+export type PullRequestReviewCommentType =
+  | "created"
+  | "edited"
+  | "deleted"
+  | (string & {});
+
+/**
+ * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+ */
+export type WorkflowRunType =
+  | "requested"
+  | "completed"
+  | "in_progress"
+  | (string & {});
+
 export interface OnObject {
   push?: PushTrigger;
   pull_request?: PullRequestTrigger;
   workflow_dispatch?: WorkflowDispatchTrigger;
   schedule?: { cron: string }[] | ScheduleTrigger | string[];
-  branch_protection_rule?: { types?: string[] };
+  branch_protection_rule?: { types?: BranchProtectionRuleType[] };
   check_suite?: CheckSuiteTrigger;
   issues?: IssuesTrigger;
   issue_comment?: IssueCommentTrigger;
-  discussion?: { types?: string[] };
-  discussion_comment?: { types?: string[] };
+  discussion?: { types?: DiscussionType[] };
+  discussion_comment?: { types?: DiscussionCommentType[] };
   fork?: {};
   gollum?: {};
   release?: ReleaseTrigger;
@@ -86,21 +288,21 @@ export interface OnObject {
   delete?: DeleteTrigger;
   registry_package?: RegistryPackageTrigger;
   page_build?: PageBuildTrigger;
-  label?: { types?: string[] };
-  merge_group?: { types?: string[] };
-  milestone?: { types?: string[] };
-  project?: { types?: string[] };
-  project_card?: { types?: string[] };
-  project_column?: { types?: string[] };
+  label?: { types?: LabelType[] };
+  merge_group?: { types?: MergeGroupType[] };
+  milestone?: { types?: MilestoneType[] };
+  project?: { types?: ProjectType[] };
+  project_card?: { types?: ProjectCardType[] };
+  project_column?: { types?: ProjectColumnType[] };
   public?: {};
-  pull_request_review?: { types?: string[] };
-  pull_request_review_comment?: { types?: string[] };
+  pull_request_review?: { types?: PullRequestReviewType[] };
+  pull_request_review_comment?: { types?: PullRequestReviewCommentType[] };
   pull_request_target?: PullRequestTrigger;
   workflow_call?: WorkflowCallTrigger;
   status?: {};
   watch?: {};
   workflow_run?: {
-    types?: string[];
+    types?: WorkflowRunType[];
     workflows: string[];
     branches?: string[];
     "branches-ignore"?: string[];

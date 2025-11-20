@@ -100,11 +100,7 @@ export interface IssuesTrigger {
 /**
  * @see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#issue_comment
  */
-export type IssueCommentType =
-  | "created"
-  | "edited"
-  | "deleted"
-  | (string & {});
+export type IssueCommentType = "created" | "edited" | "deleted" | (string & {});
 
 export interface IssueCommentTrigger {
   types?: IssueCommentType[];

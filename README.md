@@ -77,6 +77,7 @@ MIT
 ## Alternatives
 
 - [actions-toolkit](https://github.com/actions/toolkit)
+- [gagen](https://github.com/dsherret/gagen)
 - [ghats](https://github.com/koki-develop/ghats)
 - [github-actions-typescript](https://github.com/thedjpetersen/github-actions-typescript)
 - [github-actions-typing](https://github.com/typesafegithub/github-actions-typing)

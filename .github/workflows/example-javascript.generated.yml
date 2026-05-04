@@ -23,7 +23,7 @@ jobs:
         run: git diff --exit-code .github/workflows/example-javascript.generated.yml
       - name: Type-Check
         run: tsc --noEmit --skipLibCheck --allowJs --module nodenext --moduleResolution
-          nodenext .github/workflows/example-javascript.main.mjs
+          nodenext .github/workflows/example-javascript.main.mjs --ignoreConfig
   exampleJob:
     runs-on: ubuntu-latest
     steps:

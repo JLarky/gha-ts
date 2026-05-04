@@ -35,7 +35,7 @@ const wf = workflow({
         },
         {
           name: "Type-Check",
-          run: "tsc --noEmit --skipLibCheck --allowJs --module nodenext --moduleResolution nodenext .github/workflows/example-javascript.main.mjs",
+          run: "tsc --noEmit --skipLibCheck --allowJs --module nodenext --moduleResolution nodenext .github/workflows/example-javascript.main.mjs --ignoreConfig",
         },
       ],
     },

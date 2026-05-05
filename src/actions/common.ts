@@ -32,7 +32,7 @@ export interface CheckoutOptions {
   submodules?: boolean | "recursive";
 }
 export function checkout(options: CheckoutOptions = {}): UsesStep {
-  return uses("actions/checkout@v4", buildWith(options));
+  return uses("actions/checkout@v5", buildWith(options));
 }
 
 // AddToProject action

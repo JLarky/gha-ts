@@ -3,9 +3,11 @@
 
 name: Publish
 "on": 
-  push: 
-    branches: 
-      - main
+  release: 
+    types: 
+      - published
+  workflow_dispatch: 
+    {}
 permissions: 
   contents: read
   id-token: write

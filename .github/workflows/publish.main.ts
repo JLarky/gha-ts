@@ -7,9 +7,8 @@ import { generateWorkflow } from "@jlarky/gha-ts/cli";
 const wf = workflow({
   name: "Publish",
   on: {
-    push: {
-      branches: ["main"],
-    },
+    release: { types: ["published"] },
+    workflow_dispatch: {},
   },
   permissions: {
     contents: "read",
